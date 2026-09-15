@@ -1,0 +1,1290 @@
+/* =====================================================
+   DASAR WEBSITE
+===================================================== */
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #FFFBEB;
+    color: #8174A0;
+}
+
+
+/* =====================================================
+   NAVBAR
+===================================================== */
+
+.navbar {
+    background-color: #ffffff !important;
+    padding: 12px 0 !important;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+    min-height: 80px;
+}
+
+.navbar .container {
+    max-width: 1150px;
+}
+
+.logo-navbar {
+    width: 100px;
+    height: 100px;
+    object-fit: contain;
+}
+
+.navbar-brand {
+    display: flex !important;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+}
+
+.navbar-brand h5 {
+    margin: 0;
+    color: #8174A0;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.navbar-brand h4 {
+    margin: 0;
+    color: #2d0146d7 !important;
+}
+
+.navbar-brand small {
+    color: #A888B5;
+    font-size: 13px;
+}
+
+.navbar-nav {
+    gap: 4px;
+    margin-left: 20px !important;
+}
+
+.navbar-nav .nav-link {
+    color: #8174A0 !important;
+    font-size: 14px;
+    font-weight: 500;
+    padding: 10px 14px !important;
+    border-radius: 7px;
+    transition: 0.2s;
+}
+
+.navbar-nav .nav-link:hover {
+    background-color: #FFD2A0;
+    color: #8174A0 !important;
+}
+
+.navbar-nav .nav-link.active {
+    background-color: #8174A0 !important;
+    color: #ffffff !important;
+}
+
+.btn-login {
+    display: inline-block !important;
+    background-color: #8174A0 !important;
+    color: #ffffff !important;
+    padding: 9px 23px !important;
+    border-radius: 20px !important;
+    text-decoration: none !important;
+    font-size: 14px;
+    font-weight: 600;
+    margin-left: 15px !important;
+}
+
+.btn-login:hover {
+    background-color: #A888B5;
+    color: #ffffff !important;
+}
+
+
+/* =====================================================
+   HOME
+===================================================== */
+
+.home-hero {
+    width: 100%;
+    background-color: #ffffff;
+    overflow: hidden;
+}
+
+
+/* =====================================================
+   BAGIAN ATAS HOME
+===================================================== */
+
+.home-header {
+    width: 100%;
+    min-height: 390px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    text-align: center;
+
+    background-color: #ffffff;
+
+    padding: 55px 20px 45px;
+
+    position: relative;
+    z-index: 5;
+}
+
+
+/* =====================================================
+   LOGO HOME
+===================================================== */
+
+.home-logo {
+    width: 85px;
+    height: 85px;
+
+    object-fit: contain;
+
+    display: block;
+
+    margin: 0 auto 18px;
+}
+
+
+/* =====================================================
+   JUDUL
+===================================================== */
+
+.home-header h1 {
+    margin: 0;
+
+    color: #8174A0;
+
+    font-size: 42px;
+    font-weight: 700;
+
+    line-height: 1.2;
+
+    letter-spacing: 1px;
+}
+
+
+/* =====================================================
+   DESKRIPSI
+===================================================== */
+
+.home-header p {
+    margin: 18px auto 25px;
+
+    max-width: 700px;
+
+    color: #A888B5;
+
+    font-size: 16px;
+
+    line-height: 1.6;
+}
+
+
+/* =====================================================
+   TOMBOL HOME
+===================================================== */
+
+.home-button {
+    display: inline-block;
+
+    background-color: #8174A0;
+
+    color: #ffffff;
+
+    text-decoration: none;
+
+    padding: 11px 24px;
+
+    border-radius: 8px;
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+    transition: 0.2s;
+}
+
+.home-button:hover {
+    background-color: #A888B5;
+
+    color: #ffffff;
+
+    text-decoration: none;
+}
+
+
+/* =====================================================
+   FOTO HOME
+===================================================== */
+
+.home-image {
+    position: relative;
+
+    width: 100%;
+
+    height: 500px;
+
+    overflow: hidden;
+
+    background-color: #ffffff;
+}
+
+
+/* FOTO */
+
+.home-image img {
+    position: absolute;
+
+    top: 0;
+    left: 0;
+
+    width: 100%;
+    height: 100%;
+
+    display: block;
+
+    object-fit: cover;
+
+    object-position: center center;
+}
+
+
+/* =====================================================
+   FADE PUTIH
+===================================================== */
+
+.home-image-overlay {
+    position: absolute;
+
+    top: 0;
+    left: 0;
+
+    width: 100%;
+    height: 100%;
+
+    z-index: 2;
+
+    pointer-events: none;
+
+    background: linear-gradient(
+        to bottom,
+        rgba(255, 255, 255, 1) 0%,
+        rgba(255, 255, 255, 0.98) 5%,
+        rgba(255, 255, 255, 0.95) 10%,
+        rgba(255, 255, 255, 0.88) 17%,
+        rgba(255, 255, 255, 0.75) 24%,
+        rgba(255, 255, 255, 0.58) 32%,
+        rgba(255, 255, 255, 0.38) 42%,
+        rgba(255, 255, 255, 0.18) 52%,
+        rgba(255, 255, 255, 0.05) 62%,
+        rgba(255, 255, 255, 0) 72%
+    );
+}
+
+
+/* =====================================================
+   KATEGORI
+===================================================== */
+
+.kategori-section {
+    margin-top: 25px;
+    margin-bottom: 35px;
+}
+
+.kategori-menu {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+.kategori-btn {
+    background: #ffffff;
+    color: #8174A0;
+    border: 1px solid #EFB6C8;
+    padding: 10px 30px;
+    border-radius: 50px;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.kategori-btn:hover {
+    background-color: #FFD2A0;
+    color: #8174A0;
+    border-color: #EFB6C8;
+}
+
+.kategori-btn.active {
+    background-color: #8174A0;
+    color: #ffffff;
+    border-color: #8174A0;
+}
+
+
+/* =====================================================
+   PRODUK
+===================================================== */
+
+.produk-card {
+    border: none;
+    border-radius: 18px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    transition: 0.3s;
+    overflow: hidden;
+}
+
+.produk-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+.produk-label {
+    padding: 15px 15px 0;
+}
+
+.produk-img {
+    width: 100%;
+    height: 220px;
+    object-fit: contain;
+    padding: 15px;
+}
+
+.produk-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: #8174A0;
+}
+
+.produk-spesifikasi {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 12px;
+}
+
+.produk-spesifikasi span {
+    background: #FFD2A0;
+    padding: 6px 12px;
+    border-radius: 50px;
+    font-size: 13px;
+}
+
+.produk-status {
+    color: #A888B5;
+    font-weight: 600;
+    margin-top: 18px;
+}
+
+.btn-detail {
+    background-color: #8174A0;
+    color: #ffffff;
+    border: 1px solid #8174A0;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    padding: 6px 14px;
+}
+
+.btn-detail:hover {
+    background-color: #A888B5;
+    border-color: #A888B5;
+    color: #ffffff;
+}
+
+/* =====================================================
+SEARCH KAMERA & TRIPOD
+===================================================== */
+
+.search-box {
+    height: 70px;
+    border-radius: 50px !important;
+    border: 1px solid #EFB6C8;
+    padding: 0 30px;
+    font-size: 16px;
+    color: #374151;
+    background-color: #ffffff;
+}
+
+.search-box:focus {
+    border-color: #8174A0;
+    box-shadow: 0 0 0 3px #8174A0(37, 99, 235, 0.10);
+    outline: none;
+}
+
+
+/* =====================================================
+   JUDUL SECTION
+===================================================== */
+
+.section-title {
+    font-size: 28px;
+    font-weight: 600;
+    color: #8174A0;
+    margin-bottom: 5px;
+}
+
+.section-text {
+    color: #A888B5;
+    margin-bottom: 0;
+}
+
+
+/* FOOTER */
+
+.footer-section {
+    background-color: #8174A0;
+    color: #ffffff;
+    padding-top: 50px;
+    margin-top: 0;
+}
+
+.footer-title {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 15px;
+}
+
+.footer-text {
+    color: #FFD2A0;
+    font-size: 14px;
+    line-height: 1.7;
+}
+
+.footer-menu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.footer-menu li {
+    margin-bottom: 10px;
+}
+
+.footer-menu a {
+    color: #180848;
+    text-decoration: underline;
+    font-size: 14px;
+}
+
+.footer-menu a:hover {
+    color: #ffffff;
+}
+
+.footer-bottom {
+    margin-top: 30px;
+    padding: 20px;
+    text-align: center;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.footer-bottom p {
+    margin: 0;
+    color: #EFB6C8;
+    font-size: 13px;
+}
+
+
+/* ===== TABLET =========== */
+
+@media (max-width: 992px) {
+
+    .navbar-nav {
+        margin-top: 15px;
+        margin-bottom: 15px;
+    }
+
+    .btn-login {
+        display: inline-block;
+
+        width: 120px;
+
+        text-align: center;
+
+        margin-left: 0;
+    }
+
+    .home-header {
+        min-height: 350px;
+
+        padding-top: 45px;
+        padding-bottom: 40px;
+    }
+
+    .home-header h1 {
+        font-size: 34px;
+    }
+
+    .home-header p {
+        font-size: 15px;
+    }
+
+    .home-image {
+        height: 420px;
+    }
+}
+
+
+/* ========== HP ===========*/
+
+@media (max-width: 576px) {
+
+    .home-header {
+        min-height: 320px;
+
+        padding-top: 35px;
+        padding-bottom: 30px;
+    }
+
+    .home-logo {
+        width: 70px;
+        height: 70px;
+    }
+
+    .home-header h1 {
+        font-size: 27px;
+    }
+
+    .home-header p {
+        font-size: 14px;
+
+        padding: 0 10px;
+    }
+
+    .home-button {
+        padding: 10px 20px;
+    }
+
+    .home-image {
+        height: 300px;
+    }
+
+    .kategori-menu {
+        flex-wrap: wrap;
+    }
+}
+
+/* ==================================================
+   HALAMAN TENTANG
+================================================== */
+
+.tentang-hero {
+    background-color: #FFFBEB;
+    padding: 60px 0;
+}
+
+.tentang-title {
+    font-size: 42px;
+    font-weight: 700;
+    color: #8174A0;
+    margin-bottom: 10px;
+}
+
+.tentang-subtitle {
+    font-size: 17px;
+    color: #A888B5;
+    margin-bottom: 0;
+}
+
+.tentang-section {
+    background-color: #FFFBEB;
+}
+
+.tentang-image {
+    width: 100%;
+    height: 400px;
+    border-radius: 18px;
+    overflow: hidden;
+    background-color: #FFFFFF;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+}
+
+.tentang-image img {
+    width: 100%;
+    height: 400px;
+    object-fit: contain;
+    display: block;
+    background-color: #FFFFFF;
+}
+
+.tentang-heading {
+    font-size: 30px;
+    font-weight: 700;
+    color: #8174A0;
+    margin-bottom: 20px;
+}
+
+.tentang-text {
+    font-size: 16px;
+    color: #8174A0;
+    line-height: 1.8;
+    margin-bottom: 15px;
+}
+
+.tentang-list {
+    padding-left: 22px;
+    margin-top: 15px;
+}
+
+.tentang-list li {
+    font-size: 16px;
+    color: #8174A0;
+    line-height: 1.8;
+    margin-bottom: 10px;
+}
+
+/* ==================================================
+   HALAMAN KONTAK
+================================================== */
+
+.kontak-hero {
+    background-color: #EFB6C8;
+    padding: 60px 0;
+}
+
+.kontak-title {
+    font-size: 42px;
+    font-weight: 700;
+    color: #8174A0;
+    margin-bottom: 10px;
+}
+
+.kontak-subtitle {
+    font-size: 17px;
+    color: #A888B5;
+    margin-bottom: 0;
+}
+
+.kontak-section {
+    background-color: #FFFBEB;
+}
+
+.kontak-heading {
+    font-size: 28px;
+    font-weight: 700;
+    color: #8174A0;
+    margin-bottom: 20px;
+}
+
+.kontak-text {
+    font-size: 16px;
+    color: #A888B5;
+    line-height: 1.8;
+    margin-bottom: 25px;
+}
+
+.kontak-info {
+    margin-bottom: 20px;
+}
+
+.kontak-info h5 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #8174A0;
+    margin-bottom: 5px;
+}
+
+.kontak-info p {
+    font-size: 15px;
+    color: #A888B5;
+    margin-bottom: 0;
+}
+
+.kontak-form {
+    background-color: #FFFFFF;
+    padding: 30px;
+    border-radius: 18px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+}
+
+.kontak-form .form-control {
+    border: 1px solid #EFB6C8;
+    border-radius: 10px;
+    padding: 10px 14px;
+}
+
+.kontak-form .form-control:focus {
+    border-color: #8174A0;
+    box-shadow: 0 0 0 3px #8174A0 (37, 99, 235, 0.1);
+}
+
+/* ==================================================
+HALAMAN LOGIN
+================================================== */
+
+.login-section {
+    min-height: calc(100vh - 80px);
+    background-color: #FFFBEB;
+    padding: 70px 0;
+}
+
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.login-card {
+    width: 100%;
+    max-width: 430px;
+    background-color: #FFFFFF;
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 5px 25px rgba(129, 116, 160, 0.15);
+}
+
+.login-logo {
+    width: 130px !important;
+    height: 130px !important;
+    object-fit: contain;
+    display: block;
+    margin:0 auto 15px;
+}
+
+.login-title {
+    font-size: 32px;
+    font-weight: 700;
+    color: #8174A0;
+    margin-bottom: 8px;
+}
+
+.login-subtitle {
+    font-size: 15px;
+    color: #A888B5;
+    margin-bottom: 30px;
+}
+
+.login-card .form-label {
+    color: #8174A0;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.login-input {
+    border: 1px solid #EFB6C8;
+    border-radius: 10px;
+    padding: 11px 14px;
+}
+
+.login-input:focus {
+    border-color: #8174A0;
+    box-shadow: 0 0 0 3px rgba(129, 116, 160, 0.12);
+}
+
+.login-button {
+    background-color: #8174A0;
+    color: #FFFFFF;
+    border: none;
+    border-radius: 10px;
+    padding: 11px;
+    font-weight: 600;
+    margin-top: 10px;
+}
+
+.login-button:hover {
+    background-color: #A888B5;
+    color: #FFFFFF;
+}
+
+/* ==================================================
+   ADMIN - DASHBOARD
+================================================== */
+
+.admin-dashboard {
+    min-height: calc(100vh - 80px);
+    background-color: #FFFBEB;
+    padding: 60px 0;
+}
+
+.admin-title {
+    font-size: 38px;
+    font-weight: 700;
+    color: #8174A0;
+    margin-bottom: 10px;
+}
+
+.admin-subtitle {
+    font-size: 16px;
+    color: #A888B5;
+    margin-bottom: 35px;
+}
+
+.admin-card {
+    background-color: #FFFFFF;
+    border: none;
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 5px 20px rgba(129, 116, 160, 0.12);
+    transition: 0.3s;
+}
+
+.admin-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 28px rgba(129, 116, 160, 0.18);
+}
+
+.admin-card-icon {
+    font-size: 38px;
+    margin-bottom: 10px;
+}
+
+.admin-card-title {
+    color: #8174A0;
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.admin-card-number {
+    color: #8174A0;
+    font-size: 42px;
+    font-weight: 700;
+    margin: 10px 0;
+}
+
+.admin-card-text {
+    color: #A888B5;
+    font-size: 14px;
+    margin-bottom: 20px;
+}
+
+.admin-btn {
+    display: inline-block !important;
+    background-color: #8174A0 !important;
+    color: #FFFFFF !important;
+    border: none !important;
+    border-radius: 50px !important;
+    padding: 10px 24px !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    text-decoration: none !important;
+    transition: 0.3s;
+}
+
+.admin-btn:hover {
+    background-color: #A888B5 !important;
+    color: #FFFFFF !important;
+}
+
+
+/* ==================================================
+   ADMIN - DATA KONTAK
+================================================== */
+
+.data-kontak-section {
+    min-height: calc(100vh - 80px);
+    background-color: #FFFBEB;
+    padding: 50px 0;
+}
+
+.data-kontak-title {
+    color: #7f4898;
+    font-size: 32px;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.data-kontak-subtitle {
+    color: #A888B5;
+    font-size: 15px;
+    margin-bottom: 30px;
+}
+
+
+/* ==================================================
+   TABEL DATA KONTAK
+================================================== */
+
+.data-kontak-table {
+    background-color: #FFFFFF;
+    border: 2px solid #4f2871;
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: 0 5px 20px rgba(129, 116, 160, 0.10);
+}
+
+.data-kontak-table table {
+    margin-bottom: 0;
+}
+
+.data-kontak-table thead {
+    background-color: #8174A0;
+    color: #FFFFFF;
+}
+
+.data-kontak-table thead th {
+    background-color: #4f2871;
+    color: #FFFFFF;
+    border: 1px solid #4f2871;
+    padding: 15px 12px;
+    font-size: 14px;
+    font-weight: 600;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.data-kontak-table tbody td {
+    padding: 14px 12px;
+    color: #3d2a4c;
+    font-size: 14px;
+    vertical-align: middle;
+    border: 1px solid #4f2871;
+}
+
+.data-kontak-table tbody tr {
+    transition: 0.2s;
+}
+
+.data-kontak-table tbody tr:hover {
+    background-color: #FFF5F8;
+}
+
+.data-kontak-table tbody tr:nth-child(even) {
+    background-color: #FFFBFD;
+}
+
+
+/* ==================================================
+   TOMBOL AKSI ADMIN
+================================================== */
+
+.btn-edit-kontak {
+    background-color: #FFD2A0;
+    color: #8174A0;
+    border: none;
+    border-radius: 50px;
+    padding: 6px 15px;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: 0.2s;
+}
+
+.btn-edit-kontak:hover {
+    background-color: #F3B978;
+    color: #8174A0;
+}
+
+.btn-hapus-kontak {
+    background-color: #EFB6C8;
+    color: #8174A0;
+    border: none;
+    border-radius: 50px;
+    padding: 6px 15px;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: 0.2s;
+}
+
+.btn-hapus-kontak:hover {
+    background-color: #DD91AB;
+    color: #FFFFFF;
+}
+
+
+/* ==================================================
+   HALAMAN EDIT KONTAK
+================================================== */
+
+.edit-kontak-section {
+    min-height: calc(100vh - 80px);
+    background-color: #FFFBEB;
+    padding: 60px 0;
+}
+
+.edit-kontak-card {
+    max-width: 700px;
+    margin: 0 auto;
+    background-color: #FFFFFF;
+    padding: 35px;
+    border-radius: 20px;
+    box-shadow: 0 5px 20px rgba(129, 116, 160, 0.12);
+}
+
+.edit-kontak-title {
+    color: #8174A0;
+    font-size: 30px;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.edit-kontak-subtitle {
+    color: #A888B5;
+    font-size: 15px;
+    margin-bottom: 30px;
+}
+
+.edit-kontak-card .form-label {
+    color: #8174A0;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.edit-kontak-card .form-control {
+    border: 1px solid #EFB6C8;
+    border-radius: 10px;
+    padding: 11px 14px;
+}
+
+.edit-kontak-card .form-control:focus {
+    border-color: #8174A0;
+    box-shadow: 0 0 0 3px rgba(129, 116, 160, 0.12);
+}
+
+.btn-simpan-kontak {
+    background-color: #8174A0;
+    color: #FFFFFF;
+    border: none;
+    border-radius: 50px;
+    padding: 10px 25px;
+    font-weight: 600;
+    transition: 0.2s;
+}
+
+.btn-simpan-kontak:hover {
+    background-color: #A888B5;
+    color: #FFFFFF;
+}
+
+.btn-batal-kontak {
+    background-color: #EFB6C8;
+    color: #8174A0;
+    border: none;
+    border-radius: 50px;
+    padding: 10px 25px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: 0.2s;
+}
+
+.btn-batal-kontak:hover {
+    background-color: #DD91AB;
+    color: #FFFFFF;
+}
+
+
+/* ==================================================
+   ALERT PESAN KONTAK
+================================================== */
+
+.kontak-alert {
+    max-width: 1150px;
+    margin: 20px auto 0;
+    border: none;
+    border-radius: 12px;
+    background-color: #E8F5E9;
+    color: #4F6F52;
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.05);
+}
+
+
+/* ==================================================
+   ADMIN RESPONSIVE
+================================================== */
+
+@media (max-width: 768px) {
+
+    .admin-dashboard {
+        padding: 40px 15px;
+    }
+
+    .admin-title {
+        font-size: 30px;
+    }
+
+    .admin-card {
+        padding: 25px 20px;
+    }
+
+    .data-kontak-section {
+        padding: 40px 15px;
+    }
+
+    .data-kontak-title {
+        font-size: 27px;
+    }
+
+    .edit-kontak-section {
+        padding: 40px 15px;
+    }
+
+    .edit-kontak-card {
+        padding: 25px 20px;
+    }
+
+}
+
+/* ==================================================
+   KONFIRMASI HAPUS DATA KONTAK
+================================================== */
+
+.hapus-kontak-section {
+    min-height: calc(100vh - 80px);
+    background-color: #FFFBEB;
+    padding: 80px 15px;
+    display: flex;
+    align-items: center;
+}
+
+.hapus-kontak-card {
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto;
+    background-color: #FFFFFF;
+    padding: 40px;
+    border-radius: 20px;
+    text-align: center;
+    box-shadow: 0 5px 20px rgba(129, 116, 160, 0.12);
+}
+
+.hapus-kontak-icon {
+    font-size: 45px;
+    margin-bottom: 15px;
+}
+
+.hapus-kontak-title {
+    color: #8174A0;
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 15px;
+}
+
+.hapus-kontak-text {
+    color: #8174A0;
+    font-size: 16px;
+    margin-bottom: 8px;
+}
+
+.hapus-kontak-warning {
+    color: #A888B5;
+    font-size: 14px;
+    margin-bottom: 30px;
+}
+
+.btn-hapus-confirm {
+    background-color: #EFB6C8;
+    color: #8174A0;
+    border: none;
+    border-radius: 50px;
+    padding: 10px 25px;
+    font-size: 14px;
+    font-weight: 600;
+    margin-right: 8px;
+    transition: 0.2s;
+}
+
+.btn-hapus-confirm:hover {
+    background-color: #DD91AB;
+    color: #FFFFFF;
+}
+
+.btn-batal-hapus {
+    display: inline-block;
+    background-color: #8174A0;
+    color: #FFFFFF;
+    border: none;
+    border-radius: 50px;
+    padding: 10px 25px;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: 0.2s;
+}
+
+.btn-batal-hapus:hover {
+    background-color: #A888B5;
+    color: #FFFFFF;
+}
+
+/* ==================================================
+   DETAIL KAMERA & TRIPOD
+================================================== */
+
+.detail-produk-section {
+    min-height: calc(100vh - 80px);
+    background-color: #FFFBEB;
+    padding: 60px 0;
+}
+
+.detail-produk-image {
+    background-color: #FFFFFF;
+    border-radius: 20px;
+    padding: 30px;
+    min-height: 450px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    box-shadow: 0 5px 20px rgba(129, 116, 160, 0.10);
+}
+
+.detail-produk-image img {
+    width: 100%;
+    max-height: 400px;
+    object-fit: contain;
+}
+
+.detail-produk-title {
+    color: #8174A0;
+    font-size: 36px;
+    font-weight: 700;
+    margin-bottom: 15px;
+}
+
+.detail-produk-description {
+    color: #A888B5;
+    font-size: 16px;
+    line-height: 1.8;
+    margin-bottom: 25px;
+}
+
+.detail-produk-heading {
+    color: #8174A0;
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 12px;
+}
+
+.detail-produk-spesifikasi {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 25px;
+}
+
+.detail-produk-spesifikasi span {
+    background-color: #FFD2A0;
+    color: #8174A0;
+    padding: 8px 16px;
+    border-radius: 50px;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.detail-produk-info {
+    margin-bottom: 25px;
+}
+
+.detail-produk-info p {
+    color: #8174A0;
+    margin-bottom: 8px;
+}
+
+.detail-produk-info strong {
+    color: #8174A0;
+}
+

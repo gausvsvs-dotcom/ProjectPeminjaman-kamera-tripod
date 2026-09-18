@@ -4,6 +4,7 @@ require_once "../config/koneksi.php";
 $query = mysqli_query($conn, "SELECT * FROM kondisi_barang");
 ?>
 <?php include "../layout/header.php" ?>
+<link rel="stylesheet" href="../assets/css/data-master.css">
 <?php include "../layout/navbar.php" ?>
 <div class="main-content">
     <div class="container">

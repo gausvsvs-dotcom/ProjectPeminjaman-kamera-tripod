@@ -3,7 +3,7 @@ include 'includes/koneksi.php';
 
 $query = "SELECT * FROM kontak ORDER BY id ASC";
 $result = mysqli_query($conn, $query);
-
+/** @var mysqli $conn */
 session_start();
 
 if (!isset($_SESSION['admin'])) {

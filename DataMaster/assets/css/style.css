@@ -1,0 +1,68 @@
+/*GLOBAL STYLE - PROJECT PEMINJAMAN */
+* {
+    box-sizing: border-box;
+}
+html,
+body {
+    margin: 0;
+    padding: 0;
+}
+body {
+    background-color: #f3edf5;
+    font-family: Arial, sans-serif;
+    color: #302b3f;
+}
+/*MAIN CONTENT*/
+.main-content {
+    margin-left: 260px;
+    padding: 100px 30px 30px;
+    min-height: 100vh;
+}
+.container-fluid {
+    max-width: 1400px;
+    margin: 0 auto;
+}
+/* CARD GLOBAL */
+.card {
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(48, 43, 63, 0.08);
+    overflow: hidden;
+}
+.card-header {
+    background-color: #8174A0;
+    color: white;
+    border: none;
+}
+/*TABLE GLOBAL*/
+.table {
+    margin-bottom: 0;
+}
+.table thead th {
+    background-color: #EFB6C8;
+    color: #40384e;
+    vertical-align: middle;
+}
+.table tbody tr {
+    transition: 0.2s ease;
+}
+.table tbody tr:hover {
+    background-color: #fff3f6;
+}
+/*BUTTON GLOBAL */
+.btn-primary-custom {
+    background-color: #A888B5;
+    color: white;
+    border: none;
+}
+.btn-primary-custom:hover {
+    background-color: #8174A0;
+    color: white;
+}
+/*RESPONSIVE*/
+@media (max-width: 992px) {
+    .main-content {
+        margin-left: 0;
+        padding: 90px 20px 25px;
+    }
+}

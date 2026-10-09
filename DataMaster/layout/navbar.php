@@ -187,7 +187,7 @@
             TRANSAKSI
         </div>
         <a
-            href="#"
+            href="../../Transaksi/peminjaman.php"
             class="menu-item">
             <i class="bi bi-clipboard-check-fill"></i>
             <span>Peminjaman</span>
@@ -203,7 +203,7 @@
             LAPORAN
         </div>
         <a
-            href="#"
+            href="../laporan/index.php"
             class="menu-item">
             <i class="bi bi-file-earmark-bar-graph-fill"></i>
             <span>Laporan</span>

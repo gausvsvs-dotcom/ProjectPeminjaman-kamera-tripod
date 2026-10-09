@@ -1,0 +1,290 @@
+/* BUBBLE MENU */
+.laporan-menu {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin: 25px 0;
+}
+.laporan-bubble {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    padding: 12px 22px;
+    border-radius: 30px;
+    background: #ffffff;
+    color: #8174A0;
+    border: 1px solid #e5ddec;
+    text-decoration: none;
+    font-weight: 600;
+    transition: 0.2s;
+}
+.laporan-bubble:hover,
+.laporan-bubble.active {
+    background: #8174A0;
+    color: #ffffff;
+    border-color: #8174A0;
+}
+/* FILTER */
+.laporan-filter-card {
+    background: #ffffff;
+    padding: 24px;
+    border: 1px solid #eee7f1;
+    border-radius: 16px;
+    margin-bottom: 28px;
+    box-shadow: 0 5px 18px rgba(70, 55, 90, 0.05);
+}
+.laporan-card-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: #393244;
+    margin-bottom: 20px;
+}
+.laporan-filter-card label {
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 7px;
+    color: #514b59;
+}
+.laporan-filter-card .form-control,
+.laporan-filter-card .form-select {
+    height: 45px;
+    border: 1px solid #d9cce2;
+    border-radius: 9px;
+}
+.laporan-filter-card .form-control:focus,
+.laporan-filter-card .form-select:focus {
+    border-color: #8174A0;
+    box-shadow: 0 0 0 3px rgba(129, 116, 160, 0.13);
+}
+.laporan-filter-action {
+    display: flex;
+    gap: 9px;
+}
+.btn-laporan-filter,
+.btn-laporan-reset {
+    height: 45px;
+    padding: 0 18px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 9px;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+}
+
+.btn-laporan-filter {
+    background: #8174A0;
+    color: white;
+}
+
+.btn-laporan-filter:hover {
+    background: #6f628e;
+    color: white;
+}
+
+.btn-laporan-reset {
+    background: #f1edf5;
+    color: #6f628e;
+}
+
+.btn-laporan-reset:hover {
+    background: #e5ddec;
+    color: #514568;
+}
+
+/* JUDUL DAFTAR */
+.laporan-list-header {
+    margin: 25px 0 15px;
+}
+
+.laporan-list-header h3 {
+    font-size: 21px;
+    font-weight: 700;
+    color: #393244;
+    margin-bottom: 5px;
+}
+
+.laporan-list-header p {
+    color: #817989;
+    margin: 0;
+    font-size: 14px;
+}
+
+/* STRUK */
+.laporan-struk-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
+    gap: 20px;
+    align-items: start;
+}
+
+.laporan-struk {
+    background: #ffffff;
+    border: 1px solid #e9e1ed;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 5px 18px rgba(70, 55, 90, 0.05);
+}
+
+.struk-header {
+    background: #f4edf6;
+    padding: 18px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.struk-label {
+    font-size: 11px;
+    color: #8174A0;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+.struk-header h4 {
+    margin: 5px 0 0;
+    font-size: 18px;
+    color: #393244;
+    font-weight: 700;
+}
+
+.struk-status {
+    background: #ffffff;
+    color: #6f628e;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.struk-section {
+    padding: 17px 20px;
+    border-bottom: 1px dashed #ded5e4;
+}
+
+.struk-section h5 {
+    font-size: 14px;
+    font-weight: 700;
+    color: #8174A0;
+    margin: 0 0 13px;
+}
+
+.struk-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+    margin-bottom: 10px;
+    font-size: 13px;
+}
+
+.struk-row:last-child {
+    margin-bottom: 0;
+}
+
+.struk-row span,
+.struk-barang > span {
+    color: #817989;
+}
+
+.struk-row strong {
+    color: #393244;
+    text-align: right;
+    font-weight: 600;
+    overflow-wrap: anywhere;
+}
+
+.struk-barang {
+    font-size: 13px;
+}
+
+.struk-barang > div {
+    margin-top: 8px;
+    color: #393244;
+    line-height: 1.8;
+}
+
+.struk-total {
+    border-top: 1px dashed #ded5e4;
+    padding-top: 12px;
+    margin-top: 12px;
+}
+
+.struk-total strong {
+    color: #6f628e;
+}
+
+.struk-footer {
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    color: #817989;
+    font-size: 12px;
+}
+
+.btn-struk-print {
+    border: none;
+    border-radius: 8px;
+    padding: 8px 13px;
+    background: #8174A0;
+    color: #ffffff;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.btn-struk-print:hover {
+    background: #6f628e;
+}
+
+/* DATA KOSONG */
+.laporan-kosong {
+    background: #ffffff;
+    border: 1px solid #eee7f1;
+    border-radius: 14px;
+    padding: 45px 20px;
+    text-align: center;
+    color: #817989;
+    grid-column: 1 / -1;
+}
+
+.laporan-kosong i {
+    font-size: 35px;
+    color: #a99bb8;
+}
+
+.laporan-kosong p {
+    margin: 10px 0 0;
+}
+/* CETAK */
+@media print {
+    body {
+        background: white !important;
+    }
+    .laporan-menu,
+    .laporan-filter-card,
+    .laporan-list-header,
+    .data-page-header,
+    .struk-footer button,
+    nav,
+    .sidebar {
+        display: none !important;
+    }
+    .main-content {
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+    .laporan-struk-list {
+        display: block;
+    }
+    .laporan-struk {
+        box-shadow: none;
+        margin-bottom: 20px;
+        break-inside: avoid;
+    }
+}

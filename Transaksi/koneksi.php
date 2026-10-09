@@ -2,7 +2,7 @@
 $host = "localhost";
 $user = "root";
 $pass = "";
-$db   = "db_peminjaman_kamera"; 
+$db   = "project"; 
 
 $koneksi = mysqli_connect($host, $user, $pass, $db);
 

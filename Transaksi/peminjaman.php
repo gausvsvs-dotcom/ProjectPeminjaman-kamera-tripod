@@ -1,6 +1,11 @@
 <?php
 include 'koneksi.php';
 
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
+session_start();
+
 // 1. LOGIKA SIMPAN DATA (Jika tombol simpan diklik)
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['simpan'])) {
     

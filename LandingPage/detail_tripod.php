@@ -113,6 +113,10 @@ $data = $tripod[$id] ?? $tripod[1];
                    class="btn btn-detail">
                    ~ Kembali ~
                 </a>
+
+                <a href="pengajuan_peminjaman.php?id=<?= $id ?>&jenis=tripod" class="btn btn-ajukan">
+                    ~ Ajukan Peminjaman ~
+                </a>
             </div>
         </div>
     </div>

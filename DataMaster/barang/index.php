@@ -16,135 +16,182 @@ $query = mysqli_query($conn, "
     INNER JOIN kondisi_barang
         ON barang.id_kondisi = kondisi_barang.id_kondisi
 ");
-
 if (!$query) {
     die("Query error: " . mysqli_error($conn));
 }
 ?>
-<?php include "../layout/header.php" ?>
-<?php include "../layout/navbar.php" ?>
+<?php include "../layout/header.php"; ?>
+<link rel="stylesheet" href="../assets/css/data-master.css">
+<?php include "../layout/navbar.php"; ?>
+<div class="main-content data-master-page">
+    <div class="container-fluid">
+        <!-- PAGE HEADER -->
+        <div class="data-page-header">
 
-<div class="main-content">
-<div class="container">
-    <div class="card">
-        <div class="card-header py-3">
-            <h3 class="mb-0">Data Barang</h3>
+            <div class="data-page-icon">
+                <i class="bi bi-camera"></i>
+            </div>
+            <div>
+                <h2>Data Barang</h2>
+                <p>
+                    Kelola data barang kamera dan tripod pada sistem.
+                </p>
+            </div>
         </div>
-        <div class="card-body">
-            <?php
-            if (isset($_GET['pesan'])) {
-
-                if ($_GET['pesan'] == 'tambah') {
-                    ?>
-                    <div class="alert alert-success alert-dismissible fade show">
-                        Data barang berhasil ditambahkan!
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                    </div>
-                    <?php
-                }
-
-                if ($_GET['pesan'] == 'ubah') {
-                    ?>
-                    <div class="alert alert-warning alert-dismissible fade show">
-                        Data barang berhasil diubah!
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                    </div>
-                    <?php
-                }
-
-                if ($_GET['pesan'] == 'hapus') {
-                    ?>
-                    <div class="alert alert-danger alert-dismissible fade show">
-                        Data barang berhasil dihapus!
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                    </div>
-                    <?php
-                }
-            }
-            ?>
-            <a href="tambah.php" class="btn btn-tambah mb-3">
-                + Tambah Barang
-            </a>
-            <div class="table-responsive">
-                <table class="table table-bordered table-hover align-middle">
-                    <thead>
-                        <tr>
-                            <th>No</th>
-                            <th>Kode</th>
-                            <th>Nama Barang</th>
-                            <th>Jenis</th>
-                            <th>Kategori</th>
-                            <th>Merk</th>
-                            <th>Kondisi</th>
-                            <th>Stok</th>
-                            <th>Foto</th>
-                            <th>Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    <?php
-                    $no = 1;
-                    while ($data = mysqli_fetch_assoc($query)) {
-                    ?>
-                        <tr>
-                            <td><?= $no++; ?></td>
-                            <td>
-                                <?= htmlspecialchars($data['kode_barang']); ?>
-                            </td>
-                            <td>
-                                <?= htmlspecialchars($data['nama_barang']); ?>
-                            </td>
-                            <td>
-                                <?= ucfirst($data['jenis_barang']); ?>
-                            </td>
-                            <td>
-                                <?= htmlspecialchars($data['nama_kategori']); ?>
-                            </td>
-                            <td>
-                                <?= htmlspecialchars($data['nama_merk']); ?>
-                            </td>
-                            <td>
-                                <?= htmlspecialchars($data['nama_kondisi']); ?>
-                            </td>
-                            <td>
-                                <?= $data['stok']; ?>
-                            </td>
-                            <td>
-                                <?php if (!empty($data['foto'])) { ?>
-                                    <img
-                                        src="../uploads/barang/<?= htmlspecialchars($data['foto']); ?>"
-                                        class="foto-barang"
-                                    >
-                                <?php } else { ?>
-                                    <span class="text-muted">
-                                        Tidak ada foto
-                                    </span>
-                                <?php } ?>
-                            </td>
-                            <td>
-                                <a href="detail.php?id=<?= $data['id_barang']; ?>"
-                                   class="btn btn-info btn-sm text-white">
-                                    Detail
-                                </a>
-                                <a href="edit.php?id=<?= $data['id_barang']; ?>"
-                                   class="btn btn-warning btn-sm">
-                                    Edit
-                                </a>
-                                <a href="hapus.php?id=<?= $data['id_barang']; ?>"
-                                   class="btn btn-danger btn-sm"
-                                   onclick="return confirm('Yakin ingin menghapus barang ini?')">
-                                    Hapus
-                                </a>
-                            </td>
-                        </tr>
-                    <?php
+        <!-- DATA CARD -->
+        <div class="data-master-card">
+            <div class="data-card-header">
+                <div>
+                    <h3 class="data-card-title">
+                        <i class="bi bi-box-seam me-2"></i>
+                        Daftar Barang
+                    </h3>
+                    <p>
+                        Daftar barang yang tersedia dalam sistem.
+                    </p>
+                </div>
+                <a
+                    href="tambah.php"
+                    class="btn-data-tambah">
+                    <i class="bi bi-plus-lg me-1"></i>
+                    Tambah Barang
+                </a>
+            </div>
+            <div class="data-table-wrapper">
+                <!-- NOTIFIKASI -->
+                <?php
+                if (isset($_GET['pesan'])) {
+                    if ($_GET['pesan'] == 'tambah') {
+                ?>
+                        <div class="data-notification success">
+                            <i class="bi bi-check-circle me-2"></i>
+                            Data barang berhasil ditambahkan!
+                        </div>
+                <?php
                     }
-                    ?>
-                    </tbody>
-                </table>
+                    if ($_GET['pesan'] == 'ubah') {
+                ?>
+                        <div class="data-notification warning">
+                            <i class="bi bi-check-circle me-2"></i>
+                            Data barang berhasil diubah!
+                        </div>
+                <?php
+                    }
+                    if ($_GET['pesan'] == 'hapus') {
+                ?>
+                        <div class="data-notification danger">
+                            <i class="bi bi-check-circle me-2"></i>
+                            Data barang berhasil dihapus!
+                        </div>
+                <?php
+                    }
+                }
+                ?>
+                <div class="table-responsive">
+                    <table class="data-master-table">
+                        <thead>
+                            <tr>
+                                <th>No</th>
+                                <th>Kode</th>
+                                <th>Nama Barang</th>
+                                <th>Jenis</th>
+                                <th>Kategori</th>
+                                <th>Merk</th>
+                                <th>Kondisi</th>
+                                <th>Stok</th>
+                                <th>Foto</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        <?php
+                        $no = 1;
+                        while ($data = mysqli_fetch_assoc($query)) {
+                        ?>
+                            <tr>
+                                <!-- NO -->
+                                <td>
+                                    <span class="data-number">
+                                        <?= $no++; ?>
+                                    </span>
+                                </td>
+                                <!-- KODE -->
+                                <td>
+                                    <span class="data-id">
+                                        <?= htmlspecialchars($data['kode_barang']); ?>
+                                    </span>
+                                </td>
+                                <!-- NAMA -->
+                                <td>
+                                    <span class="data-name">
+                                        <?= htmlspecialchars($data['nama_barang']); ?>
+                                    </span>
+                                </td>
+                                <!-- JENIS -->
+                                <td>
+                                    <?= ucfirst($data['jenis_barang']); ?>
+                                </td>
+                                <!-- KATEGORI -->
+                                <td>
+                                    <?= htmlspecialchars($data['nama_kategori']); ?>
+                                </td>
+
+                                <!-- MERK -->
+                                <td>
+                                    <?= htmlspecialchars($data['nama_merk']); ?>
+                                </td>
+                                <!-- KONDISI -->
+                                <td>
+                                    <?= htmlspecialchars($data['nama_kondisi']); ?>
+                                </td>
+                                <!-- STOK -->
+                                <td>
+                                    <?= $data['stok']; ?>
+                                </td>
+                                <!-- FOTO -->
+                                <td>
+                                    <?php if (!empty($data['foto'])) { ?>
+                                        <img
+                                            src="../uploads/barang/<?= htmlspecialchars($data['foto']); ?>"
+                                            class="foto-barang"
+                                            alt="Foto <?= htmlspecialchars($data['nama_barang']); ?>">
+                                    <?php } else { ?>
+                                        <span class="text-muted">
+                                            Tidak ada foto
+                                        </span>
+                                    <?php } ?>
+                                </td>
+                                <!-- AKSI -->
+                                <td class="data-action">
+                                    <a
+                                        href="detail.php?id=g<?= $data['id_barang']; ?>"
+                                        class="data-detail">
+                                        <i class="bi bi-eye"></i>
+                                        Detail
+                                    </a>
+                                    <a
+                                        href="edit.php?id=<?= $data['id_barang']; ?>"
+                                        class="data-edit">
+                                        <i class="bi bi-pencil-square"></i>
+                                        Edit
+                                    </a>
+                                    <a
+                                        href="hapus.php?id=<?= $data['id_barang']; ?>"
+                                        class="data-delete"
+                                        onclick="return confirm('Yakin ingin menghapus barang ini?')">
+                                        <i class="bi bi-trash"></i>
+                                        Hapus
+                                    </a>
+                                </td>
+                            </tr>
+                        <?php
+                        }
+                        ?>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
 </div>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<?php include "../layout/footer.php" ?>
+<?php include "../layout/footer.php"; ?>

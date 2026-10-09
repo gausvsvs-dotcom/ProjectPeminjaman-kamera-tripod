@@ -370,9 +370,13 @@
                 </div>
             </div>
         </div>
+
+        <div id="pesanKameraTidakDitemukan" class="text-center py-4" style="display: none;">
+            <p class="section-text">Data kamera tidak ditemukan.</p>
+        </div>
+
     </div>
 </section>
-
 
 <section class="produk-section py-4" id="sectionTripod">
 
@@ -490,8 +494,14 @@
                 </div>
             </div>
         </div>
+
+        <div id="pesanTripodTidakDitemukan" class="text-center py-4" style="display: none;">
+            <p class="section-text">Data tripod tidak ditemukan.</p>
+        </div>
+
     </div>
 </section>
+
 
     <?php include 'includes/footer.php'; ?>
 
@@ -504,6 +514,9 @@
     const kategoriButtons = document.querySelectorAll('.kategori-btn');
     const sectionKamera = document.getElementById('sectionKamera');
     const sectionTripod = document.getElementById('sectionTripod');
+    const pesanKameraTidakDitemukan = document.getElementById('pesanKameraTidakDitemukan');
+    const pesanTripodTidakDitemukan = document.getElementById('pesanTripodTidakDitemukan');
+
 
     let kategoriDipilih = 'Semua';
 
@@ -517,6 +530,9 @@
         
         sectionTripod.style.display =
         kategoriDipilih === 'Kamera' ? 'none' : '';
+
+        let jumlahKamera = 0;
+        let jumlahTripod = 0;
 
         produkItems.forEach(function (produk) {
 
@@ -533,11 +549,37 @@
 
             if (cocokSearch && cocokStatus && cocokKategori) {
                 produk.style.display = '';
+                
+                if (kategoriProduk === 'Kamera') {
+                    jumlahKamera++;
+                }
+                if (kategoriProduk === 'Tripod') {
+                    jumlahTripod++;
+                }
             } else {
                 produk.style.display = 'none';
             }
-
         });
+
+        if (kategoriDipilih === 'Kamera') {
+            pesanKameraTidakDitemukan.style.display =
+            jumlahKamera === 0 ? '' : 'none';
+            
+            pesanTripodTidakDitemukan.style.display = 'none';
+        
+        } else if (kategoriDipilih === 'Tripod') {
+            pesanTripodTidakDitemukan.style.display =
+            jumlahTripod === 0 ? '' : 'none';
+            
+            pesanKameraTidakDitemukan.style.display = 'none';
+        
+        } else {
+            pesanKameraTidakDitemukan.style.display =
+            jumlahKamera === 0 ? '' : 'none';
+            
+            pesanTripodTidakDitemukan.style.display =
+            jumlahTripod === 0 ? '' : 'none';
+        }
     }
 
     searchProduk.addEventListener('input', filterProduk);
@@ -560,6 +602,6 @@
         });
 
     });
-</script>
+    </script>
 </body>
 </html>

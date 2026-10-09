@@ -405,6 +405,23 @@ body {
     color: #ffffff;
 }
 
+.btn-ajukan {
+    background-color: #8174A0 !important;
+    color: #ffffff !important;
+    border: 1px solid #8174A0 !important;
+    border-radius: 8px !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+    padding: 6px 14px !important;
+    text-decoration: none !important;
+}
+
+.btn-ajukan:hover {
+    background-color: #A888B5 !important;
+    border-color: #A888B5 !important;
+    color: #ffffff !important;
+}
+
 /* =====================================================
 SEARCH KAMERA & TRIPOD
 ===================================================== */
@@ -1288,3 +1305,84 @@ HALAMAN LOGIN
     color: #8174A0;
 }
 
+.notifikasi-sukses {
+    position: relative;
+    width: 100%;
+    margin-bottom: 20px;
+    padding: 14px 45px 14px 16px;
+
+    background-color: #d1e7dd;
+    border-left: 5px solid #198754;
+    border-radius: 10px;
+
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+}
+
+.notifikasi-isi {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+}
+
+.notifikasi-teks {
+    flex: 1;
+}
+
+.notifikasi-teks strong {
+    display: block;
+    margin-bottom: 3px;
+    color: #155724;
+    font-size: 14px;
+}
+
+.notifikasi-teks p {
+    margin: 0;
+    color: #155724;
+    font-size: 13px;
+}
+
+.notifikasi-icon {
+    width: 28px;
+    height: 28px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background-color: #198754;
+    color: white;
+
+    border-radius: 50%;
+    font-weight: bold;
+    flex-shrink: 0;
+}
+
+.notifikasi-close {
+    position: absolute;
+    top: 10px;
+    right: 12px;
+
+    border: none;
+    background: none;
+
+    color: #155724;
+    font-size: 22px;
+    line-height: 1;
+
+    cursor: pointer;
+    padding: 0;
+}
+
+.notifikasi-close:hover {
+    color: #0f3d1e;
+}
+
+@media (max-width: 576px) {
+    .notifikasi-sukses {
+        top: 80px;
+        right: 15px;
+        left: 15px;
+        width: auto;
+    }
+}

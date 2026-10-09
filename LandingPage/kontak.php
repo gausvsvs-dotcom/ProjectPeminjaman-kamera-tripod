@@ -9,27 +9,19 @@
     <link rel="stylesheet"href="assets/css/style.css">
 
 </head>
+
+<script>
+function tutupNotifikasi() {
+    const notifikasi = document.getElementById('notifikasiSukses');
+
+    if (notifikasi) {
+        notifikasi.remove();
+    }
+}
+</script>
+
 <body>
     <?php include 'includes/navbar.php' ?>
-
-    <?php 
-    if (isset($_GET['status']) && $_GET['status'] == 'success') : ?>
-
-        <div class="container mt-3">
-            <div class="alert alert-success alert-dismissible fade show" role="alert">
-
-                <strong>Pesan berhasil dikirim!</strong>
-                Terima kasih, pesan Anda telah kami terima.
-
-                <button type="button"
-                        class="btn-close"
-                        data-bs-dismiss="alert">
-                </button>
-
-            </div>
-        </div>
-
-    <?php endif; ?>
 
     <section class="kontak-hero">
         <div class="container">
@@ -83,6 +75,32 @@
                 <div class="col-lg-7">
                     <div class="kontak-form">
                         <h2 class="kontak-heading"> Hubungi Kami</h2>
+
+                        <?php 
+                        if (isset($_GET['status']) && $_GET['status'] == 'success') : ?>
+                        
+                        <div id="notifikasiSukses" class="notifikasi-sukses">
+                            <div class="notifikasi-isi">
+                                
+                            <div class="notifikasi-teks">
+                                <strong>Pesan berhasil dikirim!</strong>
+                                <p>Terima kasih, pesan Anda telah kami terima.</p>
+                            </div>
+
+                    <div class="notifikasi-icon">✓</div>
+
+                </div>
+
+                <button type="button"
+                        class="notifikasi-close"
+                        onclick="tutupNotifikasi()">
+                    ×
+                </button>
+
+            </div>
+
+        <?php endif; ?>
+
                         <form action="proses_kontak.php" method="POST">
                             <div class="mb-3">
 

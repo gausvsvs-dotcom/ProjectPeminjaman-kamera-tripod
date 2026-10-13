@@ -22,8 +22,7 @@ $id = $_GET['id'];
     <link rel="stylesheet"
           href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css">
 
-    <link rel="stylesheet"
-          href="assets/css/style.css?v=2">
+    <link rel="stylesheet" href="assets/css/style.css?v=99">
 </head>
 
 <body>

@@ -2,12 +2,15 @@
 require_once "../config/koneksi.php";
 /** @var mysqli $conn */
 
-if (!isset($_GET['id'])) {
+// Validasi ID barang
+$id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
+
+if (!$id || $id <= 0) {
     header("Location: index.php");
     exit;
 }
-$id = $_GET['id'];
-$query = mysqli_query($conn, "
+// Ambil detail barang menggunakan prepared statement
+$stmt = mysqli_prepare($conn, "
     SELECT
         barang.*,
         kategori.nama_kategori,
@@ -20,19 +23,23 @@ $query = mysqli_query($conn, "
         ON barang.id_merk = merk.id_merk
     INNER JOIN kondisi_barang
         ON barang.id_kondisi = kondisi_barang.id_kondisi
-    WHERE barang.id_barang = '$id'
-");
-
-if (!$query) {
+    WHERE barang.id_barang = ?");
+if (!$stmt) {
     die("Query error: " . mysqli_error($conn));
 }
+mysqli_stmt_bind_param($stmt, "i", $id);
+mysqli_stmt_execute($stmt);
+$query = mysqli_stmt_get_result($stmt);
 $data = mysqli_fetch_assoc($query);
+mysqli_stmt_close($stmt);
+
+// Jika barang tidak ditemukan
 if (!$data) {
     die("Data barang tidak ditemukan.");
 }
 ?>
 <?php include "../layout/header.php"; ?>
-<link rel="stylesheet" href="../assets/css/data-master.css">
+<link rel="stylesheet" href="../assets/css/data-master.css?v=3">
 <?php include "../layout/navbar.php"; ?>
 <div class="main-content data-master-page">
     <div class="container-fluid">
@@ -42,12 +49,8 @@ if (!$data) {
                 <i class="bi bi-camera"></i>
             </div>
             <div>
-                <h2>
-                    Detail Barang
-                </h2>
-                <p>
-                    Informasi detail barang pada sistem.
-                </p>
+                <h2>Detail Barang</h2>
+                <p>Informasi detail barang pada sistem.</p>
             </div>
         </div>
         <!-- DETAIL CARD -->
@@ -57,92 +60,73 @@ if (!$data) {
                     <i class="bi bi-info-circle me-2"></i>
                     Informasi Barang
                 </h3>
-                <p>
-                    Detail data barang yang dipilih.
-                </p>
+                <p>Detail data barang yang dipilih.</p>
             </div>
             <div class="data-detail-body">
                 <!-- ID BARANG -->
                 <div class="detail-item">
-                    <div class="detail-label">
-                        ID Barang
-                    </div>
+                    <div class="detail-label">ID Barang</div>
                     <div class="detail-value">
-                        #<?= $data['id_barang']; ?>
+                        #<?= (int) $data['id_barang']; ?>
                     </div>
                 </div>
                 <!-- KODE BARANG -->
                 <div class="detail-item">
-                    <div class="detail-label">
-                        Kode Barang
-                    </div>
+                    <div class="detail-label">Kode Barang</div>
                     <div class="detail-value">
                         <?= htmlspecialchars($data['kode_barang']); ?>
                     </div>
                 </div>
                 <!-- NAMA BARANG -->
                 <div class="detail-item">
-                    <div class="detail-label">
-                        Nama Barang
-                    </div>
+                    <div class="detail-label">Nama Barang</div>
                     <div class="detail-value">
                         <?= htmlspecialchars($data['nama_barang']); ?>
                     </div>
                 </div>
                 <!-- JENIS BARANG -->
                 <div class="detail-item">
-                    <div class="detail-label">
-                        Jenis Barang
-                    </div>
+                    <div class="detail-label">Jenis Barang</div>
                     <div class="detail-value">
-                        <?= ucfirst($data['jenis_barang']); ?>
+                        <?= htmlspecialchars(ucfirst($data['jenis_barang'])); ?>
                     </div>
                 </div>
                 <!-- KATEGORI -->
                 <div class="detail-item">
-                    <div class="detail-label">
-                        Kategori
-                    </div>
+                    <div class="detail-label">Kategori</div>
                     <div class="detail-value">
                         <?= htmlspecialchars($data['nama_kategori']); ?>
                     </div>
                 </div>
                 <!-- MERK -->
                 <div class="detail-item">
-                    <div class="detail-label">
-                        Merk
-                    </div>
+                    <div class="detail-label">Merk</div>
                     <div class="detail-value">
                         <?= htmlspecialchars($data['nama_merk']); ?>
                     </div>
                 </div>
                 <!-- KONDISI -->
                 <div class="detail-item">
-                    <div class="detail-label">
-                        Kondisi
-                    </div>
+                    <div class="detail-label">Kondisi</div>
                     <div class="detail-value">
                         <?= htmlspecialchars($data['nama_kondisi']); ?>
                     </div>
                 </div>
                 <!-- STOK -->
                 <div class="detail-item">
-                    <div class="detail-label">
-                        Stok
-                    </div>
+                    <div class="detail-label">Stok</div>
                     <div class="detail-value">
-                        <?= $data['stok']; ?>
+                        <?= (int) $data['stok']; ?>
                     </div>
                 </div>
                 <!-- FOTO -->
                 <div class="detail-item">
-                    <div class="detail-label">
-                        Foto
-                    </div>
+                    <div class="detail-label">Foto</div>
                     <div class="detail-value">
                         <?php if (!empty($data['foto'])) { ?>
                             <img
                                 src="../uploads/barang/<?= htmlspecialchars($data['foto']); ?>"
+                                alt="Foto <?= htmlspecialchars($data['nama_barang']); ?>"
                                 class="foto-detail">
                         <?php } else { ?>
                             <span class="text-muted">
@@ -153,21 +137,21 @@ if (!$data) {
                 </div>
                 <!-- DESKRIPSI -->
                 <div class="detail-item">
-                    <div class="detail-label">
-                        Deskripsi
-                    </div>
+                    <div class="detail-label">Deskripsi</div>
                     <div class="detail-value">
-                        <?= nl2br(
-                            htmlspecialchars(
-                                $data['deskripsi'] ?? ''
-                            )
-                        ); ?>
+                        <?php if (!empty($data['deskripsi'])) { ?>
+                            <?= nl2br(htmlspecialchars($data['deskripsi'])); ?>
+                        <?php } else { ?>
+                            <span class="text-muted">
+                                Tidak ada deskripsi
+                            </span>
+                        <?php } ?>
                     </div>
                 </div>
                 <!-- BUTTON -->
                 <div class="mt-4">
                     <a
-                        href="edit.php?id=<?= $data['id_barang']; ?>"
+                        href="edit.php?id=<?= (int) $data['id_barang']; ?>"
                         class="btn-detail-edit">
                         <i class="bi bi-pencil-square me-1"></i>
                         Edit

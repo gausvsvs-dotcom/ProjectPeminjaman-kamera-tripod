@@ -2,17 +2,32 @@
 session_start();
 require_once "../config/koneksi.php";
 /** @var mysqli $conn */
+
+// Pastikan pengguna sudah login
 if (!isset($_SESSION['id_pengguna'])) {
     header("Location: ../login.php");
     exit;
 }
-$id = $_SESSION['id_pengguna'];
-$query = mysqli_query($conn, "
-    SELECT *
-    FROM pengguna
-    WHERE id_pengguna = '$id'
-");
-$data = mysqli_fetch_assoc($query);
+
+// Ambil ID akun dari session
+$id = (int) $_SESSION['id_pengguna'];
+
+// Ambil data profil akun yang sedang login
+$stmt = mysqli_prepare(
+    $conn,
+    "SELECT id_pengguna, nama, username, role, foto
+     FROM pengguna
+     WHERE id_pengguna = ?"
+);
+
+mysqli_stmt_bind_param($stmt, "i", $id);
+mysqli_stmt_execute($stmt);
+
+$hasil = mysqli_stmt_get_result($stmt);
+$data = mysqli_fetch_assoc($hasil);
+
+mysqli_stmt_close($stmt);
+
 if (!$data) {
     echo "Data pengguna tidak ditemukan.";
     exit;
@@ -86,17 +101,24 @@ if (!$data) {
                         <?= htmlspecialchars($data['role']); ?>
                     </div>
                 </div>
+
                 <!-- BUTTON -->
-                <div class="mt-4">
+                <div class="d-flex flex-wrap gap-2 mt-4">
                     <a
-                        href="edit.php?id=<?= $data['id_pengguna']; ?>"
+                        href="edit.php?id=<?= (int) $data['id_pengguna']; ?>"
                         class="btn-detail-edit">
                         <i class="bi bi-pencil-square me-1"></i>
                         Edit Profile
                     </a>
                     <a
+                        href="ganti_password.php"
+                        class="btn-detail-back">
+                        <i class="bi bi-shield-lock me-1"></i>
+                        Ganti Password
+                    </a>
+                    <a
                         href="../dashboard/index.php"
-                        class="btn-detail-back ms-1">
+                        class="btn-detail-back">
                         <i class="bi bi-arrow-left me-1"></i>
                         Kembali
                     </a>

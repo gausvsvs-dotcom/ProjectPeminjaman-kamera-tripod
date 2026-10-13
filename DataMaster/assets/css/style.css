@@ -13,7 +13,7 @@ body {
     color: #302b3f;
 }
 /*MAIN CONTENT*/
-.main-content {
+.main-content { 
     margin-left: 260px;
     padding: 100px 30px 30px;
     min-height: 100vh;

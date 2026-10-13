@@ -144,7 +144,7 @@ if (!$query) {
                         <thead>
                             <tr>
                                 <th>No</th>
-                                <th>Kode Peminjaman</th>
+                                <th>id Peminjaman</th>
                                 <th>Nama Peminjam</th>
                                 <th>Barang Dipinjam</th>
                                 <th>Tanggal Peminjaman</th>
@@ -166,7 +166,7 @@ if (!$query) {
                                         </td>
                                         <td>
                                             <span class="data-id">
-                                                <?= htmlspecialchars($data['kode_peminjaman']); ?>
+                                                <?= htmlspecialchars($data['id_peminjaman']); ?>
                                             </span>
                                         </td>
                                         <td>

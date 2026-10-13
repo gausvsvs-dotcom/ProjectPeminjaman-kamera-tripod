@@ -12,7 +12,8 @@ if (isset($_GET['status']) && $_GET['status'] == 'error') {
     <title>Login - Sistem Peminjaman Kamera dan Tripod</title>
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/style.css?v=99">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
     <?php include 'includes/navbar.php' ?>

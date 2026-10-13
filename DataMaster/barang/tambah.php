@@ -1,4 +1,8 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+
 require_once "../config/koneksi.php";
 /** @var mysqli $conn */
 // Mengambil data untuk dropdown
@@ -103,7 +107,7 @@ if (isset($_POST["simpan"])) {
                     } elseif ($ukuran_foto > 5 * 1024 * 1024) {
                         $error = "Ukuran foto maksimal 5 MB.";
                     } else {
-                        $folder_upload = "../uploads/barang/";
+                        $folder_upload = __DIR__ . "/../uploads/barang/";
                         if (
                             !is_dir($folder_upload) &&
                             !mkdir($folder_upload, 0755, true)) {
@@ -112,6 +116,7 @@ if (isset($_POST["simpan"])) {
                             $nama_file = bin2hex(random_bytes(16))
                                 . "." . $ekstensi;
                             $tujuan_foto = $folder_upload . $nama_file;
+                            echo "<pre>";
                             if (move_uploaded_file($tmp_foto, $tujuan_foto)) {
                                 $foto = $nama_file;
                                 $file_terunggah = $tujuan_foto;

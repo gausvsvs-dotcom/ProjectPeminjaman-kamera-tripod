@@ -138,7 +138,7 @@ function tutupNotifikasi() {
 
                         <?php endif; ?>
 
-                        <form action="proses_kontak.php" method="POST">
+                        <form action="kontak.php" method="POST">
                             <div class="mb-3">
                                 <label class="form-label">
                                     Nama

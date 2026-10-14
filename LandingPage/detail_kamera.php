@@ -154,9 +154,9 @@ $data = $kamera[$id] ?? $kamera[1];
                    ~ Kembali ~
                 </a>
 
-                <a href="pengajuan_peminjaman.php?id=<?= $id ?>&jenis=kamera" 
-                    class="btn btn-ajukan">
+                <a href="/ProjectPeminjaman-kamera-tripod/Transaksi/peminjaman.php?id=<?= $id ?>&jenis=kamera" class="btn btn-ajukan">
                     ~ Ajukan Peminjaman ~
+                </a>
             </div>
         </div>
     </div>

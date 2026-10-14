@@ -3,6 +3,6 @@ session_start();
 session_unset();
 session_destroy();
 
-header("Location: index.php?pesan=logout");
+header("Location:../../LandingPage/login.php?pesan=logout");
 exit;
 ?>

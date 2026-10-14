@@ -39,7 +39,7 @@ if (isset($_GET['status']) && $_GET['status'] == 'error') {
 
                     
 
-                    <form action="proses_login.php" method="post">
+                    <form action="../DataMaster/login/proses_login.php" method="post">
                         <div class="mb-3">
                             <label for="username" class="form-label">Username</label>
                             <input type="text" class="form-control login-input" id="username" name="username"

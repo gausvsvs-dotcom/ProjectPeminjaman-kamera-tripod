@@ -3,43 +3,86 @@ require_once 'koneksi.php';
 
 $pesan = "";
 
-// Mengambil data user dan barang untuk dropdown
-$users = $pdo->query("SELECT * FROM users ORDER BY nama_user ASC")->fetchAll();
-$barang = $pdo->query("SELECT * FROM barang WHERE stok > 0 ORDER BY nama_barang ASC")->fetchAll();
+// Tangkap parameter dari Landing Page
+$id_produk = $_GET['id'] ?? null;
+$jenis_produk = $_GET['jenis'] ?? null;
+
+// Data referensi nama barang dari landing page
+$kamera = [
+    1 => 'Canon EOS 700D',
+    2 => 'Nikon D7500',
+    3 => 'Nikon D5600',
+    4 => 'Fujifilm X-S10',
+    5 => 'Sony Alpha A6400',
+    6 => 'Fujifilm X-T30',
+    7 => 'Canon EOS 90D',
+    8 => 'Canon EOS 80D'
+];
+
+$tripod = [
+    1 => 'ECO 196A',
+    2 => 'Weifeng WT-3110A',
+    3 => 'Weifeng WT-3520'
+];
+
+// Tentukan nama barang yang dipilih dari landing page
+$nama_barang_terpilih = "";
+if ($jenis_produk === 'kamera' && isset($kamera[$id_produk])) {
+    $nama_barang_terpilih = $kamera[$id_produk];
+} elseif ($jenis_produk === 'tripod' && isset($tripod[$id_produk])) {
+    $nama_barang_terpilih = $tripod[$id_produk];
+}
+
+// Mengambil data pengguna untuk dropdown
+$users_result = mysqli_query($conn, "SELECT * FROM pengguna ORDER BY nama_user ASC");
+$users = $users_result ? mysqli_fetch_all($users_result, MYSQLI_ASSOC) : [];
+
+// Mengambil data barang dari database
+$barang_result = mysqli_query($conn, "SELECT * FROM barang WHERE stok > 0 ORDER BY nama_barang ASC");
+$barang = $barang_result ? mysqli_fetch_all($barang_result, MYSQLI_ASSOC) : [];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $id_user = $_POST['id_user'] ?? '';
     $id_barang = $_POST['id_barang'] ?? '';
     $jumlah = (int)($_POST['jumlah'] ?? 1);
     $tgl_pinjam = $_POST['tgl_pinjam'] ?? '';
-    $tgl_kembali_rencana = $_POST['tgl_kembali_rencana'] ?? '';
+    $tgl_jatuh_tempo = $_POST['tgl_jatuh_tempo'] ?? '';
+    $no_hp = trim($_POST['no_hp'] ?? '-');
+    $alamat = trim($_POST['alamat'] ?? '-');
 
-    if ($id_user && $id_barang && $jumlah > 0 && $tgl_pinjam && $tgl_kembali_rencana) {
-        try {
-            // Cek stok barang
-            $stmt_stok = $pdo->prepare("SELECT stok FROM barang WHERE id_barang = ?");
-            $stmt_stok->execute([$id_barang]);
-            $stok_tersedia = $stmt_stok->fetchColumn();
+    if ($id_user && $id_barang && $jumlah > 0 && $tgl_pinjam && $tgl_jatuh_tempo) {
+        $stmt_stok = mysqli_prepare($conn, "SELECT stok FROM barang WHERE id_barang = ?");
+        mysqli_stmt_bind_param($stmt_stok, "i", $id_barang);
+        mysqli_stmt_execute($stmt_stok);
+        $result_stok = mysqli_stmt_get_result($stmt_stok);
+        $row_stok = mysqli_fetch_assoc($result_stok);
+        $stok_tersedia = $row_stok['stok'] ?? 0;
 
-            if ($stok_tersedia >= $jumlah) {
-                // Simpan transaksi peminjaman
-                $sql = "INSERT INTO peminjaman (id_user, id_barang, tgl_pinjam, tgl_kembali_rencana, jumlah, status) 
-                        VALUES (?, ?, ?, ?, ?, 'Dipinjam')";
-                $stmt = $pdo->prepare($sql);
-                $stmt->execute([$id_user, $id_barang, $tgl_pinjam, $tgl_kembali_rencana, $jumlah]);
+        if ($stok_tersedia >= $jumlah) {
+            $stmt_u = mysqli_prepare($conn, "SELECT nama_user FROM pengguna WHERE id_user = ?");
+            mysqli_stmt_bind_param($stmt_u, "i", $id_user);
+            mysqli_stmt_execute($stmt_u);
+            $res_u = mysqli_stmt_get_result($stmt_u);
+            $row_u = mysqli_fetch_assoc($res_u);
+            $nama_peminjam = $row_u['nama_user'] ?? 'Peminjam';
 
-                // Kurangi stok barang
-                $stmt_update = $pdo->prepare("UPDATE barang SET stok = stok - ? WHERE id_barang = ?");
-                $stmt_update->execute([$jumlah, $id_barang]);
+            $stmt = mysqli_prepare($conn, "INSERT INTO peminjaman (id_user, nama_peminjam, no_hp, tgl_jatuh_tempo, status, tgl_peminjaman, jenis_peminjaman, Alamat) VALUES (?, ?, ?, ?, 'Dipinjam', ?, 'online', ?)");
+            mysqli_stmt_bind_param($stmt, "isssss", $id_user, $nama_peminjam, $no_hp, $tgl_jatuh_tempo, $tgl_pinjam, $alamat);
+
+            if (mysqli_stmt_execute($stmt)) {
+                $stmt_update = mysqli_prepare($conn, "UPDATE barang SET stok = stok - ? WHERE id_barang = ?");
+                mysqli_stmt_bind_param($stmt_update, "ii", $jumlah, $id_barang);
+                mysqli_stmt_execute($stmt_update);
 
                 $pesan = "<div class='alert success'>Peminjaman berhasil dicatat!</div>";
-                // Refresh list barang
-                $barang = $pdo->query("SELECT * FROM barang WHERE stok > 0 ORDER BY nama_barang ASC")->fetchAll();
+                
+                $barang_result = mysqli_query($conn, "SELECT * FROM barang WHERE stok > 0 ORDER BY nama_barang ASC");
+                $barang = $barang_result ? mysqli_fetch_all($barang_result, MYSQLI_ASSOC) : [];
             } else {
-                $pesan = "<div class='alert error'>Stok barang tidak mencukupi!</div>";
+                $pesan = "<div class='alert error'>Gagal menyimpan: " . mysqli_error($conn) . "</div>";
             }
-        } catch (PDOException $e) {
-            $pesan = "<div class='alert error'>Error: " . $e->getMessage() . "</div>";
+        } else {
+            $pesan = "<div class='alert error'>Stok barang tidak mencukupi!</div>";
         }
     } else {
         $pesan = "<div class='alert error'>Lengkapi semua data form!</div>";
@@ -91,7 +134,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             font-weight: 700; 
             font-size: 0.95rem;
         }
-        select, input { 
+        select, input, textarea { 
             width: 100%; 
             padding: 12px 14px; 
             border: none; 
@@ -102,7 +145,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             font-size: 0.95rem;
             outline: none;
         }
-        select::placeholder, input::placeholder {
+        select::placeholder, input::placeholder, textarea::placeholder {
             color: #E2D9EE;
         }
         select option {
@@ -168,12 +211,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <div class="card-body">
         <?= $pesan; ?>
+
+        <?php if ($nama_barang_terpilih): ?>
+            <div class="alert success mb-3">
+                Barang Dipilih dari Katalog: <strong><?= htmlspecialchars($nama_barang_terpilih); ?></strong> (<?= ucfirst($jenis_produk); ?>)
+            </div>
+        <?php endif; ?>
         
         <form method="POST">
             <div class="form-group">
-                <label>Nama Peminjam</label>
+                <label>Pengelola / Admin Pencatat</label>
                 <select name="id_user" required>
-                    <option value="">-- Pilih Peminjam --</option>
+                    <option value="">-- Pilih Pengelola --</option>
                     <?php foreach ($users as $u): ?>
                         <option value="<?= $u['id_user']; ?>"><?= htmlspecialchars($u['nama_user']); ?></option>
                     <?php endforeach; ?>
@@ -181,13 +230,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
 
             <div class="form-group">
-                <label>Pilih Barang</label>
+                <label>Pilih Barang di Database</label>
                 <select name="id_barang" required>
                     <option value="">-- Pilih Barang --</option>
                     <?php foreach ($barang as $b): ?>
-                        <option value="<?= $b['id_barang']; ?>"><?= htmlspecialchars($b['nama_barang']); ?> (Stok: <?= $b['stok']; ?>)</option>
+                        <option value="<?= $b['id_barang']; ?>" <?= ($nama_barang_terpilih && stripos($b['nama_barang'], $nama_barang_terpilih) !== false) ? 'selected' : ''; ?>>
+                            <?= htmlspecialchars($b['nama_barang']); ?> (Stok: <?= $b['stok']; ?>)
+                        </option>
                     <?php endforeach; ?>
                 </select>
+            </div>
+
+            <div class="form-group">
+                <label>Nomor HP Peminjam</label>
+                <input type="text" name="no_hp" placeholder="Contoh: 081234567890" required>
             </div>
 
             <div class="form-group">
@@ -202,14 +258,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             <div class="form-group">
                 <label>Tanggal Rencana Kembali</label>
-                <input type="date" name="tgl_kembali_rencana" value="<?= date('Y-m-d', strtotime('+3 days')); ?>" required>
+                <input type="date" name="tgl_jatuh_tempo" value="<?= date('Y-m-d', strtotime('+3 days')); ?>" required>
+            </div>
+
+            <div class="form-group">
+                <label>Alamat Peminjam</label>
+                <textarea name="alamat" rows="2" placeholder="Alamat lengkap peminjam"></textarea>
             </div>
 
             <button type="submit">Simpan Peminjaman</button>
         </form>
 
         <div class="nav">
-            <a href="riwayat.php">Lihat Riwayat Peminjaman &rarr;</a>
+            <a href="riwayat.php">&larr; Lihat Riwayat Peminjaman</a>
         </div>
     </div>
 </div>

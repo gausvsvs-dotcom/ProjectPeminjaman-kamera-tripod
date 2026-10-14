@@ -1,3 +1,39 @@
+<?php
+require_once 'includes/koneksi.php';
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $nama  = trim($_POST['nama'] ?? '');
+    $email = trim($_POST['email'] ?? '');
+    $pesan = trim($_POST['pesan'] ?? '');
+
+    if (
+        $nama === '' ||
+        !filter_var($email, FILTER_VALIDATE_EMAIL) ||
+        $pesan === ''
+    ) {
+        header("Location: kontak.php?status=error");
+        exit;
+    }
+
+    $stmt = mysqli_prepare(
+        $conn,
+        "INSERT INTO kontak (nama, email, pesan)
+         VALUES (?, ?, ?)"
+    );
+
+    mysqli_stmt_bind_param($stmt, "sss", $nama, $email, $pesan);
+
+    if (mysqli_stmt_execute($stmt)) {
+        mysqli_stmt_close($stmt);
+        header("Location: kontak.php?status=success");
+        exit;
+    }
+
+    mysqli_stmt_close($stmt);
+    header("Location: kontak.php?status=error");
+    exit;
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>

@@ -66,86 +66,88 @@ if (!$query) {
             </div>
             <!-- Tabel -->
             <div class="data-table-wrapper">
-                <table class="data-master-table">
-                    <thead>
-                        <tr>
-                            <th width="70">No</th>
-                            <th width="120">ID Merk</th>
-                            <th>Nama Merk</th>
-                            <th width="180">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php if (mysqli_num_rows($query) > 0): ?>
-                            <?php
-                            $no = 1;
-                            while ($data = mysqli_fetch_assoc($query)):
-                                $id_merk = (int) $data['id_merk'];
-                            ?>
+                <div class="table-responsive">
+                    <table class="data-master-table">
+                        <thead>
+                            <tr>
+                                <th width="65">No.</th>
+                                <th width="120">ID Merk</th>
+                                <th>Nama Merk</th>
+                                <th width="180">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php if (mysqli_num_rows($query) > 0): ?>
+                                <?php
+                                $no = 1;
+                                while ($data = mysqli_fetch_assoc($query)):
+                                    $id_merk = (int) $data['id_merk'];
+                                ?>
+                                    <tr>
+                                        <td class="data-number">
+                                            <?= $no++; ?>
+                                        </td>
+                                        <td>
+                                            <span class="data-id">
+                                                <?= $id_merk; ?>
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span class="data-name">
+                                                <?= htmlspecialchars(
+                                                    $data['nama_merk'],
+                                                    ENT_QUOTES,
+                                                    'UTF-8'
+                                                ); ?>
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <div class="data-action">
+                                                <!-- Detail -->
+                                                <a
+                                                    href="detail.php?id=<?= $id_merk; ?>"
+                                                    class="data-detail"
+                                                    title="Detail Merk"
+                                                    aria-label="Detail Merk">
+                                                    <i class="bi bi-eye"></i>
+                                                </a>
+                                                <!-- Edit -->
+                                                <a
+                                                    href="edit.php?id=<?= $id_merk; ?>"
+                                                    class="data-edit"
+                                                    title="Edit Merk"
+                                                    aria-label="Edit Merk">
+                                                    <i class="bi bi-pencil-square"></i>
+                                                </a>
+                                                <!-- Hapus -->
+                                                <a
+                                                    href="hapus.php?id=<?= $id_merk; ?>"
+                                                    class="data-delete"
+                                                    title="Hapus Merk"
+                                                    aria-label="Hapus Merk"
+                                                    onclick="return confirm('Yakin ingin menghapus merk ini?')">
+                                                    <i class="bi bi-trash3"></i>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                <?php endwhile; ?>
+                            <?php else: ?>
                                 <tr>
-                                    <td class="data-number">
-                                        <?= $no++; ?>
-                                    </td>
-                                    <td>
-                                        <span class="data-id">
-                                            <?= $id_merk; ?>
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <span class="data-name">
-                                            <?= htmlspecialchars(
-                                                $data['nama_merk'],
-                                                ENT_QUOTES,
-                                                'UTF-8'
-                                            ); ?>
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <div class="data-action">
-                                            <!-- Detail -->
-                                            <a
-                                                href="detail.php?id=<?= $id_merk; ?>"
-                                                class="data-detail"
-                                                title="Detail Merk"
-                                                aria-label="Detail Merk">
-                                                <i class="bi bi-eye"></i>
-                                            </a>
-                                            <!-- Edit -->
-                                            <a
-                                                href="edit.php?id=<?= $id_merk; ?>"
-                                                class="data-edit"
-                                                title="Edit Merk"
-                                                aria-label="Edit Merk">
-                                                <i class="bi bi-pencil-square"></i>
-                                            </a>
-                                            <!-- Hapus -->
-                                            <a
-                                                href="hapus.php?id=<?= $id_merk; ?>"
-                                                class="data-delete"
-                                                title="Hapus Merk"
-                                                aria-label="Hapus Merk"
-                                                onclick="return confirm('Yakin ingin menghapus merk ini?')">
-                                                <i class="bi bi-trash3"></i>
-                                            </a>
+                                    <td colspan="4">
+                                        <div class="data-empty">
+                                            <i class="bi bi-tags"></i>
+                                            <h6>Belum Ada Data Merk</h6>
+                                            <p>
+                                                Silakan tambahkan data merk terlebih dahulu.
+                                            </p>
                                         </div>
                                     </td>
                                 </tr>
-                            <?php endwhile; ?>
-                        <?php else: ?>
-                            <tr>
-                                <td colspan="4">
-                                    <div class="data-empty">
-                                        <i class="bi bi-tags"></i>
-                                        <h6>Belum Ada Data Merk</h6>
-                                        <p>
-                                            Silakan tambahkan data merk terlebih dahulu.
-                                        </p>
-                                    </div>
-                                </td>
-                            </tr>
-                        <?php endif; ?>
-                    </tbody>
-                </table>
+                            <?php endif; ?>
+                        </tbody>
+                    </table>
+                </div>
             </div>
             <!-- Footer Tabel -->
             <div class="data-table-footer">

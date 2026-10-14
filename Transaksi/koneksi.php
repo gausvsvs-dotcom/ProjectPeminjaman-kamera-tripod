@@ -1,17 +1,15 @@
-
 <?php
 
 $host = "localhost";
 $user = "root";
-$pass = "";
-$db   = "project";
+$password = "";
+$database = "project";
 
-$koneksi = mysqli_connect($host, $user, $pass, $db);
+$conn = mysqli_connect($host, $user, $password, $database);
 
 if (!$conn) {
-    die("Koneksi Database Gagal: " . mysqli_connect_error());
+    die("Koneksi database gagal: " . mysqli_connect_error());
 }
 
 mysqli_set_charset($conn, "utf8mb4");
-
-?> 
+?>

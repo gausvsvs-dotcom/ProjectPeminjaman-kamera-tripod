@@ -182,10 +182,11 @@
             <i class="bi bi-people-fill"></i>
             <span>Pengguna</span>
         </a>
-        <!-- TRANSAKSI -->
+
         <div class="menu-title">
             TRANSAKSI
         </div>
+
         <a
             href="../../Transaksi/peminjaman.php"
             class="menu-item">
@@ -198,16 +199,32 @@
             <i class="bi bi-arrow-return-left"></i>
             <span>Pengembalian</span>
         </a>
+        <a
+            href="../../Transaksi/pembayaran.php"
+            class="menu-item">
+            <i class="bi bi-wallet-fill"></i>
+            <span>Pembayaran</span>
+        </a>
+        <div class="menu-title">
+            LAYANAN KONSUMEN
+        </div>
+        <a
+            href="../kontak/index.php"
+            class="menu-item">
+            <i class="bi bi-chat-left-text-fill"></i>
+            <span>Pesan Kontak</span>
+        </a>
         <!-- LAPORAN -->
         <div class="menu-title">
             LAPORAN
-        </div>
+        </div> 
         <a
             href="../laporan/index.php"
             class="menu-item">
             <i class="bi bi-file-earmark-bar-graph-fill"></i>
             <span>Laporan</span>
         </a>
+
         <!-- LOGOUT -->
         <div class="sidebar-bottom">
             <a

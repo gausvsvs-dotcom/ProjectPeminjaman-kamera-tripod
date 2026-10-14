@@ -83,7 +83,7 @@ if (!$query) {
                     <table class="data-master-table">
                         <thead>
                             <tr>
-                                <th>No</th>
+                                <th width="65">No.</th>
                                 <th>Kode Barang</th>
                                 <th>Nama Barang</th>
                                 <th>Jenis Barang</th>

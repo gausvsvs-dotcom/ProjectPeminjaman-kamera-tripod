@@ -15,8 +15,8 @@ body {
 
 body {
     font-family: Arial, sans-serif;
-    background-color: #FFFBEB;
-    color: #8174A0;
+    background-color: #F8F6FC; /* Background sangat terang & lembut */
+    color: #17153B; /* Navy gelap pekat untuk teks utama */
 }
 
 
@@ -27,7 +27,7 @@ body {
 .navbar {
     background-color: #ffffff !important;
     padding: 12px 0 !important;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 2px 10px rgba(23, 21, 59, 0.08);
     min-height: 80px;
 }
 
@@ -50,18 +50,18 @@ body {
 
 .navbar-brand h5 {
     margin: 0;
-    color: #8174A0;
+    color: #1F2544;
     font-size: 18px;
     font-weight: 700;
 }
 
 .navbar-brand h4 {
     margin: 0;
-    color: #2d0146d7 !important;
+    color: #1F2544 !important;
 }
 
 .navbar-brand small {
-    color: #A888B5;
+    color: #81689D;
     font-size: 13px;
 }
 
@@ -71,7 +71,7 @@ body {
 }
 
 .navbar-nav .nav-link {
-    color: #8174A0 !important;
+    color: #2E236C !important;
     font-size: 14px;
     font-weight: 500;
     padding: 10px 14px !important;
@@ -80,18 +80,18 @@ body {
 }
 
 .navbar-nav .nav-link:hover {
-    background-color: #FFD2A0;
-    color: #8174A0 !important;
+    background-color: #FFD0EC; /* Pink pastel terang */
+    color: #17153B !important;
 }
 
 .navbar-nav .nav-link.active {
-    background-color: #8174A0 !important;
+    background-color: #433B71 !important; /* Ungu gelap elegan */
     color: #ffffff !important;
 }
 
 .btn-login {
     display: inline-block !important;
-    background-color: #8174A0 !important;
+    background-color: #2E236C !important;
     color: #ffffff !important;
     padding: 9px 23px !important;
     border-radius: 20px !important;
@@ -102,7 +102,7 @@ body {
 }
 
 .btn-login:hover {
-    background-color: #A888B5;
+    background-color: #433B71;
     color: #ffffff !important;
 }
 
@@ -125,18 +125,13 @@ body {
 .home-header {
     width: 100%;
     min-height: 390px;
-
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-
     text-align: center;
-
     background-color: #ffffff;
-
     padding: 55px 20px 45px;
-
     position: relative;
     z-index: 5;
 }
@@ -149,11 +144,8 @@ body {
 .home-logo {
     width: 85px;
     height: 85px;
-
     object-fit: contain;
-
     display: block;
-
     margin: 0 auto 18px;
 }
 
@@ -164,14 +156,10 @@ body {
 
 .home-header h1 {
     margin: 0;
-
-    color: #8174A0;
-
+    color: #17153B;
     font-size: 42px;
     font-weight: 700;
-
     line-height: 1.2;
-
     letter-spacing: 1px;
 }
 
@@ -182,13 +170,9 @@ body {
 
 .home-header p {
     margin: 18px auto 25px;
-
     max-width: 700px;
-
-    color: #A888B5;
-
+    color: #81689D;
     font-size: 16px;
-
     line-height: 1.6;
 }
 
@@ -199,29 +183,19 @@ body {
 
 .home-button {
     display: inline-block;
-
-    background-color: #8174A0;
-
+    background-color: #433B71;
     color: #ffffff;
-
     text-decoration: none;
-
     padding: 11px 24px;
-
     border-radius: 8px;
-
     font-size: 14px;
-
     font-weight: 600;
-
     transition: 0.2s;
 }
 
 .home-button:hover {
-    background-color: #A888B5;
-
+    background-color: #2E236C;
     color: #ffffff;
-
     text-decoration: none;
 }
 
@@ -232,32 +206,20 @@ body {
 
 .home-image {
     position: relative;
-
     width: 100%;
-
     height: 500px;
-
     overflow: hidden;
-
     background-color: #ffffff;
 }
 
-
-/* FOTO */
-
 .home-image img {
     position: absolute;
-
     top: 0;
     left: 0;
-
     width: 100%;
     height: 100%;
-
     display: block;
-
     object-fit: cover;
-
     object-position: center center;
 }
 
@@ -268,17 +230,12 @@ body {
 
 .home-image-overlay {
     position: absolute;
-
     top: 0;
     left: 0;
-
     width: 100%;
     height: 100%;
-
     z-index: 2;
-
     pointer-events: none;
-
     background: linear-gradient(
         to bottom,
         rgba(255, 255, 255, 1) 0%,
@@ -312,8 +269,8 @@ body {
 
 .kategori-btn {
     background: #ffffff;
-    color: #8174A0;
-    border: 1px solid #EFB6C8;
+    color: #2E236C;
+    border: 1px solid #C8ACD6; /* Lavender lembut dari palet */
     padding: 10px 30px;
     border-radius: 50px;
     font-size: 15px;
@@ -323,15 +280,15 @@ body {
 }
 
 .kategori-btn:hover {
-    background-color: #FFD2A0;
-    color: #8174A0;
-    border-color: #EFB6C8;
+    background-color: #FFD0EC;
+    color: #17153B;
+    border-color: #FFD0EC;
 }
 
 .kategori-btn.active {
-    background-color: #8174A0;
+    background-color: #17153B;
     color: #ffffff;
-    border-color: #8174A0;
+    border-color: #17153B;
 }
 
 
@@ -342,14 +299,14 @@ body {
 .produk-card {
     border: none;
     border-radius: 18px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 4px 15px rgba(23, 21, 59, 0.08);
     transition: 0.3s;
     overflow: hidden;
 }
 
 .produk-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 10px 25px rgba(23, 21, 59, 0.15);
 }
 
 .produk-label {
@@ -366,7 +323,7 @@ body {
 .produk-title {
     font-size: 20px;
     font-weight: 600;
-    color: #8174A0;
+    color: #17153B;
 }
 
 .produk-spesifikasi {
@@ -377,22 +334,24 @@ body {
 }
 
 .produk-spesifikasi span {
-    background: #FFD2A0;
+    background: #C8ACD6; /* Warna ungu pastel lembut */
     padding: 6px 12px;
     border-radius: 50px;
     font-size: 13px;
+    color: #17153B;
+    font-weight: 600;
 }
 
 .produk-status {
-    color: #A888B5;
+    color: #433B71;
     font-weight: 600;
     margin-top: 18px;
 }
 
 .btn-detail {
-    background-color: #8174A0;
+    background-color: #433B71;
     color: #ffffff;
-    border: 1px solid #8174A0;
+    border: 1px solid #433B71;
     border-radius: 8px;
     font-size: 14px;
     font-weight: 500;
@@ -400,9 +359,26 @@ body {
 }
 
 .btn-detail:hover {
-    background-color: #A888B5;
-    border-color: #A888B5;
+    background-color: #2E236C;
+    border-color: #2E236C;
     color: #ffffff;
+}
+
+.btn-ajukan {
+    background-color: #17153B !important;
+    color: #ffffff !important;
+    border: 1px solid #17153B !important;
+    border-radius: 8px !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+    padding: 6px 14px !important;
+    text-decoration: none !important;
+}
+
+.btn-ajukan:hover {
+    background-color: #433B71 !important;
+    border-color: #433B71 !important;
+    color: #ffffff !important;
 }
 
 /* =====================================================
@@ -412,16 +388,16 @@ SEARCH KAMERA & TRIPOD
 .search-box {
     height: 70px;
     border-radius: 50px !important;
-    border: 1px solid #EFB6C8;
+    border: 1px solid #C8ACD6;
     padding: 0 30px;
     font-size: 16px;
-    color: #374151;
+    color: #17153B;
     background-color: #ffffff;
 }
 
 .search-box:focus {
-    border-color: #8174A0;
-    box-shadow: 0 0 0 3px #8174A0(37, 99, 235, 0.10);
+    border-color: #2E236C;
+    box-shadow: 0 0 0 3px rgba(46, 35, 108, 0.12);
     outline: none;
 }
 
@@ -433,12 +409,12 @@ SEARCH KAMERA & TRIPOD
 .section-title {
     font-size: 28px;
     font-weight: 600;
-    color: #8174A0;
+    color: #17153B;
     margin-bottom: 5px;
 }
 
 .section-text {
-    color: #A888B5;
+    color: #81689D;
     margin-bottom: 0;
 }
 
@@ -446,7 +422,7 @@ SEARCH KAMERA & TRIPOD
 /* FOOTER */
 
 .footer-section {
-    background-color: #8174A0;
+    background-color: #17153B; /* Navy sangat gelap khas palet */
     color: #ffffff;
     padding-top: 50px;
     margin-top: 0;
@@ -456,10 +432,11 @@ SEARCH KAMERA & TRIPOD
     font-size: 18px;
     font-weight: 600;
     margin-bottom: 15px;
+    color: #FFD0EC; /* Pink pastel terang */
 }
 
 .footer-text {
-    color: #FFD2A0;
+    color: #C8ACD6;
     font-size: 14px;
     line-height: 1.7;
 }
@@ -475,25 +452,25 @@ SEARCH KAMERA & TRIPOD
 }
 
 .footer-menu a {
-    color: #180848;
+    color: #C8ACD6;
     text-decoration: underline;
     font-size: 14px;
 }
 
 .footer-menu a:hover {
-    color: #ffffff;
+    color: #FFD0EC;
 }
 
 .footer-bottom {
     margin-top: 30px;
     padding: 20px;
     text-align: center;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    border-top: 1px solid rgba(200, 172, 214, 0.3);
 }
 
 .footer-bottom p {
     margin: 0;
-    color: #EFB6C8;
+    color: #81689D;
     font-size: 13px;
 }
 
@@ -582,25 +559,25 @@ SEARCH KAMERA & TRIPOD
 ================================================== */
 
 .tentang-hero {
-    background-color: #FFFBEB;
+    background-color: #F8F6FC;
     padding: 60px 0;
 }
 
 .tentang-title {
     font-size: 42px;
     font-weight: 700;
-    color: #8174A0;
+    color: #17153B;
     margin-bottom: 10px;
 }
 
 .tentang-subtitle {
     font-size: 17px;
-    color: #A888B5;
+    color: #81689D;
     margin-bottom: 0;
 }
 
 .tentang-section {
-    background-color: #FFFBEB;
+    background-color: #F8F6FC;
 }
 
 .tentang-image {
@@ -609,7 +586,7 @@ SEARCH KAMERA & TRIPOD
     border-radius: 18px;
     overflow: hidden;
     background-color: #FFFFFF;
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 5px 20px rgba(23, 21, 59, 0.08);
 }
 
 .tentang-image img {
@@ -623,13 +600,13 @@ SEARCH KAMERA & TRIPOD
 .tentang-heading {
     font-size: 30px;
     font-weight: 700;
-    color: #8174A0;
+    color: #17153B;
     margin-bottom: 20px;
 }
 
 .tentang-text {
     font-size: 16px;
-    color: #8174A0;
+    color: #2E236C;
     line-height: 1.8;
     margin-bottom: 15px;
 }
@@ -641,7 +618,7 @@ SEARCH KAMERA & TRIPOD
 
 .tentang-list li {
     font-size: 16px;
-    color: #8174A0;
+    color: #2E236C;
     line-height: 1.8;
     margin-bottom: 10px;
 }
@@ -651,37 +628,37 @@ SEARCH KAMERA & TRIPOD
 ================================================== */
 
 .kontak-hero {
-    background-color: #EFB6C8;
+    background-color: #FFD0EC; /* Pink pastel dari palet gambar */
     padding: 60px 0;
 }
 
 .kontak-title {
     font-size: 42px;
     font-weight: 700;
-    color: #8174A0;
+    color: #17153B;
     margin-bottom: 10px;
 }
 
 .kontak-subtitle {
     font-size: 17px;
-    color: #A888B5;
+    color: #433B71;
     margin-bottom: 0;
 }
 
 .kontak-section {
-    background-color: #FFFBEB;
+    background-color: #F8F6FC;
 }
 
 .kontak-heading {
     font-size: 28px;
     font-weight: 700;
-    color: #8174A0;
+    color: #17153B;
     margin-bottom: 20px;
 }
 
 .kontak-text {
     font-size: 16px;
-    color: #A888B5;
+    color: #81689D;
     line-height: 1.8;
     margin-bottom: 25px;
 }
@@ -693,13 +670,13 @@ SEARCH KAMERA & TRIPOD
 .kontak-info h5 {
     font-size: 16px;
     font-weight: 600;
-    color: #8174A0;
+    color: #17153B;
     margin-bottom: 5px;
 }
 
 .kontak-info p {
     font-size: 15px;
-    color: #A888B5;
+    color: #81689D;
     margin-bottom: 0;
 }
 
@@ -707,18 +684,18 @@ SEARCH KAMERA & TRIPOD
     background-color: #FFFFFF;
     padding: 30px;
     border-radius: 18px;
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 5px 20px rgba(23, 21, 59, 0.08);
 }
 
 .kontak-form .form-control {
-    border: 1px solid #EFB6C8;
+    border: 1px solid #C8ACD6;
     border-radius: 10px;
     padding: 10px 14px;
 }
 
 .kontak-form .form-control:focus {
-    border-color: #8174A0;
-    box-shadow: 0 0 0 3px #8174A0 (37, 99, 235, 0.1);
+    border-color: #2E236C;
+    box-shadow: 0 0 0 3px rgba(46, 35, 108, 0.12);
 }
 
 /* ==================================================
@@ -727,7 +704,7 @@ HALAMAN LOGIN
 
 .login-section {
     min-height: calc(100vh - 80px);
-    background-color: #FFFBEB;
+    background-color: #F8F6FC;
     padding: 70px 0;
 }
 
@@ -743,7 +720,8 @@ HALAMAN LOGIN
     background-color: #FFFFFF;
     padding: 40px;
     border-radius: 20px;
-    box-shadow: 0 5px 25px rgba(129, 116, 160, 0.15);
+    box-shadow: 0 5px 25px rgba(23, 21, 59, 0.12);
+    border-top: 5px solid #433B71;
 }
 
 .login-logo {
@@ -751,41 +729,41 @@ HALAMAN LOGIN
     height: 130px !important;
     object-fit: contain;
     display: block;
-    margin:0 auto 15px;
+    margin: 0 auto 15px;
 }
 
 .login-title {
     font-size: 32px;
     font-weight: 700;
-    color: #8174A0;
+    color: #17153B;
     margin-bottom: 8px;
 }
 
 .login-subtitle {
     font-size: 15px;
-    color: #A888B5;
+    color: #81689D;
     margin-bottom: 30px;
 }
 
 .login-card .form-label {
-    color: #8174A0;
+    color: #17153B;
     font-weight: 600;
     font-size: 14px;
 }
 
 .login-input {
-    border: 1px solid #EFB6C8;
+    border: 1px solid #C8ACD6;
     border-radius: 10px;
     padding: 11px 14px;
 }
 
 .login-input:focus {
-    border-color: #8174A0;
-    box-shadow: 0 0 0 3px rgba(129, 116, 160, 0.12);
+    border-color: #2E236C;
+    box-shadow: 0 0 0 3px rgba(46, 35, 108, 0.12);
 }
 
 .login-button {
-    background-color: #8174A0;
+    background-color: #2E236C;
     color: #FFFFFF;
     border: none;
     border-radius: 10px;
@@ -795,7 +773,7 @@ HALAMAN LOGIN
 }
 
 .login-button:hover {
-    background-color: #A888B5;
+    background-color: #433B71;
     color: #FFFFFF;
 }
 
@@ -805,20 +783,20 @@ HALAMAN LOGIN
 
 .admin-dashboard {
     min-height: calc(100vh - 80px);
-    background-color: #FFFBEB;
+    background-color: #F8F6FC;
     padding: 60px 0;
 }
 
 .admin-title {
     font-size: 38px;
     font-weight: 700;
-    color: #8174A0;
+    color: #17153B;
     margin-bottom: 10px;
 }
 
 .admin-subtitle {
     font-size: 16px;
-    color: #A888B5;
+    color: #81689D;
     margin-bottom: 35px;
 }
 
@@ -827,13 +805,14 @@ HALAMAN LOGIN
     border: none;
     border-radius: 20px;
     padding: 30px;
-    box-shadow: 0 5px 20px rgba(129, 116, 160, 0.12);
+    box-shadow: 0 5px 20px rgba(23, 21, 59, 0.10);
     transition: 0.3s;
+    border-left: 4px solid #433B71;
 }
 
 .admin-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 10px 28px rgba(129, 116, 160, 0.18);
+    box-shadow: 0 10px 28px rgba(23, 21, 59, 0.15);
 }
 
 .admin-card-icon {
@@ -842,27 +821,27 @@ HALAMAN LOGIN
 }
 
 .admin-card-title {
-    color: #8174A0;
+    color: #17153B;
     font-size: 20px;
     font-weight: 700;
 }
 
 .admin-card-number {
-    color: #8174A0;
+    color: #17153B;
     font-size: 42px;
     font-weight: 700;
     margin: 10px 0;
 }
 
 .admin-card-text {
-    color: #A888B5;
+    color: #81689D;
     font-size: 14px;
     margin-bottom: 20px;
 }
 
 .admin-btn {
     display: inline-block !important;
-    background-color: #8174A0 !important;
+    background-color: #2E236C !important;
     color: #FFFFFF !important;
     border: none !important;
     border-radius: 50px !important;
@@ -874,7 +853,7 @@ HALAMAN LOGIN
 }
 
 .admin-btn:hover {
-    background-color: #A888B5 !important;
+    background-color: #433B71 !important;
     color: #FFFFFF !important;
 }
 
@@ -885,19 +864,19 @@ HALAMAN LOGIN
 
 .data-kontak-section {
     min-height: calc(100vh - 80px);
-    background-color: #FFFBEB;
+    background-color: #F8F6FC;
     padding: 50px 0;
 }
 
 .data-kontak-title {
-    color: #7f4898;
+    color: #17153B;
     font-size: 32px;
     font-weight: 700;
     margin-bottom: 8px;
 }
 
 .data-kontak-subtitle {
-    color: #A888B5;
+    color: #81689D;
     font-size: 15px;
     margin-bottom: 30px;
 }
@@ -909,10 +888,10 @@ HALAMAN LOGIN
 
 .data-kontak-table {
     background-color: #FFFFFF;
-    border: 2px solid #4f2871;
+    border: 2px solid #17153B;
     border-radius: 18px;
     overflow: hidden;
-    box-shadow: 0 5px 20px rgba(129, 116, 160, 0.10);
+    box-shadow: 0 5px 20px rgba(23, 21, 59, 0.10);
 }
 
 .data-kontak-table table {
@@ -920,14 +899,14 @@ HALAMAN LOGIN
 }
 
 .data-kontak-table thead {
-    background-color: #8174A0;
+    background-color: #17153B;
     color: #FFFFFF;
 }
 
 .data-kontak-table thead th {
-    background-color: #4f2871;
+    background-color: #17153B;
     color: #FFFFFF;
-    border: 1px solid #4f2871;
+    border: 1px solid #17153B;
     padding: 15px 12px;
     font-size: 14px;
     font-weight: 600;
@@ -937,10 +916,10 @@ HALAMAN LOGIN
 
 .data-kontak-table tbody td {
     padding: 14px 12px;
-    color: #3d2a4c;
+    color: #2E236C;
     font-size: 14px;
     vertical-align: middle;
-    border: 1px solid #4f2871;
+    border: 1px solid #C8ACD6;
 }
 
 .data-kontak-table tbody tr {
@@ -948,11 +927,11 @@ HALAMAN LOGIN
 }
 
 .data-kontak-table tbody tr:hover {
-    background-color: #FFF5F8;
+    background-color: #FFD0EC; /* Hover tabel dengan nuansa pink pastel */
 }
 
 .data-kontak-table tbody tr:nth-child(even) {
-    background-color: #FFFBFD;
+    background-color: #F8F6FC;
 }
 
 
@@ -961,8 +940,8 @@ HALAMAN LOGIN
 ================================================== */
 
 .btn-edit-kontak {
-    background-color: #FFD2A0;
-    color: #8174A0;
+    background-color: #C8ACD6;
+    color: #17153B;
     border: none;
     border-radius: 50px;
     padding: 6px 15px;
@@ -973,13 +952,13 @@ HALAMAN LOGIN
 }
 
 .btn-edit-kontak:hover {
-    background-color: #F3B978;
-    color: #8174A0;
+    background-color: #433B71;
+    color: #FFFFFF;
 }
 
 .btn-hapus-kontak {
-    background-color: #EFB6C8;
-    color: #8174A0;
+    background-color: #FFD0EC;
+    color: #17153B;
     border: none;
     border-radius: 50px;
     padding: 6px 15px;
@@ -990,7 +969,7 @@ HALAMAN LOGIN
 }
 
 .btn-hapus-kontak:hover {
-    background-color: #DD91AB;
+    background-color: #433B71;
     color: #FFFFFF;
 }
 
@@ -1001,7 +980,7 @@ HALAMAN LOGIN
 
 .edit-kontak-section {
     min-height: calc(100vh - 80px);
-    background-color: #FFFBEB;
+    background-color: #F8F6FC;
     padding: 60px 0;
 }
 
@@ -1011,41 +990,41 @@ HALAMAN LOGIN
     background-color: #FFFFFF;
     padding: 35px;
     border-radius: 20px;
-    box-shadow: 0 5px 20px rgba(129, 116, 160, 0.12);
+    box-shadow: 0 5px 20px rgba(23, 21, 59, 0.10);
 }
 
 .edit-kontak-title {
-    color: #8174A0;
+    color: #17153B;
     font-size: 30px;
     font-weight: 700;
     margin-bottom: 8px;
 }
 
 .edit-kontak-subtitle {
-    color: #A888B5;
+    color: #81689D;
     font-size: 15px;
     margin-bottom: 30px;
 }
 
 .edit-kontak-card .form-label {
-    color: #8174A0;
+    color: #17153B;
     font-size: 14px;
     font-weight: 600;
 }
 
 .edit-kontak-card .form-control {
-    border: 1px solid #EFB6C8;
+    border: 1px solid #C8ACD6;
     border-radius: 10px;
     padding: 11px 14px;
 }
 
 .edit-kontak-card .form-control:focus {
-    border-color: #8174A0;
-    box-shadow: 0 0 0 3px rgba(129, 116, 160, 0.12);
+    border-color: #2E236C;
+    box-shadow: 0 0 0 3px rgba(46, 35, 108, 0.12);
 }
 
 .btn-simpan-kontak {
-    background-color: #8174A0;
+    background-color: #2E236C;
     color: #FFFFFF;
     border: none;
     border-radius: 50px;
@@ -1055,13 +1034,13 @@ HALAMAN LOGIN
 }
 
 .btn-simpan-kontak:hover {
-    background-color: #A888B5;
+    background-color: #433B71;
     color: #FFFFFF;
 }
 
 .btn-batal-kontak {
-    background-color: #EFB6C8;
-    color: #8174A0;
+    background-color: #C8ACD6;
+    color: #17153B;
     border: none;
     border-radius: 50px;
     padding: 10px 25px;
@@ -1071,7 +1050,7 @@ HALAMAN LOGIN
 }
 
 .btn-batal-kontak:hover {
-    background-color: #DD91AB;
+    background-color: #433B71;
     color: #FFFFFF;
 }
 
@@ -1133,7 +1112,7 @@ HALAMAN LOGIN
 
 .hapus-kontak-section {
     min-height: calc(100vh - 80px);
-    background-color: #FFFBEB;
+    background-color: #F8F6FC;
     padding: 80px 15px;
     display: flex;
     align-items: center;
@@ -1147,7 +1126,7 @@ HALAMAN LOGIN
     padding: 40px;
     border-radius: 20px;
     text-align: center;
-    box-shadow: 0 5px 20px rgba(129, 116, 160, 0.12);
+    box-shadow: 0 5px 20px rgba(23, 21, 59, 0.10);
 }
 
 .hapus-kontak-icon {
@@ -1156,27 +1135,27 @@ HALAMAN LOGIN
 }
 
 .hapus-kontak-title {
-    color: #8174A0;
+    color: #17153B;
     font-size: 28px;
     font-weight: 700;
     margin-bottom: 15px;
 }
 
 .hapus-kontak-text {
-    color: #8174A0;
+    color: #17153B;
     font-size: 16px;
     margin-bottom: 8px;
 }
 
 .hapus-kontak-warning {
-    color: #A888B5;
+    color: #81689D;
     font-size: 14px;
     margin-bottom: 30px;
 }
 
 .btn-hapus-confirm {
-    background-color: #EFB6C8;
-    color: #8174A0;
+    background-color: #FFD0EC;
+    color: #17153B;
     border: none;
     border-radius: 50px;
     padding: 10px 25px;
@@ -1187,13 +1166,13 @@ HALAMAN LOGIN
 }
 
 .btn-hapus-confirm:hover {
-    background-color: #DD91AB;
+    background-color: #433B71;
     color: #FFFFFF;
 }
 
 .btn-batal-hapus {
     display: inline-block;
-    background-color: #8174A0;
+    background-color: #2E236C;
     color: #FFFFFF;
     border: none;
     border-radius: 50px;
@@ -1205,7 +1184,7 @@ HALAMAN LOGIN
 }
 
 .btn-batal-hapus:hover {
-    background-color: #A888B5;
+    background-color: #433B71;
     color: #FFFFFF;
 }
 
@@ -1215,7 +1194,7 @@ HALAMAN LOGIN
 
 .detail-produk-section {
     min-height: calc(100vh - 80px);
-    background-color: #FFFBEB;
+    background-color: #F8F6FC;
     padding: 60px 0;
 }
 
@@ -1229,7 +1208,7 @@ HALAMAN LOGIN
     align-items: center;
     justify-content: center;
 
-    box-shadow: 0 5px 20px rgba(129, 116, 160, 0.10);
+    box-shadow: 0 5px 20px rgba(23, 21, 59, 0.10);
 }
 
 .detail-produk-image img {
@@ -1239,21 +1218,21 @@ HALAMAN LOGIN
 }
 
 .detail-produk-title {
-    color: #8174A0;
+    color: #17153B;
     font-size: 36px;
     font-weight: 700;
     margin-bottom: 15px;
 }
 
 .detail-produk-description {
-    color: #A888B5;
+    color: #81689D;
     font-size: 16px;
     line-height: 1.8;
     margin-bottom: 25px;
 }
 
 .detail-produk-heading {
-    color: #8174A0;
+    color: #17153B;
     font-size: 18px;
     font-weight: 600;
     margin-bottom: 12px;
@@ -1267,12 +1246,12 @@ HALAMAN LOGIN
 }
 
 .detail-produk-spesifikasi span {
-    background-color: #FFD2A0;
-    color: #8174A0;
+    background-color: #C8ACD6;
+    color: #17153B;
     padding: 8px 16px;
     border-radius: 50px;
     font-size: 14px;
-    font-weight: 500;
+    font-weight: 600;
 }
 
 .detail-produk-info {
@@ -1280,11 +1259,129 @@ HALAMAN LOGIN
 }
 
 .detail-produk-info p {
-    color: #8174A0;
+    color: #17153B;
     margin-bottom: 8px;
 }
 
 .detail-produk-info strong {
-    color: #8174A0;
+    color: #17153B;
 }
 
+.notifikasi-sukses {
+    position: relative;
+    width: 100%;
+    margin-bottom: 20px;
+    padding: 14px 45px 14px 16px;
+
+    background-color: #d1e7dd;
+    border-left: 5px solid #198754;
+    border-radius: 10px;
+
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+}
+
+.notifikasi-isi {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+}
+
+.notifikasi-teks {
+    flex: 1;
+}
+
+.notifikasi-teks strong {
+    display: block;
+    margin-bottom: 3px;
+    color: #155724;
+    font-size: 14px;
+}
+
+.notifikasi-teks p {
+    margin: 0;
+    color: #155724;
+    font-size: 13px;
+}
+
+.notifikasi-icon {
+    width: 28px;
+    height: 28px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background-color: #198754;
+    color: white;
+
+    border-radius: 50%;
+    font-weight: bold;
+    flex-shrink: 0;
+}
+
+.notifikasi-close {
+    position: absolute;
+    top: 10px;
+    right: 12px;
+
+    border: none;
+    background: none;
+
+    color: #155724;
+    font-size: 22px;
+    line-height: 1;
+
+    cursor: pointer;
+    padding: 0;
+}
+
+.notifikasi-close:hover {
+    color: #0f3d1e;
+}
+
+@media (max-width: 576px) {
+    .notifikasi-sukses {
+        top: 80px;
+        right: 15px;
+        left: 15px;
+        width: auto;
+    }
+}
+
+/* ==================================================
+   ANIMASI HOME
+================================================== */
+
+@keyframes heroFadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(25px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-hero-group {
+    animation: heroFadeUp 0.9s ease-in-out forwards;
+}
+
+/* --- Animasi Gambar Hero di Home --- */
+@keyframes imageFadeZoom {
+    from {
+        opacity: 0;
+        transform: scale(1.05) translateY(10px); /* Mulai dari sedikit lebih besar & turun */
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);    /* Kembali ke ukuran & posisi normal */
+    }
+}
+
+.animate-fade-image {
+    opacity: 0; /* Mulai dengan tidak terlihat */
+    animation: imageFadeZoom 1.2s ease-out 0.3s forwards; /* Durasi 1.2s, delay 0.3s */
+    transition: transform 0.3s ease-out; /* Untuk transisi halus */
+}

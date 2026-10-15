@@ -1,0 +1,357 @@
+
+/* FORM TAMBAH BARANG */
+.barang-form-page {
+    padding-bottom: 30px;
+    color: #40384e;
+}
+/* Judul halaman */
+.barang-form-page .barang-heading {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 25px;
+}
+.barang-form-page .barang-heading-icon {
+    width: 56px;
+    height: 56px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 15px;
+    background-color: #8174A0;
+    color: #ffffff;
+    font-size: 24px;
+}
+.barang-form-page .barang-heading h2 {
+    margin: 0;
+    color: #302b3f;
+    font-size: 26px;
+    font-weight: 700;
+}
+.barang-form-page .barang-heading p {
+    margin: 6px 0 0;
+    color: #817b86;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+/* Card form */
+.barang-form-page .data-form-card {
+    background-color: #ffffff;
+    border: 1px solid #eeeaf2;
+    border-radius: 18px;
+    box-shadow: 0 7px 25px rgba(60, 50, 80, 0.07);
+    overflow: hidden;
+}
+
+.barang-form-page .data-form-header {
+    padding: 24px 28px;
+    background-color: #ffffff;
+    border-bottom: 1px solid #eeeaf2;
+}
+
+.barang-form-page .data-form-header h3 {
+    margin: 0;
+    color: #40384e;
+    font-size: 21px;
+    font-weight: 700;
+}
+
+.barang-form-page .data-form-header p {
+    margin: 7px 0 0;
+    color: #817b86;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.barang-form-page .data-form-body {
+    padding: 28px;
+}
+
+/* Susunan form dan area foto */
+.barang-form-page .barang-form-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.7fr) minmax(250px, 0.9fr);
+    gap: 24px;
+    align-items: start;
+}
+
+.barang-form-page .barang-form-section {
+    min-width: 0;
+}
+
+/* Label form */
+.barang-form-page .data-form-label {
+    display: block;
+    margin-bottom: 9px;
+    color: #40384e;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.barang-form-page .required-mark {
+    color: #C85B70;
+}
+
+/* Input, dropdown, dan textarea */
+.barang-form-page .data-form-control {
+    display: block;
+    width: 100%;
+    min-height: 46px;
+    padding: 11px 14px;
+    border: 1px solid #ddd7e4;
+    border-radius: 10px;
+    background-color: #ffffff;
+    color: #302b3f;
+    font-family: inherit;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s ease,
+                box-shadow 0.2s ease;
+}
+
+.barang-form-page select.data-form-control {
+    cursor: pointer;
+}
+
+.barang-form-page textarea.data-form-control {
+    min-height: 125px;
+    resize: vertical;
+    line-height: 1.6;
+}
+
+.barang-form-page .data-form-control::placeholder {
+    color: #aaa1b4;
+}
+
+.barang-form-page .data-form-control:focus {
+    border-color: #8174A0;
+    box-shadow: 0 0 0 3px rgba(129, 116, 160, 0.13);
+}
+
+/* Kotak kode otomatis */
+.barang-form-page .kode-otomatis-box {
+    padding: 18px;
+    margin-bottom: 23px;
+    border: 1px solid #e5dcec;
+    border-radius: 13px;
+    background-color: #f6f2f9;
+}
+
+.barang-form-page .kode-otomatis-box .data-form-control {
+    background-color: #ffffff;
+    color: #8174A0;
+    font-weight: 700;
+}
+
+.barang-form-page .kode-otomatis-box small {
+    display: block;
+    margin-top: 9px;
+    color: #817b86;
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+/* Jarak antar input */
+.barang-form-page .barang-field {
+    margin-bottom: 21px;
+}
+
+.barang-form-page .barang-field:last-child {
+    margin-bottom: 0;
+}
+
+/* Kategori, merk, kondisi, dan stok */
+.barang-form-page .barang-field-row {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+}
+
+/* Area upload foto */
+.barang-form-page .barang-photo-card {
+    padding: 20px;
+    border: 1px solid #eeeaf2;
+    border-radius: 14px;
+    background-color: #faf8fc;
+}
+
+.barang-form-page .barang-photo-title {
+    margin-bottom: 6px;
+    color: #40384e;
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.barang-form-page .barang-photo-description {
+    margin-bottom: 17px;
+    color: #817b86;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.barang-form-page .barang-photo-input {
+    width: 100%;
+    padding: 12px;
+    border: 1px dashed #b7a8c9;
+    border-radius: 11px;
+    background-color: #ffffff;
+    color: #5d536b;
+    font-size: 12px;
+}
+
+.barang-form-page .barang-photo-input:focus {
+    border-color: #8174A0;
+    outline: 2px solid rgba(129, 116, 160, 0.12);
+}
+
+.barang-form-page .barang-photo-preview {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 210px;
+    margin-top: 17px;
+    padding: 12px;
+    overflow: hidden;
+    border: 1px solid #eeeaf2;
+    border-radius: 12px;
+    background-color: #f3edf5;
+    color: #a89bb9;
+    text-align: center;
+}
+
+.barang-form-page .barang-photo-preview img {
+    display: block;
+    max-width: 100%;
+    max-height: 250px;
+    object-fit: contain;
+    border-radius: 8px;
+}
+
+.barang-form-page .barang-photo-placeholder i {
+    display: block;
+    margin-bottom: 12px;
+    font-size: 48px;
+}
+
+.barang-form-page .barang-photo-placeholder p {
+    margin: 0;
+    color: #817b86;
+    font-size: 13px;
+}
+
+/* Alert */
+.barang-form-page .alert {
+    margin-bottom: 22px;
+    border-radius: 10px;
+    font-size: 14px;
+}
+
+/* Tombol form */
+.barang-form-page .barang-form-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 28px;
+    padding-top: 23px;
+    border-top: 1px solid #eeeaf2;
+}
+
+.barang-form-page .btn-form-save,
+.barang-form-page .btn-form-cancel {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 44px;
+    padding: 11px 21px;
+    border: 1px solid transparent;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color 0.2s ease,
+                transform 0.2s ease;
+}
+
+.barang-form-page .btn-form-save {
+    background-color: #8174A0;
+    color: #ffffff;
+}
+
+.barang-form-page .btn-form-save:hover {
+    background-color: #706391;
+    color: #ffffff;
+    transform: translateY(-1px);
+}
+
+.barang-form-page .btn-form-cancel {
+    background-color: #f3edf5;
+    border-color: #e5dcec;
+    color: #5d536b;
+}
+
+.barang-form-page .btn-form-cancel:hover {
+    background-color: #EFB6C8;
+    border-color: #EFB6C8;
+    color: #40384e;
+}
+
+/* Tablet */
+@media (max-width: 900px) {
+    .barang-form-page .barang-form-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .barang-form-page .barang-photo-card {
+        max-width: 100%;
+    }
+
+    .barang-form-page .barang-photo-preview {
+        min-height: 180px;
+    }
+}
+
+/* HP */
+@media (max-width: 576px) {
+    .barang-form-page .barang-heading {
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .barang-form-page .barang-heading-icon {
+        width: 45px;
+        height: 45px;
+        border-radius: 12px;
+        font-size: 20px;
+    }
+
+    .barang-form-page .barang-heading h2 {
+        font-size: 22px;
+    }
+
+    .barang-form-page .data-form-header,
+    .barang-form-page .data-form-body {
+        padding: 18px;
+    }
+
+    .barang-form-page .barang-form-field-row {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .barang-form-page .barang-field-row {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 0;
+    }
+
+    .barang-form-page .barang-form-actions {
+        flex-direction: column;
+    }
+
+    .barang-form-page .btn-form-save,
+    .barang-form-page .btn-form-cancel {
+        width: 100%;
+    }
+}

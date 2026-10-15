@@ -51,6 +51,7 @@ $query_kondisi = mysqli_query($conn, "
 ?>
 
 <?php include "../layout/header.php"; ?>
+<link rel="stylesheet" href="../assets/css/dashboard.css?v=3">
 <?php include "../layout/navbar.php"; ?>
 <style>
     /*DASHBOARD MODERN*/
@@ -325,9 +326,7 @@ $query_kondisi = mysqli_query($conn, "
 
 
 <div class="main-content dashboard-wrapper">
-    <!-- ==========================
-         HEADER
-    =========================== -->
+    <!--EADER-->
     <div class="dashboard-header">
         <div>
             <h1 class="dashboard-title">
@@ -347,9 +346,7 @@ $query_kondisi = mysqli_query($conn, "
             </div>
         </div>
     </div>
-    <!-- ==========================
-         WELCOME
-    =========================== -->
+    <!-- WELCOME-->
     <div class="welcome-card">
         <h5>
             Selamat Datang
@@ -359,9 +356,7 @@ $query_kondisi = mysqli_query($conn, "
             melalui dashboard admin.
         </p>
     </div>
-    <!-- ==========================
-         DATA MASTER
-    =========================== -->
+    <!--DATA MASTER -->
     <div class="row g-4 mb-4">
         <!-- KATEGORI -->
         <div class="col-xl-3 col-md-6">
@@ -436,9 +431,7 @@ $query_kondisi = mysqli_query($conn, "
             </div>
         </div>
     </div>
-    <!-- ==========================
-         STATISTIK BARANG
-    =========================== -->
+    <!-- STATISTIK BARANG-->
     <div class="dashboard-card mb-4">
         <div class="section-header">
             <h5 class="section-title">
@@ -487,9 +480,7 @@ $query_kondisi = mysqli_query($conn, "
             </div>
         </div>
     </div>
-    <!-- ==========================
-         KONDISI BARANG
-    =========================== -->
+    <!--KONDISI BARANG-->
     <div class="dashboard-card">
         <div class="section-header">
             <h5 class="section-title">
@@ -531,9 +522,7 @@ $query_kondisi = mysqli_query($conn, "
         </div>
     </div>
 </div>
-<!-- ==========================
-     JAM & TANGGAL
-=========================== -->
+<!-- JAM & TANGGAL-->
 <script>
     function updateWaktu() {
         const sekarang = new Date();

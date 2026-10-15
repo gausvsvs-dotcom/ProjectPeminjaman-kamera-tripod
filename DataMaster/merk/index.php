@@ -1,101 +1,161 @@
 <?php
 require_once "../config/koneksi.php";
 /** @var mysqli $conn */
-
-$query = mysqli_query($conn, "SELECT * FROM merk");
-
+// Ambil data merk
+$query = mysqli_query(
+    $conn,
+    "SELECT * FROM merk ORDER BY id_merk ASC"
+);
 if (!$query) {
     die("Query error: " . mysqli_error($conn));
 }
 ?>
-<?php include "../layout/header.php" ?>
-<?php include "../layout/navbar.php" ?>
+<?php include "../layout/header.php"; ?>
+<link rel="stylesheet" href="../assets/css/data-master.css?v=3">
+<?php include "../layout/navbar.php"; ?>
 
-<div class="main-content">
-    <div class="container">
-        <div class="card">
-            <div class="card-header py-3">
-                <h3 class="mb-0">Data Merk</h3>
+<div class="main-content data-master-page">
+    <div class="container-fluid">
+        <!-- Header Halaman -->
+        <div class="data-page-header">
+            <div class="data-page-icon">
+                <i class="bi bi-tags"></i>
             </div>
-            <div class="card-body">
-                <?php
-                if (isset($_GET['pesan'])) {
-
-                    if ($_GET['pesan'] == 'tambah') {
-                ?>
-                        <div class="alert alert-success alert-dismissible fade show">
-                            Data merk berhasil ditambahkan!
-                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                        </div>
-                    <?php
-                    }
-                    if ($_GET['pesan'] == 'ubah') {
-                    ?>
-                        <div class="alert alert-warning alert-dismissible fade show">
-                            Data merk berhasil diubah!
-                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                        </div>
-                    <?php
-                    }
-                    if ($_GET['pesan'] == 'hapus') {
-                    ?>
-                        <div class="alert alert-danger alert-dismissible fade show">
-                            Data merk berhasil dihapus!
-                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                        </div>
-                <?php
-                    }
-                }
-                ?>
-                <a href="tambah.php" class="btn btn-tambah mb-3">
-                    + Tambah Merk
+            <div>
+                <h2>Data Merk</h2>
+                <p>Kelola daftar merk kamera dan tripod yang terdaftar.</p>
+            </div>
+        </div>
+        <!-- Notifikasi -->
+        <?php if (isset($_GET['pesan'])): ?>
+            <?php if ($_GET['pesan'] === 'tambah'): ?>
+                <div class="data-notification success" role="alert">
+                    <i class="bi bi-check-circle-fill"></i>
+                    Data merk berhasil ditambahkan!
+                </div>
+            <?php elseif ($_GET['pesan'] === 'ubah'): ?>
+                <div class="data-notification success" role="alert">
+                    <i class="bi bi-check-circle-fill"></i>
+                    Data merk berhasil diubah!
+                </div>
+            <?php elseif ($_GET['pesan'] === 'hapus'): ?>
+                <div class="data-notification success" role="alert">
+                    <i class="bi bi-check-circle-fill"></i>
+                    Data merk berhasil dihapus!
+                </div>
+            <?php elseif ($_GET['pesan'] === 'tidak_ditemukan'): ?>
+                <div class="data-notification warning" role="alert">
+                    <i class="bi bi-exclamation-circle-fill"></i>
+                    Data merk tidak ditemukan.
+                </div>
+            <?php endif; ?>
+        <?php endif; ?>
+        <!-- Card Tabel -->
+        <div class="data-master-card">
+            <div class="data-card-header">
+                <div>
+                    <h5 class="data-card-title">Daftar Merk</h5>
+                    <p class="mb-0 text-muted">
+                        Daftar merk yang digunakan pada data barang.
+                    </p>
+                </div>
+                <a href="tambah.php" class="btn-data-tambah">
+                    <i class="bi bi-plus-lg"></i>
+                    Tambah Merk
                 </a>
+            </div>
+            <!-- Tabel -->
+            <div class="data-table-wrapper">
                 <div class="table-responsive">
-                    <table class="table table-bordered table-hover align-middle">
+                    <table class="data-master-table">
                         <thead>
                             <tr>
-                                <th width="70">No</th>
-                                <th>ID Merk</th>
+                                <th width="65">No.</th>
+                                <th width="120">ID Merk</th>
                                 <th>Nama Merk</th>
-                                <th width="220">Aksi</th>
+                                <th width="180">Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <?php
-                            $no = 1;
-                            while ($data = mysqli_fetch_assoc($query)) {
-                            ?>
+                            <?php if (mysqli_num_rows($query) > 0): ?>
+                                <?php
+                                $no = 1;
+                                while ($data = mysqli_fetch_assoc($query)):
+                                    $id_merk = (int) $data['id_merk'];
+                                ?>
+                                    <tr>
+                                        <td class="data-number">
+                                            <?= $no++; ?>
+                                        </td>
+                                        <td>
+                                            <span class="data-id">
+                                                <?= $id_merk; ?>
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span class="data-name">
+                                                <?= htmlspecialchars(
+                                                    $data['nama_merk'],
+                                                    ENT_QUOTES,
+                                                    'UTF-8'
+                                                ); ?>
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <div class="data-action">
+                                                <!-- Detail -->
+                                                <a
+                                                    href="detail.php?id=<?= $id_merk; ?>"
+                                                    class="data-detail"
+                                                    title="Detail Merk"
+                                                    aria-label="Detail Merk">
+                                                    <i class="bi bi-eye"></i>
+                                                </a>
+                                                <!-- Edit -->
+                                                <a
+                                                    href="edit.php?id=<?= $id_merk; ?>"
+                                                    class="data-edit"
+                                                    title="Edit Merk"
+                                                    aria-label="Edit Merk">
+                                                    <i class="bi bi-pencil-square"></i>
+                                                </a>
+                                                <!-- Hapus -->
+                                                <a
+                                                    href="hapus.php?id=<?= $id_merk; ?>"
+                                                    class="data-delete"
+                                                    title="Hapus Merk"
+                                                    aria-label="Hapus Merk"
+                                                    onclick="return confirm('Yakin ingin menghapus merk ini?')">
+                                                    <i class="bi bi-trash3"></i>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                <?php endwhile; ?>
+                            <?php else: ?>
                                 <tr>
-                                    <td><?= $no++; ?></td>
-                                    <td><?= $data['id_merk']; ?></td>
-                                    <td>
-                                        <?= htmlspecialchars($data['nama_merk']); ?>
-                                    </td>
-                                    <td>
-                                        <a href="detail.php?id=<?= $data['id_merk']; ?>"
-                                            class="btn btn-info btn-sm text-white">
-                                            Detail
-                                        </a>
-                                        <a href="edit.php?id=<?= $data['id_merk']; ?>"
-                                            class="btn btn-warning btn-sm">
-                                            Edit
-                                        </a>
-                                        <a href="hapus.php?id=<?= $data['id_merk']; ?>"
-                                            class="btn btn-danger btn-sm"
-                                            onclick="return confirm('Yakin ingin menghapus merk ini?')">
-                                            Hapus
-                                        </a>
+                                    <td colspan="4">
+                                        <div class="data-empty">
+                                            <i class="bi bi-tags"></i>
+                                            <h6>Belum Ada Data Merk</h6>
+                                            <p>
+                                                Silakan tambahkan data merk terlebih dahulu.
+                                            </p>
+                                        </div>
                                     </td>
                                 </tr>
-                            <?php
-                            }
-                            ?>
+                            <?php endif; ?>
                         </tbody>
                     </table>
                 </div>
             </div>
+            <!-- Footer Tabel -->
+            <div class="data-table-footer">
+                Menampilkan
+                <strong><?= mysqli_num_rows($query); ?></strong>
+                data merk
+            </div>
         </div>
     </div>
 </div>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<?php include "../layout/footer.php" ?>
+<?php include "../layout/footer.php"; ?>

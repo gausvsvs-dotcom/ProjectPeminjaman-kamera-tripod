@@ -46,8 +46,7 @@ $data = $tripod[$id] ?? $tripod[1];
     <link rel="stylesheet"
           href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css">
 
-    <link rel="stylesheet"
-          href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/style.css?v=99">
 </head>
 
 <body>
@@ -112,6 +111,10 @@ $data = $tripod[$id] ?? $tripod[1];
                 <a href="kamera&tripod.php"
                    class="btn btn-detail">
                    ~ Kembali ~
+                </a>
+
+                <a href="/ProjectPeminjaman-kamera-tripod/Transaksi/peminjaman.php?id=<?= $id ?>&jenis=kamera" class="btn btn-ajukan">
+                    ~ Ajukan Peminjaman ~
                 </a>
             </div>
         </div>

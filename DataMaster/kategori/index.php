@@ -25,50 +25,34 @@ $query = mysqli_query($conn, "SELECT * FROM kategori");
                 </a>
                 <div class="table-responsive">
                     <table class="table table-bordered table-hover align-middle">
-
                         <thead>
-
                             <tr>
-
                                 <th width="70">
                                     No
                                 </th>
-
                                 <th>
                                     ID Kategori
                                 </th>
-
                                 <th>
                                     Nama Kategori
                                 </th>
-
                                 <th width="220">
                                     Aksi
                                 </th>
-
                             </tr>
-
                         </thead>
-
-
                         <tbody>
-
                             <?php
                             $no = 1;
-
                             while ($data = mysqli_fetch_assoc($query)) {
                             ?>
-
                                 <tr>
-
                                     <td>
                                         <?= $no++; ?>
                                     </td>
-
                                     <td>
                                         <?= $data['id_kategori']; ?>
                                     </td>
-
                                     <td>
                                         <?= htmlspecialchars($data['nama_kategori']); ?>
                                     </td>

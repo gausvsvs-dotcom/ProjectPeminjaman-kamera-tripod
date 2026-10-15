@@ -100,7 +100,7 @@ $query_kondisi = mysqli_query($conn, "
     .welcome-card {
         position: relative;
         overflow: hidden;
-        background: linear-gradient(
+        background: -webkit-linear-gradient(
             135deg,
             #8174A0 0%,
             #A888B5 65%,
@@ -352,7 +352,7 @@ $query_kondisi = mysqli_query($conn, "
     =========================== -->
     <div class="welcome-card">
         <h5>
-            Selamat Datang 👋
+            Selamat Datang
         </h5>
         <p>
             Kelola data kamera, tripod, pengguna, dan peminjaman

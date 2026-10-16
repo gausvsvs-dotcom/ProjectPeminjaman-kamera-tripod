@@ -1,132 +1,92 @@
+
 <?php
-session_start();
 require_once "../config/koneksi.php";
 /** @var mysqli $conn */
 
-// Pastikan pengguna sudah login
-if (!isset($_SESSION['id_pengguna'])) {
-    header("Location: ../login.php");
-    exit;
-}
+// Ambil ID pengguna dari URL
+$id = isset($_GET['id']) ? (int) $_GET['id'] : 0;
 
-// Validasi ID pengguna
-$id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
-
-if (!$id || $id < 1) {
-    header("Location: index.php");
-    exit;
+if ($id <= 0) {
+    die("ID pengguna tidak valid.");
 }
 
 // Ambil data pengguna
-$stmt = mysqli_prepare(
+$query = mysqli_query(
     $conn,
-    "SELECT id_pengguna, nama, username, role
+    "SELECT id_user, nama_user, username, role
      FROM pengguna
-     WHERE id_pengguna = ?"
+     WHERE id_user = $id"
 );
 
-mysqli_stmt_bind_param($stmt, "i", $id);
-mysqli_stmt_execute($stmt);
+if (!$query) {
+    die("Query error: " . mysqli_error($conn));
+}
 
-$result = mysqli_stmt_get_result($stmt);
-$data = mysqli_fetch_assoc($result);
-
-mysqli_stmt_close($stmt);
+$data = mysqli_fetch_assoc($query);
 
 if (!$data) {
-    header("Location: index.php?pesan=tidak_ditemukan");
-    exit;
+    die("Data pengguna tidak ditemukan.");
 }
 
 $error = "";
-$nama = $data['nama'];
+
+// Isi awal form
+$nama_user = $data['nama_user'];
 $username = $data['username'];
 $role = $data['role'];
 
-// Proses update data pengguna
+// Proses simpan perubahan
 if (isset($_POST['update'])) {
-
-    $nama = trim($_POST['nama'] ?? '');
+    $nama_user = trim($_POST['nama_user'] ?? '');
     $username = trim($_POST['username'] ?? '');
     $role = $_POST['role'] ?? '';
 
-    $daftar_role = ['admin', 'petugas', 'pimpinan'];
-
-    if ($nama === '' || $username === '') {
-        $error = "Nama dan username wajib diisi.";
-
-    } elseif (strlen($nama) > 100) {
-        $error = "Nama maksimal 100 karakter.";
-
-    } elseif (strlen($username) > 50) {
-        $error = "Username maksimal 50 karakter.";
-
-    } elseif (!in_array($role, $daftar_role, true)) {
-        $error = "Role yang dipilih tidak valid.";
-
+    if ($nama_user === '' || $username === '' || $role === '') {
+        $error = "Semua kolom wajib diisi.";
     } else {
-
-        // Periksa username duplikat
-        $stmt_cek = mysqli_prepare(
+        // Cek apakah username sudah dipakai pengguna lain
+        $stmt = mysqli_prepare(
             $conn,
-            "SELECT id_pengguna
+            "SELECT id_user
              FROM pengguna
-             WHERE username = ?
-             AND id_pengguna != ?"
+             WHERE username = ? AND id_user != ?"
         );
 
-        mysqli_stmt_bind_param(
-            $stmt_cek,
-            "si",
-            $username,
-            $id
-        );
+        mysqli_stmt_bind_param($stmt, "si", $username, $id);
+        mysqli_stmt_execute($stmt);
+        mysqli_stmt_store_result($stmt);
 
-        mysqli_stmt_execute($stmt_cek);
-        $hasil_cek = mysqli_stmt_get_result($stmt_cek);
-        $username_duplikat = mysqli_num_rows($hasil_cek) > 0;
+        $duplikat = mysqli_stmt_num_rows($stmt) > 0;
+        mysqli_stmt_close($stmt);
 
-        mysqli_stmt_close($stmt_cek);
-
-        if ($username_duplikat) {
-            $error = "Username sudah digunakan pengguna lain.";
-
+        if ($duplikat) {
+            $error = "Username sudah digunakan.";
         } else {
-
-            // Update hanya data profil, bukan password
-            $stmt_update = mysqli_prepare(
+            // Update data pengguna tanpa mengubah password
+            $stmt = mysqli_prepare(
                 $conn,
                 "UPDATE pengguna
-                 SET nama = ?, username = ?, role = ?
-                 WHERE id_pengguna = ?"
+                 SET nama_user = ?, username = ?, role = ?
+                 WHERE id_user = ?"
             );
 
             mysqli_stmt_bind_param(
-                $stmt_update,
+                $stmt,
                 "sssi",
-                $nama,
+                $nama_user,
                 $username,
                 $role,
                 $id
             );
 
-            if (mysqli_stmt_execute($stmt_update)) {
-
-                mysqli_stmt_close($stmt_update);
-
-                // Perbarui session jika profil sendiri yang diedit
-                if ((int) $_SESSION['id_pengguna'] === $id) {
-                    $_SESSION['nama'] = $nama;
-                    $_SESSION['username'] = $username;
-                    $_SESSION['role'] = $role;
-                }
+            if (mysqli_stmt_execute($stmt)) {
+                mysqli_stmt_close($stmt);
 
                 header("Location: index.php?pesan=ubah");
                 exit;
-
             } else {
-                $error = "Data pengguna gagal diubah.";
-                mysqli_stmt_close($stmt_update);
+                $error = "Gagal mengubah data: " . mysqli_error($conn);
+                mysqli_stmt_close($stmt);
             }
         }
     }
@@ -134,115 +94,81 @@ if (isset($_POST['update'])) {
 ?>
 
 <?php include "../layout/header.php"; ?>
+<link rel="stylesheet" href="../assets/css/data-master.css?v=2">
 <?php include "../layout/navbar.php"; ?>
 
 <div class="main-content data-master-page">
     <div class="container-fluid">
 
-        <!-- Header Halaman -->
         <div class="data-page-header">
             <div class="data-page-icon">
                 <i class="bi bi-person-gear"></i>
             </div>
-
             <div>
                 <h2>Edit Pengguna</h2>
-                <p>Perbarui informasi akun pengguna.</p>
+                <p>Ubah informasi akun pengguna.</p>
             </div>
         </div>
 
-        <!-- Form Edit -->
         <div class="data-form-card">
-
             <div class="data-form-header">
                 <div>
                     <h5 class="mb-1">Form Edit Pengguna</h5>
-                    <p class="mb-0">
-                        Ubah nama, username, dan role pengguna.
-                    </p>
+                    <p class="mb-0">Silakan ubah data di bawah ini.</p>
                 </div>
             </div>
 
             <div class="data-form-body">
 
                 <?php if ($error !== ''): ?>
-                    <div class="alert alert-danger" role="alert">
-                        <i class="bi bi-exclamation-circle me-2"></i>
-                        <?= htmlspecialchars(
-                            $error,
-                            ENT_QUOTES,
-                            'UTF-8'
-                        ); ?>
+                    <div class="alert alert-danger">
+                        <?= htmlspecialchars($error, ENT_QUOTES, 'UTF-8'); ?>
                     </div>
                 <?php endif; ?>
 
                 <form method="POST">
-
-                    <!-- ID Pengguna -->
                     <div class="mb-4">
-                        <label class="data-form-label">
-                            ID Pengguna
-                        </label>
-
+                        <label class="data-form-label">ID Pengguna</label>
                         <input
                             type="text"
                             class="data-form-control"
-                            value="<?= (int) $data['id_pengguna']; ?>"
+                            value="<?= (int) $data['id_user']; ?>"
                             disabled
                         >
                     </div>
 
-                    <!-- Nama -->
                     <div class="mb-4">
-                        <label for="nama" class="data-form-label">
-                            Nama
-                            <span class="text-danger">*</span>
+                        <label for="nama_user" class="data-form-label">
+                            Nama Pengguna
                         </label>
-
                         <input
                             type="text"
-                            id="nama"
-                            name="nama"
+                            id="nama_user"
+                            name="nama_user"
                             class="data-form-control"
-                            value="<?= htmlspecialchars(
-                                $nama,
-                                ENT_QUOTES,
-                                'UTF-8'
-                            ); ?>"
-                            maxlength="100"
+                            value="<?= htmlspecialchars($nama_user, ENT_QUOTES, 'UTF-8'); ?>"
                             required
                         >
                     </div>
 
-                    <!-- Username -->
                     <div class="mb-4">
                         <label for="username" class="data-form-label">
                             Username
-                            <span class="text-danger">*</span>
                         </label>
-
                         <input
                             type="text"
                             id="username"
                             name="username"
                             class="data-form-control"
-                            value="<?= htmlspecialchars(
-                                $username,
-                                ENT_QUOTES,
-                                'UTF-8'
-                            ); ?>"
-                            maxlength="50"
+                            value="<?= htmlspecialchars($username, ENT_QUOTES, 'UTF-8'); ?>"
                             required
                         >
                     </div>
 
-                    <!-- Role -->
                     <div class="mb-4">
                         <label for="role" class="data-form-label">
                             Role
-                            <span class="text-danger">*</span>
                         </label>
-
                         <select
                             id="role"
                             name="role"
@@ -250,35 +176,22 @@ if (isset($_POST['update'])) {
                             required
                         >
                             <option value="">-- Pilih Role --</option>
-
-                            <option value="admin"
-                                <?= $role === 'admin' ? 'selected' : ''; ?>>
-                                Admin
-                            </option>
-
-                            <option value="petugas"
-                                <?= $role === 'petugas' ? 'selected' : ''; ?>>
-                                Petugas
-                            </option>
-
-                            <option value="pimpinan"
-                                <?= $role === 'pimpinan' ? 'selected' : ''; ?>>
-                                Pimpinan
-                            </option>
+                            <?php foreach (['admin', 'petugas', 'pimpinan'] as $pilihan): ?>
+                                <option
+                                    value="<?= $pilihan; ?>"
+                                    <?= $role === $pilihan ? 'selected' : ''; ?>
+                                >
+                                    <?= ucfirst($pilihan); ?>
+                                </option>
+                            <?php endforeach; ?>
                         </select>
                     </div>
 
-                    <!-- Informasi Password -->
                     <div class="alert alert-info">
-                        <i class="bi bi-shield-lock me-2"></i>
-                        Password tidak diubah melalui halaman ini.
-                        Untuk mengganti password, gunakan menu
-                        <strong>Ganti Password</strong> pada profil sendiri.
+                        Password tidak diubah melalui form ini.
                     </div>
 
-                    <!-- Tombol -->
                     <div class="d-flex flex-wrap gap-2 mt-4">
-
                         <button
                             type="submit"
                             name="update"
@@ -288,17 +201,17 @@ if (isset($_POST['update'])) {
                             Simpan Perubahan
                         </button>
 
-                        <a
-                            href="index.php"
-                            class="btn-form-cancel"
-                        >
+                        <a href="index.php" class="btn-form-cancel">
                             <i class="bi bi-arrow-left me-1"></i>
                             Kembali
                         </a>
                     </div>
                 </form>
+
             </div>
         </div>
+
     </div>
 </div>
+
 <?php include "../layout/footer.php"; ?>

@@ -1,17 +1,22 @@
+
 <?php
 require_once "../config/koneksi.php";
 /** @var mysqli $conn */
+
 // Ambil seluruh data kategori
 $query = mysqli_query(
     $conn,
     "SELECT * FROM kategori ORDER BY id_kategori DESC"
 );
-// Periksa query
+
 if (!$query) {
     die("Query error: " . mysqli_error($conn));
 }
-// Hitung total data kategori
-$total_kategori = mysqli_num_rows($query);
+
+// Simpan semua data agar bisa dihitung dan ditampilkan dengan benar
+$data_kategori = mysqli_fetch_all($query, MYSQLI_ASSOC);
+$total_kategori = count($data_kategori);
+
 // Daftar notifikasi
 $notifikasi = [
     'tambah' => [
@@ -30,25 +35,34 @@ $notifikasi = [
         'teks' => 'Data kategori berhasil dihapus!'
     ]
 ];
+
 $pesan = $_GET['pesan'] ?? '';
 ?>
+
 <?php include "../layout/header.php"; ?>
+
 <link rel="stylesheet" href="../assets/css/data-master.css?v=2">
+
 <?php include "../layout/navbar.php"; ?>
+
 <div class="main-content data-master-page">
     <div class="container-fluid">
+
         <!-- HEADER HALAMAN -->
         <div class="data-page-header">
             <div class="data-page-icon">
                 <i class="bi bi-tags"></i>
             </div>
+
             <div>
                 <h2>Data Kategori</h2>
                 <p>Kelola kategori barang yang tersedia pada sistem.</p>
             </div>
         </div>
+
         <!-- CARD DATA KATEGORI -->
         <div class="data-master-card">
+
             <!-- HEADER CARD -->
             <div class="data-card-header">
                 <div>
@@ -56,88 +70,39 @@ $pesan = $_GET['pesan'] ?? '';
                         <i class="bi bi-list-ul me-2"></i>
                         Daftar Kategori
                     </h3>
+
                     <p class="mb-0">
                         Informasi kategori barang yang tersimpan.
                     </p>
                 </div>
+
                 <!-- TOMBOL TAMBAH -->
                 <a href="tambah.php" class="btn-data-tambah">
                     <i class="bi bi-plus-circle me-1"></i>
                     Tambah Kategori
                 </a>
             </div>
-                <div class="table-responsive">
-                    <table class="table table-bordered table-hover align-middle">
-                        <thead>
-                            <tr>
-                                <th width="70">
-                                    No
-                                </th>
-                                <th>
-                                    ID Kategori
-                                </th>
-                                <th>
-                                    Nama Kategori
-                                </th>
-                                <th width="220">
-                                    Aksi
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php
-                            $no = 1;
-                            while ($data = mysqli_fetch_assoc($query)) {
-                            ?>
-                                <tr>
-                                    <td>
-                                        <?= $no++; ?>
-                                    </td>
-                                    <td>
-                                        <?= $data['id_kategori']; ?>
-                                    </td>
-                                    <td>
-                                        <?= htmlspecialchars($data['nama_kategori']); ?>
-                                    </td>
-                                    <td>
-                                        <a href="detail.php?id=<?= $data['id_kategori']; ?>"
-                                            class="btn btn-sm btn-info text-white">
-                                            <i class="bi bi-eye"></i>
-                                            Detail
-                                        </a>
-                                        <a href="edit.php?id=<?= $data['id_kategori']; ?>"
-                                            class="btn btn-sm btn-warning">
-                                            <i class="bi bi-pencil-square"></i>
-                                            Edit
-                                        </a>
-                                        <a href="hapus.php?id=<?= $data['id_kategori']; ?>"
-                                            class="btn btn-sm btn-danger"
-                                            onclick="return confirm('Yakin ingin menghapus data ini?')">
-                                            <i class="bi bi-trash"></i>
-                                            Hapus
-                                        </a>
-                                    </td>
-                                </tr>
-                            <?php } ?>
-                        </tbody>
-                    </table> 
-                </div>
-            </div>
+
             <!-- ISI CARD -->
             <div class="data-card-body">
-                <!-- NOTIFIKASI TAMBAH, UBAH, HAPUS -->
+
+                <!-- NOTIFIKASI -->
                 <?php if (isset($notifikasi[$pesan])): ?>
                     <?php $notif = $notifikasi[$pesan]; ?>
+
                     <div class="data-notification">
                         <div
-                            class="alert alert-<?= $notif['class']; ?> alert-dismissible fade show"
-                            role="alert">
-                            <i class="bi bi-<?= $notif['icon']; ?> me-2"></i>
+                            class="alert alert-<?= htmlspecialchars($notif['class']); ?> alert-dismissible fade show"
+                            role="alert"
+                        >
+                            <i class="bi bi-<?= htmlspecialchars($notif['icon']); ?> me-2"></i>
+
                             <?= htmlspecialchars(
                                 $notif['teks'],
                                 ENT_QUOTES,
                                 'UTF-8'
                             ); ?>
+
                             <button
                                 type="button"
                                 class="btn-close"
@@ -147,10 +112,11 @@ $pesan = $_GET['pesan'] ?? '';
                         </div>
                     </div>
                 <?php endif; ?>
+
                 <!-- TABEL DATA KATEGORI -->
                 <div class="data-table-wrapper">
                     <table class="data-master-table">
-                        <!-- HEADER TABEL -->
+
                         <thead>
                             <tr>
                                 <th width="65">No.</th>
@@ -160,24 +126,25 @@ $pesan = $_GET['pesan'] ?? '';
                                 <th width="190">Aksi</th>
                             </tr>
                         </thead>
-                        <!-- ISI TABEL -->
+
                         <tbody>
                             <?php if ($total_kategori > 0): ?>
-                                <?php $no = 1; ?>
-                                <?php while ($data = mysqli_fetch_assoc($query)): ?>
+                                <?php foreach ($data_kategori as $index => $data): ?>
                                     <tr>
                                         <!-- NOMOR -->
                                         <td>
                                             <span class="data-number">
-                                                <?= $no++; ?>
+                                                <?= $index + 1; ?>
                                             </span>
                                         </td>
+
                                         <!-- ID KATEGORI -->
                                         <td>
                                             <span class="data-id">
                                                 #<?= (int) $data['id_kategori']; ?>
                                             </span>
                                         </td>
+
                                         <!-- NAMA KATEGORI -->
                                         <td>
                                             <span class="data-name">
@@ -188,6 +155,7 @@ $pesan = $_GET['pesan'] ?? '';
                                                 ); ?>
                                             </span>
                                         </td>
+
                                         <!-- KETERANGAN -->
                                         <td>
                                             <?php if (!empty($data['keterangan'])): ?>
@@ -204,40 +172,45 @@ $pesan = $_GET['pesan'] ?? '';
                                                 </span>
                                             <?php endif; ?>
                                         </td>
+
                                         <!-- TOMBOL AKSI -->
                                         <td>
                                             <div class="data-action">
-                                                <!-- DETAIL -->
+
                                                 <a
                                                     href="detail.php?id=<?= (int) $data['id_kategori']; ?>"
                                                     class="data-detail"
                                                     title="Detail"
-                                                    aria-label="Detail kategori">
+                                                    aria-label="Detail kategori"
+                                                >
                                                     <i class="bi bi-eye"></i>
                                                 </a>
-                                                <!-- EDIT -->
+
                                                 <a
                                                     href="edit.php?id=<?= (int) $data['id_kategori']; ?>"
                                                     class="data-edit"
                                                     title="Edit"
-                                                    aria-label="Edit kategori">
+                                                    aria-label="Edit kategori"
+                                                >
                                                     <i class="bi bi-pencil-square"></i>
                                                 </a>
-                                                <!-- HAPUS -->
+
                                                 <a
                                                     href="hapus.php?id=<?= (int) $data['id_kategori']; ?>"
                                                     class="data-delete"
                                                     title="Hapus"
                                                     aria-label="Hapus kategori"
-                                                    onclick="return confirm('Yakin ingin menghapus kategori ini?');">
+                                                    onclick="return confirm('Yakin ingin menghapus kategori ini?');"
+                                                >
                                                     <i class="bi bi-trash"></i>
                                                 </a>
+
                                             </div>
                                         </td>
                                     </tr>
-                                <?php endwhile; ?>
+                                <?php endforeach; ?>
+
                             <?php else: ?>
-                                <!-- JIKA DATA KOSONG -->
                                 <tr>
                                     <td colspan="5" class="data-empty">
                                         <i class="bi bi-inbox"></i>
@@ -249,16 +222,20 @@ $pesan = $_GET['pesan'] ?? '';
                                 </tr>
                             <?php endif; ?>
                         </tbody>
+
                     </table>
                 </div>
+
                 <!-- TOTAL DATA -->
                 <div class="data-table-footer">
                     Total kategori:
                     <strong><?= $total_kategori; ?></strong> data
                 </div>
+
             </div>
         </div>
-                        
+
     </div>
 </div>
+
 <?php include "../layout/footer.php"; ?>

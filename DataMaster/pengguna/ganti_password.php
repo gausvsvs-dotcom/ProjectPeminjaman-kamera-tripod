@@ -1,16 +1,17 @@
+
 <?php
 session_start();
 require_once "../config/koneksi.php";
 /** @var mysqli $conn */
 
 // Pastikan pengguna sudah login
-if (!isset($_SESSION['id_pengguna'])) {
+if (!isset($_SESSION['id_user'])) {
     header("Location: ../login.php");
     exit;
 }
 
-// Ambil ID hanya dari session, bukan URL atau form
-$id_pengguna = (int) $_SESSION['id_pengguna'];
+// Ambil ID hanya dari session pengguna yang login
+$id_user = (int) $_SESSION['id_user'];
 
 $error = "";
 $success = "";
@@ -43,10 +44,12 @@ if (isset($_POST['ganti_password'])) {
         // Ambil password akun yang sedang login
         $stmt = mysqli_prepare(
             $conn,
-            "SELECT password FROM pengguna WHERE id_pengguna = ?"
+            "SELECT password
+             FROM pengguna
+             WHERE id_user = ?"
         );
 
-        mysqli_stmt_bind_param($stmt, "i", $id_pengguna);
+        mysqli_stmt_bind_param($stmt, "i", $id_user);
         mysqli_stmt_execute($stmt);
 
         $hasil = mysqli_stmt_get_result($stmt);
@@ -68,19 +71,19 @@ if (isset($_POST['ganti_password'])) {
                 PASSWORD_DEFAULT
             );
 
-            // Update hanya akun yang sedang login
+            // Update password hanya untuk akun yang sedang login
             $stmt_update = mysqli_prepare(
                 $conn,
                 "UPDATE pengguna
                  SET password = ?
-                 WHERE id_pengguna = ?"
+                 WHERE id_user = ?"
             );
 
             mysqli_stmt_bind_param(
                 $stmt_update,
                 "si",
                 $hash_password,
-                $id_pengguna
+                $id_user
             );
 
             if (mysqli_stmt_execute($stmt_update)) {
@@ -96,6 +99,7 @@ if (isset($_POST['ganti_password'])) {
 ?>
 
 <?php include "../layout/header.php"; ?>
+<link rel="stylesheet" href="../assets/css/data-master.css">
 <?php include "../layout/navbar.php"; ?>
 
 <div class="main-content data-master-page">
@@ -129,7 +133,7 @@ if (isset($_POST['ganti_password'])) {
 
             <div class="data-form-body">
 
-                <?php if ($error !== ''): ?>
+                <?php if ($error !== '') { ?>
                     <div class="alert alert-danger" role="alert">
                         <i class="bi bi-exclamation-circle me-2"></i>
                         <?= htmlspecialchars(
@@ -138,9 +142,9 @@ if (isset($_POST['ganti_password'])) {
                             'UTF-8'
                         ); ?>
                     </div>
-                <?php endif; ?>
+                <?php } ?>
 
-                <?php if ($success !== ''): ?>
+                <?php if ($success !== '') { ?>
                     <div class="alert alert-success" role="alert">
                         <i class="bi bi-check-circle me-2"></i>
                         <?= htmlspecialchars(
@@ -149,13 +153,12 @@ if (isset($_POST['ganti_password'])) {
                             'UTF-8'
                         ); ?>
                     </div>
-                <?php endif; ?>
+                <?php } ?>
 
                 <form method="POST">
 
                     <div class="mb-4">
-                        <label for="password_lama"
-                               class="data-form-label">
+                        <label for="password_lama" class="data-form-label">
                             Password Lama
                         </label>
 
@@ -171,8 +174,7 @@ if (isset($_POST['ganti_password'])) {
                     </div>
 
                     <div class="mb-4">
-                        <label for="password_baru"
-                               class="data-form-label">
+                        <label for="password_baru" class="data-form-label">
                             Password Baru
                         </label>
 
@@ -193,8 +195,10 @@ if (isset($_POST['ganti_password'])) {
                     </div>
 
                     <div class="mb-4">
-                        <label for="konfirmasi_password"
-                               class="data-form-label">
+                        <label
+                            for="konfirmasi_password"
+                            class="data-form-label"
+                        >
                             Konfirmasi Password Baru
                         </label>
 
@@ -209,24 +213,30 @@ if (isset($_POST['ganti_password'])) {
                             required
                         >
                     </div>
+
                     <div class="d-flex flex-wrap gap-2 mt-4">
                         <button
                             type="submit"
                             name="ganti_password"
-                            class="btn-form-save">
+                            class="btn-form-save"
+                        >
                             <i class="bi bi-shield-check me-1"></i>
                             Ganti Password
                         </button>
+
                         <a
                             href="profile.php"
-                            class="btn-form-cancel" >
+                            class="btn-form-cancel"
+                        >
                             <i class="bi bi-arrow-left me-1"></i>
                             Kembali ke Profil
                         </a>
                     </div>
+
                 </form>
             </div>
         </div>
     </div>
 </div>
+
 <?php include "../layout/footer.php"; ?>

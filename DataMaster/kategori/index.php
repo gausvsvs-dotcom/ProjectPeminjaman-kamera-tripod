@@ -116,6 +116,12 @@ $pesan = $_GET['pesan'] ?? '';
                                             <i class="bi bi-trash"></i>
                                             Hapus
                                         </a>
+                                    </td>
+                                </tr>
+                            <?php } ?>
+                        </tbody>
+                    </table> 
+                </div>
             </div>
             <!-- ISI CARD -->
             <div class="data-card-body">
@@ -252,8 +258,7 @@ $pesan = $_GET['pesan'] ?? '';
                 </div>
             </div>
         </div>
-
+                        
     </div>
 </div>
-
 <?php include "../layout/footer.php"; ?>

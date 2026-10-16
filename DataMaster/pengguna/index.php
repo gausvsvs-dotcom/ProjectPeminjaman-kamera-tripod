@@ -111,17 +111,17 @@ if (!$query) {
 
                             <td>
 
-                                <a href="detail.php?id=<?= $data['id_pengguna']; ?>"
+                                <a href="detail.php?id=<?= $data['id_user']; ?>"
                                    class="btn btn-info btn-sm text-white">
                                     Detail
                                 </a>
 
-                                <a href="edit.php?id=<?= $data['id_pengguna']; ?>"
+                                <a href="edit.php?id=<?= $data['id_user']; ?>"
                                    class="btn btn-warning btn-sm">
                                     Edit
                                 </a>
 
-                                <a href="hapus.php?id=<?= $data['id_pengguna']; ?>"
+                                <a href="hapus.php?id=<?= $data['id_user']; ?>"
                                    class="btn btn-danger btn-sm"
                                    onclick="return confirm('Yakin ingin menghapus pengguna ini?')">
                                     Hapus

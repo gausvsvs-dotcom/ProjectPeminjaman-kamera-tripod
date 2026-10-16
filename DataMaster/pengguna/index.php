@@ -1,150 +1,195 @@
+
 <?php
 require_once "../config/koneksi.php";
 /** @var mysqli $conn */
 
-$query = mysqli_query($conn, "SELECT * FROM pengguna");
+// Ambil data pengguna tanpa menampilkan password
+$query = mysqli_query(
+    $conn,
+    "SELECT id_pengguna, nama, username, role
+     FROM pengguna
+     ORDER BY id_pengguna DESC"
+);
 
 if (!$query) {
     die("Query error: " . mysqli_error($conn));
 }
+
+$total_pengguna = mysqli_num_rows($query);
+
+// Notifikasi
+$notifikasi = [
+    'tambah' => [
+        'class' => 'success',
+        'pesan' => 'Data pengguna berhasil ditambahkan!'
+    ],
+    'ubah' => [
+        'class' => 'warning',
+        'pesan' => 'Data pengguna berhasil diubah!'
+    ],
+    'hapus' => [
+        'class' => 'danger',
+        'pesan' => 'Data pengguna berhasil dihapus!'
+    ]
+];
 ?>
-<?php include "../layout/header.php" ?>
-<?php include "../layout/navbar.php" ?>
+
+<?php include "../layout/header.php"; ?>
+<link rel="stylesheet" href="../assets/css/data-master.css">
+<?php include "../layout/navbar.php"; ?>
 
 <div class="main-content">
-<div class="container">
+    <div class="container-fluid data-master-page">
 
-    <div class="card">
+        <div class="data-page-header">
+            <div class="data-page-icon">
+                <i class="bi bi-people-fill"></i>
+            </div>
 
-        <div class="card-header py-3">
-            <h3 class="mb-0">Data Pengguna</h3>
+            <div>
+                <h2>Data Pengguna</h2>
+                <p>Kelola data akun dan hak akses pengguna sistem.</p>
+            </div>
         </div>
 
-        <div class="card-body">
+        <?php
+        if (
+            isset($_GET['pesan']) &&
+            isset($notifikasi[$_GET['pesan']])
+        ) {
+            $pesan = $notifikasi[$_GET['pesan']];
+        ?>
+            <div class="data-notification <?= htmlspecialchars($pesan['class'], ENT_QUOTES, 'UTF-8'); ?>">
+                <i class="bi bi-check-circle-fill"></i>
+                <span><?= htmlspecialchars($pesan['pesan'], ENT_QUOTES, 'UTF-8'); ?></span>
+            </div>
+        <?php } ?>
 
-            <?php
-            if (isset($_GET['pesan'])) {
+        <div class="data-master-card">
 
-                if ($_GET['pesan'] == 'tambah') {
-                    ?>
-                    <div class="alert alert-success alert-dismissible fade show" role="alert">
-                        Data pengguna berhasil ditambahkan!
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                    </div>
-                    <?php
-                }
+            <div class="data-card-header">
+                <div>
+                    <h5 class="data-card-title">Daftar Pengguna</h5>
+                    <p>Jumlah seluruh pengguna: <?= $total_pengguna; ?> akun</p>
+                </div>
 
-                if ($_GET['pesan'] == 'ubah') {
-                    ?>
-                    <div class="alert alert-warning alert-dismissible fade show" role="alert">
-                        Data pengguna berhasil diubah!
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                    </div>
-                    <?php
-                }
+                <a href="tambah.php" class="btn-data-tambah">
+                    <i class="bi bi-plus-lg"></i>
+                    Tambah Pengguna
+                </a>
+            </div>
 
-                if ($_GET['pesan'] == 'hapus') {
-                    ?>
-                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                        Data pengguna berhasil dihapus!
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                    </div>
-                    <?php
-                }
-            }
-            ?>
-
-            <a href="tambah.php" class="btn btn-tambah mb-3">
-                + Tambah Pengguna
-            </a>
-
-            <div class="table-responsive">
-
-                <table class="table table-bordered table-hover align-middle">
-
+            <div class="data-table-wrapper">
+                <table class="data-master-table">
                     <thead>
                         <tr>
-                            <th width="70">No</th>
+                            <th>No</th>
                             <th>ID Pengguna</th>
                             <th>Nama</th>
                             <th>Username</th>
-                            <th>Password</th>
                             <th>Role</th>
-                            <th width="220">Aksi</th>
+                            <th>Aksi</th>
                         </tr>
                     </thead>
 
                     <tbody>
+                        <?php if ($total_pengguna > 0) { ?>
+                            <?php
+                            $no = 1;
 
-                    <?php
-                    $no = 1;
+                            while ($data = mysqli_fetch_assoc($query)) {
+                                $id = (int) $data['id_pengguna'];
+                            ?>
+                                <tr>
+                                    <td>
+                                        <span class="data-number">
+                                            <?= $no++; ?>
+                                        </span>
+                                    </td>
 
-                    while ($data = mysqli_fetch_assoc($query)) {
-                    ?>
+                                    <td>
+                                        <span class="data-id">
+                                            <?= $id; ?>
+                                        </span>
+                                    </td>
 
-                        <tr>
+                                    <td>
+                                        <span class="data-name">
+                                            <?= htmlspecialchars(
+                                                $data['nama'],
+                                                ENT_QUOTES,
+                                                'UTF-8'
+                                            ); ?>
+                                        </span>
+                                    </td>
 
-                            <td><?= $no++; ?></td>
+                                    <td>
+                                        <?= htmlspecialchars(
+                                            $data['username'],
+                                            ENT_QUOTES,
+                                            'UTF-8'
+                                        ); ?>
+                                    </td>
 
-                            <td><?= $data['id_pengguna']; ?></td>
+                                    <td>
+                                        <span class="data-id">
+                                            <?= htmlspecialchars(
+                                                $data['role'],
+                                                ENT_QUOTES,
+                                                'UTF-8'
+                                            ); ?>
+                                        </span>
+                                    </td>
 
-                            <td>
-                                <?= htmlspecialchars($data['nama']); ?>
-                            </td>
+                                    <td>
+                                        <div class="data-action">
+                                            <a
+                                                href="detail.php?id=<?= $id; ?>"
+                                                class="data-detail"
+                                            >
+                                                <i class="bi bi-eye"></i>
+                                                Detail
+                                            </a>
 
-                            <td>
-                                <?= htmlspecialchars($data['username']); ?>
-                            </td>
+                                            <a
+                                                href="edit.php?id=<?= $id; ?>"
+                                                class="data-edit"
+                                            >
+                                                <i class="bi bi-pencil-square"></i>
+                                                Edit
+                                            </a>
 
-                            <td>
-                                <span class="text-muted">
-                                    ••••••••
-                                </span>
-                            </td>
+                                            <a
+                                                href="hapus.php?id=<?= $id; ?>"
+                                                class="data-delete"
+                                                onclick="return confirm('Yakin ingin menghapus pengguna ini?')"
+                                            >
+                                                <i class="bi bi-trash"></i>
+                                                Hapus
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            <?php } ?>
 
-                            <td>
-                                <span class="badge"
-                                      style="background-color: #A888B5;">
-                                    <?= htmlspecialchars($data['role']); ?>
-                                </span>
-                            </td>
-
-                            <td>
-
-                                <a href="detail.php?id=<?= $data['id_user']; ?>"
-                                   class="btn btn-info btn-sm text-white">
-                                    Detail
-                                </a>
-
-                                <a href="edit.php?id=<?= $data['id_user']; ?>"
-                                   class="btn btn-warning btn-sm">
-                                    Edit
-                                </a>
-
-                                <a href="hapus.php?id=<?= $data['id_user']; ?>"
-                                   class="btn btn-danger btn-sm"
-                                   onclick="return confirm('Yakin ingin menghapus pengguna ini?')">
-                                    Hapus
-                                </a>
-
-                            </td>
-
-                        </tr>
-
-                    <?php
-                    }
-                    ?>
-
+                        <?php } else { ?>
+                            <tr>
+                                <td colspan="6" class="data-empty">
+                                    <i class="bi bi-people"></i>
+                                    <p>Belum ada data pengguna.</p>
+                                </td>
+                            </tr>
+                        <?php } ?>
                     </tbody>
-
                 </table>
+            </div>
 
+            <div class="data-table-footer">
+                Menampilkan <?= $total_pengguna; ?> pengguna
             </div>
 
         </div>
     </div>
 </div>
-</div>
 
-
-<?php include "../layout/footer.php"?>
+<?php include "../layout/footer.php"; ?>

@@ -90,7 +90,7 @@ $data = $kamera[$id] ?? $kamera[1];
     <link rel="stylesheet"
           href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css">
 
-    <link rel="stylesheet" href="assets/css/style.css?v=99">
+    <link rel="stylesheet" href="assets/css/style.css?v=100">
 </head>
 
 <body>

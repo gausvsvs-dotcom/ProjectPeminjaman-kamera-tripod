@@ -7,7 +7,7 @@
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="assets/css/style.css?v=99">
+    <link rel="stylesheet" href="assets/css/style.css?v=100">
 </head>
 <body>
     <?php include 'includes/navbar.php'; ?>
@@ -602,6 +602,82 @@
         });
 
     });
+
+    
+/* =========================================
+   ANIMASI BERULANG SAAT SCROLL KE BAWAH
+========================================= */
+
+if (
+    'IntersectionObserver' in window &&
+    !window.matchMedia('(prefers-reduced-motion: reduce)').matches
+) {
+    let posisiScroll = window.scrollY;
+
+    // Catat arah scroll
+    window.addEventListener('scroll', function () {
+        posisiScroll = window.scrollY;
+    }, { passive: true });
+
+    // Animasi judul dan deskripsi
+    const teksBagianProduk = document.querySelectorAll(
+        '.produk-section .container > .mb-4 .section-title, ' +
+        '.produk-section .container > .mb-4 .section-text'
+    );
+
+    teksBagianProduk.forEach(function (teks) {
+        teks.classList.add('scroll-hidden');
+        teks.classList.remove('show-text');
+    });
+
+    const pengamatTeks = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+            if (entry.isIntersecting) {
+                entry.target.classList.remove('scroll-hidden');
+                entry.target.classList.add('show-text');
+            } else if (entry.boundingClientRect.top > 0) {
+                // Siapkan animasi lagi ketika elemen berada
+                // di bawah layar dan akan dimasuki saat scroll turun
+                entry.target.classList.add('scroll-hidden');
+                entry.target.classList.remove('show-text');
+            }
+        });
+    }, {
+        threshold: 0.1
+    });
+
+    teksBagianProduk.forEach(function (teks) {
+        pengamatTeks.observe(teks);
+    });
+
+    // Animasi kartu kamera dan tripod
+    const kartuProduk = document.querySelectorAll('.produk-item');
+
+    kartuProduk.forEach(function (kartu, index) {
+        kartu.classList.add('reveal-card');
+        kartu.classList.remove('show-card');
+        kartu.style.transitionDelay = (index % 4) * 100 + 'ms';
+    });
+
+    const pengamatKartu = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('show-card');
+            } else if (entry.boundingClientRect.top > 0) {
+                // Siapkan animasi kembali saat kartu masih
+                // berada di bawah layar
+                entry.target.classList.remove('show-card');
+            }
+        });
+    }, {
+        threshold: 0.1
+    });
+
+    kartuProduk.forEach(function (kartu) {
+        pengamatKartu.observe(kartu);
+    });
+}
+
     </script>
 </body>
 </html>

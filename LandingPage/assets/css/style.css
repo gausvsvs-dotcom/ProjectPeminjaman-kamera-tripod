@@ -623,6 +623,122 @@ SEARCH KAMERA & TRIPOD
     margin-bottom: 10px;
 }
 
+
+
+/* =========================================
+   ANIMASI HALAMAN TENTANG
+========================================= */
+
+/* Judul utama turun dari atas saat halaman dibuka */
+.tentang-title {
+    animation: tentangJudulMasuk 0.8s ease-out both;
+}
+
+/* Subtitle jatuh dan memantul setelah judul */
+.tentang-subtitle {
+    animation: deskripsiTentangLompat 0.9s ease-out 0.3s both;
+}
+
+/* Animasi judul utama */
+@keyframes tentangJudulMasuk {
+    from {
+        opacity: 0;
+        transform: translateY(-35px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Animasi subtitle memantul */
+@keyframes deskripsiTentangLompat {
+    0% {
+        opacity: 0;
+        transform: translateY(-40px);
+    }
+
+    65% {
+        opacity: 1;
+        transform: translateY(5px);
+    }
+
+    85% {
+        transform: translateY(-3px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Kondisi awal elemen yang dianimasikan saat scroll */
+.tentang-scroll-item {
+    opacity: 0;
+    filter: blur(6px);
+    transition:
+        opacity 0.7s ease,
+        filter 0.7s ease,
+        transform 0.7s ease;
+}
+
+/* Foto bergerak masuk dari kanan */
+.tentang-image.tentang-scroll-item {
+    transform: translateX(60px);
+}
+
+/* Semua teks bergerak masuk dari kiri */
+.tentang-heading.tentang-scroll-item,
+.tentang-text.tentang-scroll-item,
+.tentang-list.tentang-scroll-item {
+    transform: translateX(-60px);
+}
+
+/* Kondisi setelah animasi */
+.tentang-scroll-item.tentang-terlihat {
+    opacity: 1;
+    filter: blur(0);
+    transform: translateX(0);
+}
+
+/* Saat scroll ke atas, tampilkan elemen tanpa animasi */
+body.tentang-scroll-up .tentang-scroll-item {
+    transition: none !important;
+}
+
+/* Efek hover foto tetap dipertahankan */
+.tentang-image img {
+    transition: transform 0.45s ease;
+}
+
+.tentang-image:hover img {
+    transform: scale(1.04);
+}
+
+/* Aksesibilitas */
+@media (prefers-reduced-motion: reduce) {
+    .tentang-title,
+    .tentang-subtitle {
+        animation: none !important;
+        opacity: 1;
+        transform: none;
+    }
+
+    .tentang-scroll-item {
+        transition: none !important;
+        opacity: 1;
+        filter: none;
+        transform: none;
+    }
+
+    .tentang-image img {
+        transition: none;
+    }
+}
+
+
 /* ==================================================
    HALAMAN KONTAK
 ================================================== */
@@ -697,6 +813,261 @@ SEARCH KAMERA & TRIPOD
     border-color: #2E236C;
     box-shadow: 0 0 0 3px rgba(46, 35, 108, 0.12);
 }
+
+
+/* =========================================
+   ANIMASI HALAMAN KONTAK
+========================================= */
+
+/* 1. Judul Kontak Kami muncul dari atas */
+.kontak-title {
+    animation: kontakJudulMasuk 0.8s ease-out both;
+}
+
+@keyframes kontakJudulMasuk {
+    from {
+        opacity: 0;
+        transform: translateY(-35px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* 2. Subtitle muncul setelah judul */
+.kontak-subtitle {
+    opacity: 0;
+    animation: kontakSubtitleMasuk 0.8s ease-out 0.2s both;
+}
+
+@keyframes kontakSubtitleMasuk {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* 3. Bagian Informasi Kontak masuk dari kiri */
+.kontak-section .col-lg-5 {
+    animation: kontakMasukKiri 0.9s ease-out 0.15s both;
+}
+
+@keyframes kontakMasukKiri {
+    from {
+        opacity: 0;
+        transform: translateX(-45px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* 4. Form Hubungi Kami masuk dari kanan */
+.kontak-form {
+    animation: kontakMasukKanan 0.9s ease-out 0.25s both;
+}
+
+@keyframes kontakMasukKanan {
+    from {
+        opacity: 0;
+        transform: translateX(45px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* 5. Judul bagian informasi dan form */
+.kontak-heading {
+    animation: kontakHeadingMasuk 0.7s ease-out both;
+}
+
+@keyframes kontakHeadingMasuk {
+    from {
+        opacity: 0;
+        transform: translateY(15px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* 6. Informasi alamat, WhatsApp, email, Instagram */
+.kontak-info {
+    animation: kontakInfoMasuk 0.6s ease-out both;
+}
+
+.kontak-info:nth-of-type(1) {
+    animation-delay: 0.2s;
+}
+
+.kontak-info:nth-of-type(2) {
+    animation-delay: 0.3s;
+}
+
+.kontak-info:nth-of-type(3) {
+    animation-delay: 0.4s;
+}
+
+.kontak-info:nth-of-type(4) {
+    animation-delay: 0.5s;
+}
+
+@keyframes kontakInfoMasuk {
+    from {
+        opacity: 0;
+        transform: translateY(18px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* 7. Kolom formulir muncul satu per satu */
+.kontak-form form > .mb-3 {
+    animation: kontakInputMasuk 0.6s ease-out both;
+}
+
+.kontak-form form > .mb-3:nth-child(1) {
+    animation-delay: 0.35s;
+}
+
+.kontak-form form > .mb-3:nth-child(2) {
+    animation-delay: 0.5s;
+}
+
+.kontak-form form > .mb-3:nth-child(3) {
+    animation-delay: 0.65s;
+}
+
+@keyframes kontakInputMasuk {
+    from {
+        opacity: 0;
+        transform: translateY(18px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* 8. Efek fokus pada kolom input */
+.kontak-form .form-control {
+    transition:
+        border-color 0.3s ease,
+        box-shadow 0.3s ease,
+        transform 0.3s ease;
+}
+
+.kontak-form .form-control:focus {
+    transform: translateY(-2px);
+}
+
+/* 9. Animasi tombol Kirim Pesan */
+.kontak-form form button[type="submit"] {
+    transition:
+        transform 0.3s ease,
+        box-shadow 0.3s ease,
+        background-color 0.3s ease;
+    animation: kontakTombolMasuk 0.6s ease-out 0.8s both;
+}
+
+@keyframes kontakTombolMasuk {
+    from {
+        opacity: 0;
+        transform: translateY(15px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.kontak-form form button[type="submit"]:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 7px 16px rgba(46, 35, 108, 0.2);
+}
+
+/* 10. Notifikasi pesan berhasil dikirim */
+.notifikasi-sukses {
+    animation: kontakNotifikasiMasuk 0.5s ease-out both;
+}
+
+@keyframes kontakNotifikasiMasuk {
+    from {
+        opacity: 0;
+        transform: translateY(-12px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* 11. Efek hover pada informasi kontak */
+.kontak-info h5 i {
+    transition:
+        transform 0.3s ease,
+        color 0.3s ease;
+}
+
+.kontak-info:hover h5 i {
+    transform: scale(1.15);
+}
+
+/* 12. Tampilan HP: gerakan lebih ringan */
+@media (max-width: 767.98px) {
+    .kontak-section .col-lg-5,
+    .kontak-form {
+        animation-duration: 0.7s;
+    }
+
+    .kontak-form {
+        padding: 24px 20px;
+    }
+}
+
+/* 13. Aksesibilitas: kurangi animasi jika diperlukan */
+@media (prefers-reduced-motion: reduce) {
+    .kontak-title,
+    .kontak-subtitle,
+    .kontak-section .col-lg-5,
+    .kontak-form,
+    .kontak-heading,
+    .kontak-info,
+    .kontak-form form > .mb-3,
+    .kontak-form form button[type="submit"],
+    .notifikasi-sukses {
+        animation: none !important;
+        opacity: 1 !important;
+        transform: none !important;
+    }
+
+    .kontak-form .form-control,
+    .kontak-info h5 i,
+    .kontak-form form button[type="submit"] {
+        transition: none !important;
+    }
+}
+
 
 /* ==================================================
 HALAMAN LOGIN
@@ -775,6 +1146,201 @@ HALAMAN LOGIN
 .login-button:hover {
     background-color: #433B71;
     color: #FFFFFF;
+}
+
+/* =========================================
+   ANIMASI HALAMAN LOGIN
+========================================= */
+
+/* 1. Kartu login muncul dari bawah */
+.login-card {
+    animation: loginKartuMasuk 0.8s ease-out both;
+    transform-origin: center;
+}
+
+@keyframes loginKartuMasuk {
+    from {
+        opacity: 0;
+        transform: translateY(35px) scale(0.97);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* 2. Logo muncul dengan efek membesar */
+.login-logo {
+    animation: loginLogoMasuk 0.8s ease-out 0.2s both;
+}
+
+@keyframes loginLogoMasuk {
+    from {
+        opacity: 0;
+        transform: scale(0.7);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* 3. Judul Login muncul dari atas */
+.login-title {
+    animation: loginJudulMasuk 0.7s ease-out 0.3s both;
+}
+
+@keyframes loginJudulMasuk {
+    from {
+        opacity: 0;
+        transform: translateY(-15px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* 4. Deskripsi muncul setelah judul */
+.login-subtitle {
+    animation: loginDeskripsiMasuk 0.7s ease-out 0.4s both;
+}
+
+@keyframes loginDeskripsiMasuk {
+    from {
+        opacity: 0;
+        transform: translateY(15px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* 5. Kolom username dan password muncul bertahap */
+.login-card form > .mb-3 {
+    animation: loginInputMasuk 0.6s ease-out both;
+}
+
+.login-card form > .mb-3:nth-child(1) {
+    animation-delay: 0.45s;
+}
+
+.login-card form > .mb-3:nth-child(2) {
+    animation-delay: 0.6s;
+}
+
+@keyframes loginInputMasuk {
+    from {
+        opacity: 0;
+        transform: translateY(18px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* 6. Efek halus pada input */
+.login-input {
+    transition:
+        border-color 0.3s ease,
+        box-shadow 0.3s ease,
+        transform 0.3s ease;
+}
+
+.login-input:focus {
+    transform: translateY(-2px);
+    border-color: #2E236C;
+    box-shadow: 0 0 0 3px rgba(46, 35, 108, 0.12);
+}
+
+/* 7. Tombol Login muncul setelah kolom input */
+.login-button {
+    animation: loginTombolMasuk 0.6s ease-out 0.75s both;
+    transition:
+        background-color 0.3s ease,
+        transform 0.3s ease,
+        box-shadow 0.3s ease;
+}
+
+@keyframes loginTombolMasuk {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Efek hover tombol Login */
+.login-button:hover {
+    background-color: #433B71;
+    color: #FFFFFF;
+    transform: translateY(-3px);
+    box-shadow: 0 7px 16px rgba(46, 35, 108, 0.2);
+}
+
+/* 8. Pesan error muncul dengan efek lembut */
+.login-card .alert-danger {
+    animation: loginErrorMasuk 0.5s ease-out both;
+    border-radius: 10px;
+}
+
+@keyframes loginErrorMasuk {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* 9. Tampilan perangkat kecil */
+@media (max-width: 576px) {
+    .login-section {
+        padding: 45px 15px;
+    }
+
+    .login-card {
+        padding: 30px 24px;
+    }
+
+    .login-logo {
+        width: 110px !important;
+        height: 110px !important;
+    }
+}
+
+/* 10. Aksesibilitas: hormati pengaturan minim animasi */
+@media (prefers-reduced-motion: reduce) {
+    .login-card,
+    .login-logo,
+    .login-title,
+    .login-subtitle,
+    .login-card form > .mb-3,
+    .login-button,
+    .login-card .alert-danger {
+        animation: none !important;
+        opacity: 1 !important;
+        transform: none !important;
+    }
+
+    .login-input,
+    .login-button {
+        transition: none !important;
+    }
 }
 
 /* ==================================================
@@ -1349,6 +1915,504 @@ HALAMAN LOGIN
     }
 }
 
+
+/* =====================================================
+   NAVBAR MODERN
+   Khusus untuk includes/navbar.php
+===================================================== */
+
+/* Dasar navbar */
+.navbar.navbar-modern {
+    width: 100%;
+    min-height: 82px;
+    padding: 10px 0 !important;
+    background-color: #FFFFFF !important;
+    border-bottom: 1px solid rgba(200, 172, 214, 0.25);
+    box-shadow: 0 4px 20px rgba(23, 21, 59, 0.06);
+    position: sticky;
+    top: 0;
+    z-index: 1030;
+}
+
+/* Lebar area navbar */
+.navbar-modern > .container {
+    max-width: 1200px;
+}
+
+/* Logo dan nama website */
+.navbar-modern .brand-modern {
+    display: inline-flex !important;
+    align-items: center;
+    gap: 12px;
+    margin: 0;
+    padding: 0;
+    text-decoration: none;
+    flex-shrink: 0;
+}
+
+/* Ukuran logo */
+.navbar-modern .logo-navbar {
+    width: 58px;
+    height: 58px;
+    object-fit: contain;
+    flex-shrink: 0;
+    transition: transform 0.3s ease;
+}
+
+/* Efek logo */
+.navbar-modern .brand-modern:hover .logo-navbar {
+    transform: scale(1.05);
+}
+
+/* Identitas website */
+.navbar-modern .brand-text {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 4px;
+    line-height: 1.2;
+}
+
+/* Nama utama */
+.navbar-modern .brand-text strong {
+    color: #2E236C;
+    font-size: 17px;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+/* Keterangan kecil */
+.navbar-modern .brand-text small {
+    color: #81689D;
+    font-size: 9px;
+    font-weight: 500;
+    letter-spacing: 1.1px;
+}
+
+/* Area menu */
+.navbar-modern .navbar-collapse {
+    align-items: center;
+}
+
+/* Daftar menu */
+.navbar-modern .navbar-menu-modern {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin: 0 auto !important;
+    padding: 0;
+}
+
+/* Link menu */
+.navbar-modern .navbar-menu-modern .nav-link {
+    position: relative;
+    display: inline-block;
+    padding: 12px 13px !important;
+    border-radius: 8px;
+    background-color: transparent;
+    color: #2E236C !important;
+    font-size: 14px;
+    font-weight: 500;
+    white-space: nowrap;
+    transition:
+        color 0.3s ease,
+        background-color 0.3s ease;
+}
+
+/* Garis animasi di bawah menu */
+.navbar-modern .navbar-menu-modern .nav-link::after {
+    content: "";
+    position: absolute;
+    left: 13px;
+    right: 13px;
+    bottom: 5px;
+    height: 2px;
+    background-color: #81689D;
+    border-radius: 10px;
+    transform: scaleX(0);
+    transform-origin: center;
+    transition: transform 0.3s ease;
+}
+
+/* Hover menu */
+.navbar-modern .navbar-menu-modern .nav-link:hover {
+    color: #433B71 !important;
+    background-color: #F8F6FC;
+}
+
+.navbar-modern .navbar-menu-modern .nav-link:hover::after {
+    transform: scaleX(1);
+}
+
+/* Menu halaman aktif */
+.navbar-modern .navbar-menu-modern .nav-link.active {
+    color: #433B71 !important;
+    background-color: #F1ECF7 !important;
+    font-weight: 600;
+}
+
+.navbar-modern .navbar-menu-modern .nav-link.active::after {
+    transform: scaleX(1);
+}
+
+/* Area tombol di sebelah kanan */
+.navbar-modern .navbar-action {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+    flex-shrink: 0;
+}
+
+/* Tombol Login dan Dashboard Admin */
+.navbar-modern .btn-login-modern {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    min-height: 43px;
+    padding: 11px 19px;
+    border: 1px solid #2E236C;
+    border-radius: 9px;
+    background-color: #2E236C;
+    color: #FFFFFF;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+    box-shadow: 0 4px 12px rgba(46, 35, 108, 0.12);
+    transition:
+        background-color 0.3s ease,
+        border-color 0.3s ease,
+        transform 0.3s ease,
+        box-shadow 0.3s ease;
+}
+
+/* Hover tombol Login */
+.navbar-modern .btn-login-modern:hover {
+    background-color: #433B71;
+    border-color: #433B71;
+    color: #FFFFFF;
+    transform: translateY(-2px);
+    box-shadow: 0 7px 16px rgba(46, 35, 108, 0.18);
+}
+
+/* Animasi ikon panah */
+.navbar-modern .btn-login-modern i {
+    transition: transform 0.3s ease;
+}
+
+.navbar-modern .btn-login-modern:hover i {
+    transform: translateX(3px);
+}
+
+/* Tombol Logout */
+.navbar-modern .btn-logout-modern {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 43px;
+    padding: 10px 14px;
+    border: 1px solid #F0B9C8;
+    border-radius: 9px;
+    background-color: #FFFFFF;
+    color: #B4233A;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+    transition:
+        background-color 0.3s ease,
+        color 0.3s ease;
+}
+
+.navbar-modern .btn-logout-modern:hover {
+    background-color: #FFF0F2;
+    color: #9F1239;
+}
+
+/* Tombol menu di perangkat kecil */
+.navbar-modern .navbar-toggler {
+    border: 1px solid #D9CDE7;
+    border-radius: 9px;
+    padding: 8px 10px;
+    box-shadow: none;
+}
+
+.navbar-modern .navbar-toggler:focus {
+    box-shadow: 0 0 0 3px rgba(129, 104, 157, 0.15);
+}
+
+/* =====================================================
+   RESPONSIVE TABLET
+===================================================== */
+
+@media (max-width: 1199.98px) {
+    .navbar-modern > .container {
+        padding-left: 22px;
+        padding-right: 22px;
+    }
+
+    .navbar-modern .brand-modern {
+        gap: 9px;
+    }
+
+    .navbar-modern .logo-navbar {
+        width: 52px;
+        height: 52px;
+    }
+
+    .navbar-modern .brand-text strong {
+        font-size: 15px;
+    }
+
+    .navbar-modern .brand-text small {
+        font-size: 8px;
+        letter-spacing: 0.8px;
+    }
+
+    .navbar-modern .navbar-menu-modern {
+        gap: 1px;
+    }
+
+    .navbar-modern .navbar-menu-modern .nav-link {
+        padding-left: 9px !important;
+        padding-right: 9px !important;
+        font-size: 13px;
+    }
+
+    .navbar-modern .btn-login-modern {
+        padding-left: 14px;
+        padding-right: 14px;
+    }
+}
+
+/* =====================================================
+   RESPONSIVE TABLET KECIL DAN HP
+===================================================== */
+
+@media (max-width: 991.98px) {
+    .navbar.navbar-modern {
+        min-height: 72px;
+        padding: 9px 0 !important;
+    }
+
+    .navbar-modern .navbar-collapse {
+        padding-top: 16px;
+        padding-bottom: 8px;
+    }
+
+    .navbar-modern .navbar-menu-modern {
+        align-items: stretch;
+        gap: 4px;
+        width: 100%;
+        margin: 0 0 14px 0 !important;
+    }
+
+    .navbar-modern .navbar-menu-modern .nav-link {
+        display: block;
+        width: 100%;
+        padding: 12px 14px !important;
+        border-radius: 8px;
+        font-size: 14px;
+    }
+
+    .navbar-modern .navbar-menu-modern .nav-link::after {
+        display: none;
+    }
+
+    .navbar-modern .navbar-action {
+        justify-content: flex-start;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+}
+
+/* =====================================================
+   RESPONSIVE HP
+===================================================== */
+
+@media (max-width: 576px) {
+    .navbar-modern > .container {
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+
+    .navbar-modern .logo-navbar {
+        width: 45px;
+        height: 45px;
+    }
+
+    .navbar-modern .brand-modern {
+        gap: 8px;
+        max-width: calc(100% - 60px);
+    }
+
+    .navbar-modern .brand-text {
+        min-width: 0;
+    }
+
+    .navbar-modern .brand-text strong {
+        font-size: 14px;
+    }
+
+    .navbar-modern .brand-text small {
+        font-size: 7px;
+        letter-spacing: 0.6px;
+    }
+
+    .navbar-modern .navbar-toggler {
+        padding: 6px 8px;
+    }
+
+    .navbar-modern .btn-login-modern,
+    .navbar-modern .btn-logout-modern {
+        min-height: 40px;
+        padding: 9px 13px;
+        font-size: 12px;
+    }
+}
+
+/* =====================================================
+   AKSESIBILITAS ANIMASI
+===================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+    .navbar-modern *,
+    .navbar-modern *::before,
+    .navbar-modern *::after {
+        transition: none !important;
+        animation: none !important;
+    }
+}
+
+
+/* =========================================
+   ANIMASI FOOTER
+========================================= */
+
+/* Footer muncul perlahan dari bawah */
+.footer-section {
+    animation: footerFadeUp 0.9s ease-out both;
+}
+
+/* Animasi judul dan isi footer */
+.footer-section .footer-title,
+.footer-section .footer-text,
+.footer-section .footer-menu li,
+.footer-section .footer-sosmed li {
+    animation: footerContentFade 0.8s ease-out both;
+}
+
+/* Jeda animasi agar muncul secara berurutan */
+.footer-section .footer-title {
+    animation-delay: 0.1s;
+}
+
+.footer-section .footer-text {
+    animation-delay: 0.2s;
+}
+
+.footer-section .footer-menu li:nth-child(1),
+.footer-section .footer-sosmed li:nth-child(1) {
+    animation-delay: 0.15s;
+}
+
+.footer-section .footer-menu li:nth-child(2),
+.footer-section .footer-sosmed li:nth-child(2) {
+    animation-delay: 0.25s;
+}
+
+.footer-section .footer-menu li:nth-child(3),
+.footer-section .footer-sosmed li:nth-child(3) {
+    animation-delay: 0.35s;
+}
+
+.footer-section .footer-menu li:nth-child(4),
+.footer-section .footer-sosmed li:nth-child(4) {
+    animation-delay: 0.45s;
+}
+
+.footer-section .footer-sosmed li:nth-child(5) {
+    animation-delay: 0.55s;
+}
+
+/* Efek hover pada tautan footer */
+.footer-section .footer-menu .nav-link,
+.footer-section .footer-sosmed a {
+    transition:
+        color 0.3s ease,
+        transform 0.3s ease;
+}
+
+.footer-section .footer-menu .nav-link:hover {
+    color: #FFFFFF !important;
+    transform: translateX(6px);
+}
+
+.footer-section .footer-sosmed a:hover {
+    color: #FFFFFF !important;
+    transform: translateX(5px);
+}
+
+/* Ikon media sosial bergerak sedikit saat diarahkan */
+.footer-section .footer-sosmed i {
+    transition: transform 0.3s ease;
+}
+
+.footer-section .footer-sosmed a:hover i {
+    transform: scale(1.2) rotate(-5deg);
+}
+
+/* Animasi bagian bawah footer */
+.footer-section .footer-bottom {
+    transition: background-color 0.3s ease;
+}
+
+/* Keyframes animasi */
+@keyframes footerFadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(25px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes footerContentFade {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Menghormati pengaturan pengurangan animasi */
+@media (prefers-reduced-motion: reduce) {
+    .footer-section,
+    .footer-section .footer-title,
+    .footer-section .footer-text,
+    .footer-section .footer-menu li,
+    .footer-section .footer-sosmed li {
+        animation: none !important;
+    }
+
+    .footer-section .footer-menu .nav-link,
+    .footer-section .footer-sosmed a,
+    .footer-section .footer-sosmed i {
+        transition: none !important;
+    }
+}
+
+
+
 /* ==================================================
    ANIMASI HOME
 ================================================== */
@@ -1384,4 +2448,426 @@ HALAMAN LOGIN
     opacity: 0; /* Mulai dengan tidak terlihat */
     animation: imageFadeZoom 1.2s ease-out 0.3s forwards; /* Durasi 1.2s, delay 0.3s */
     transition: transform 0.3s ease-out; /* Untuk transisi halus */
+}
+
+
+/* Logo Home: animasi floating 3D */
+.home-logo {
+    animation: logoFloating3D 3.5s ease-in-out infinite;
+    transform-origin: center;
+    will-change: transform;
+}
+
+@keyframes logoFloating3D {
+    0% {transform: translate(0, 0) rotate(0deg) scale(1);}
+
+    20% {transform: translate(12px, -15px) rotate(8deg) scale(1.06);}
+
+    40% {transform: translate(0, -25px) rotate(0deg) scale(1.1);}
+
+    60% {transform: translate(-12px, -12px) rotate(-8deg) scale(1.06);}
+
+    80% {transform: translate(-5px, 5px) rotate(-3deg) scale(0.98);}
+
+    100% {transform: translate(0, 0) rotate(0deg) scale(1);}
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .home-logo {
+        animation: none;
+        will-change: auto;
+    }
+}
+
+
+/* Logo bisa berhenti dan bergerak kembali */
+.home-logo {
+    cursor: pointer;
+}
+
+.home-logo.logo-pause {
+    animation-play-state: paused;
+}
+
+
+/* =========================================
+
+   ANIMASI KAMERA DAN TRIPOD
+
+========================================= */
+
+
+/* Animasi judul halaman Kamera & Tripod */
+.hero-section .hero-title {
+    animation: judulMunculDariAtas 0.8s ease-out both;
+}
+
+@keyframes judulMunculDariAtas {
+    from {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .hero-section .hero-title {
+        animation: none;
+    }
+}
+
+
+/* Judul muncul terlebih dahulu */
+.hero-section .hero-title {
+    animation: judulMunculDariAtas 0.8s ease-out both;
+}
+
+
+/* Teks deskripsi jatuh dari atas */
+.hero-section .hero-text {
+    opacity: 0;
+    animation: deskripsiJatuh 0.8s ease-in 0.4s both;
+}
+
+@keyframes deskripsiJatuh {
+    0% {
+        opacity: 0;
+        transform: translateY(-40px);
+    }
+
+    65% {
+        opacity: 1;
+        transform: translateY(5px);
+    }
+
+    85% {
+        transform: translateY(-2px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+
+/* Animasi kolom pencarian dan filter status */
+.hero-section #searchProduk,
+.hero-section #filterStatus {
+    animation: kolomMeluncur 0.8s ease-out 0.25s both;
+}
+
+@keyframes kolomMeluncur {
+    from {
+        opacity: 0;
+        transform: translateY(25px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .hero-section #searchProduk,
+    .hero-section #filterStatus {
+        animation: none;
+    }
+}
+
+
+@keyframes kolomMeluncur {
+    from {
+        opacity: 0;
+        transform: translateX(50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+
+/* Animasi tombol kategori dari kiri */
+.kategori-section .kategori-btn {
+    opacity: 0;
+    animation: kategoriMasukKiri 0.7s ease-out forwards;
+}
+
+.kategori-section .kategori-btn:nth-child(1) {
+    animation-delay: 0.1s;
+}
+
+.kategori-section .kategori-btn:nth-child(2) {
+    animation-delay: 0.25s;
+}
+
+.kategori-section .kategori-btn:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+@keyframes kategoriMasukKiri {
+    from {
+        opacity: 0;
+        transform: translateX(-40px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .kategori-section .kategori-btn {
+        animation: none;
+        opacity: 1;
+    }
+}
+
+
+/* =========================================
+   ANIMASI KARTU PRODUK SAAT DI-SCROLL
+========================================= */
+
+/* Kondisi awal kartu */
+.produk-item.reveal-card {
+    opacity: 0;
+    filter: blur(5px);
+    transform: translateY(45px) scale(0.96);
+    transition:
+        opacity 0.7s ease,
+        filter 0.7s ease,
+        transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Kartu dan gambar terlihat setelah animasi */
+.produk-item.reveal-card.show-card {
+    opacity: 1;
+    filter: blur(0);
+    transform: translateY(0) scale(1);
+}
+
+/* Pengaman: tampilkan kartu jika animasi tidak aktif */
+.produk-item:not(.reveal-card) {
+    opacity: 1;
+    filter: none;
+    transform: none;
+}
+
+/* Efek hover kartu */
+.produk-card {
+    transition:
+        transform 0.35s ease,
+        box-shadow 0.35s ease;
+}
+
+.produk-item.show-card .produk-card:hover {
+    transform: translateY(-7px);
+    box-shadow: 0 12px 28px rgba(46, 35, 108, 0.15);
+}
+
+/* Efek hover gambar */
+.produk-img {
+    transition: transform 0.45s ease;
+}
+
+.produk-card:hover .produk-img {
+    transform: scale(1.05);
+}
+
+
+/* =========================================
+   ANIMASI JUDUL DAN DESKRIPSI
+========================================= */
+
+.produk-section .container > .mb-4 .section-title,
+.produk-section .container > .mb-4 .section-text {
+    opacity: 1;
+    filter: none;
+    transform: none;
+    transition:
+        opacity 0.8s ease,
+        filter 0.8s ease,
+        transform 0.8s ease;
+}
+
+/* Sembunyikan teks hanya setelah JavaScript
+   menyiapkan animasi */
+.produk-section .container > .mb-4 .section-title.scroll-hidden,
+.produk-section .container > .mb-4 .section-text.scroll-hidden {
+    opacity: 0;
+    filter: blur(6px);
+    transform: translateY(25px);
+}
+
+/* Teks setelah animasi */
+.produk-section .container > .mb-4 .section-title.show-text,
+.produk-section .container > .mb-4 .section-text.show-text {
+    opacity: 1;
+    filter: blur(0);
+    transform: translateY(0);
+}
+
+/* Deskripsi menyusul judul */
+.produk-section .container > .mb-4 .section-text {
+    transition-delay: 0.15s;
+}
+
+
+/* =========================================
+   AKSESIBILITAS
+========================================= */
+
+@media (prefers-reduced-motion: reduce) {
+    .produk-item.reveal-card,
+    .produk-card,
+    .produk-img,
+    .produk-section .container > .mb-4 .section-title,
+    .produk-section .container > .mb-4 .section-text {
+        transition: none !important;
+        filter: none !important;
+        transform: none !important;
+    }
+
+    .produk-item.reveal-card,
+    .produk-section .container > .mb-4 .section-title,
+    .produk-section .container > .mb-4 .section-text {
+        opacity: 1 !important;
+    }
+}
+
+
+
+/* =========================================
+   ANIMASI HALAMAN DETAIL KAMERA & TRIPOD
+========================================= */
+
+/* Gambar muncul dari kiri */
+.detail-produk-image {
+    animation: detailMasukKiri 0.9s ease-out both;
+}
+
+/* Gambar sedikit membesar saat diarahkan */
+.detail-produk-image img {
+    transition: transform 0.45s ease;
+}
+
+.detail-produk-image:hover img {
+    transform: scale(1.04);
+}
+
+/* Informasi produk muncul dari kanan */
+.detail-produk-section .col-lg-6:nth-child(2) {
+    animation: detailMasukKanan 0.9s ease-out 0.15s both;
+}
+
+/* Spesifikasi muncul secara bertahap */
+.detail-produk-spesifikasi span {
+    animation: detailFadeUp 0.6s ease-out both;
+}
+
+.detail-produk-spesifikasi span:nth-child(1) {
+    animation-delay: 0.3s;
+}
+
+.detail-produk-spesifikasi span:nth-child(2) {
+    animation-delay: 0.45s;
+}
+
+.detail-produk-spesifikasi span:nth-child(3) {
+    animation-delay: 0.6s;
+}
+
+/* Tombol bergerak saat diarahkan */
+.detail-produk-section .btn-detail,
+.detail-produk-section .btn-ajukan {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.detail-produk-section .btn-detail:hover,
+.detail-produk-section .btn-ajukan:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 7px 18px rgba(46, 35, 108, 0.18);
+}
+
+
+/* Animasi tombol Lihat Detail di halaman daftar produk */
+.produk-card .btn-detail {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.produk-card .btn-detail:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 7px 18px rgba(46, 35, 108, 0.18);
+}
+
+
+/* Efek hover tombol Lihat Detail */
+.produk-card .btn-detail {
+    display: inline-block;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.produk-card .btn-detail:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 7px 18px rgba(46, 35, 108, 0.18);
+}
+
+
+/* Keyframes */
+@keyframes detailMasukKiri {
+    from {
+        opacity: 0;
+        transform: translateX(-45px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes detailMasukKanan {
+    from {
+        opacity: 0;
+        transform: translateX(45px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes detailFadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Animasi lebih sederhana di perangkat yang meminta gerakan minimal */
+@media (prefers-reduced-motion: reduce) {
+    .detail-produk-image,
+    .detail-produk-section .col-lg-6:nth-child(2),
+    .detail-produk-spesifikasi span {
+        animation: none !important;
+        opacity: 1;
+        transform: none;
+    }
+
+    .detail-produk-image img,
+    .detail-produk-section .btn-detail,
+    .detail-produk-section .btn-ajukan {
+        transition: none !important;
+    }
 }

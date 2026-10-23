@@ -1,14 +1,11 @@
 <?php
-require_once 'koneksi.php';
+require_once('koneksi.php');
 
-$query = "SELECT p.*, u.nama_user, b.nama_barang 
-          FROM peminjaman p
-          JOIN users u ON p.id_user = u.id_user
-          JOIN barang b ON p.id_barang = b.id_barang
-          ORDER BY p.id_peminjaman DESC";
-$data = $pdo->query($query)->fetchAll();
+$query = mysqli_query($conn, "SELECT peminjaman.*, barang.nama_barang 
+                              FROM peminjaman 
+                              LEFT JOIN barang ON peminjaman.id_barang = barang.id_barang 
+                              ORDER BY peminjaman.id_peminjaman DESC");
 ?>
-
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -18,170 +15,129 @@ $data = $pdo->query($query)->fetchAll();
     <style>
         * {
             box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-        body { 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            background-color: #FFFBEB; 
-            margin: 0; 
-            padding: 40px 20px; 
-            color: #333333;
+        body {
+            background-color: #FFFBEB; /* Soft Cream */
+            padding: 40px 20px;
+            margin: 0;
+            display: flex;
+            justify-content: center;
         }
-        .container { 
-            max-width: 1000px; 
-            margin: 0 auto; 
-            background: #EFB6C8; 
-            padding: 0; 
-            border-radius: 16px; 
-            box-shadow: 0 4px 20px rgba(0,0,0,0.08); 
+        .card {
+            width: 100%;
+            max-width: 900px;
+            background-color: #EFB6C8; /* Soft Pink */
+            border-radius: 16px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
             overflow: hidden;
         }
-        .header-section {
-            background-color: #8174A0;
-            padding: 20px 25px;
+        .card-header {
+            background-color: #8174A0; /* Purplish Gray */
+            padding: 20px 24px;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
-        h2 { 
-            color: #ffffff; 
-            margin: 0; 
-            font-size: 1.4rem;
+        .card-header h2 {
+            color: #ffffff;
+            margin: 0;
+            font-size: 20px;
             font-weight: 600;
         }
-        .btn-tambah { 
-            background-color: #A888B5; 
-            color: #ffffff; 
-            text-decoration: none; 
-            padding: 10px 18px; 
-            border-radius: 10px; 
-            font-weight: 600; 
-            font-size: 0.95rem;
-            transition: background-color 0.2s ease;
-            display: inline-block;
+        .btn-tambah {
+            background-color: #A888B5; /* Muted Purple */
+            color: #ffffff;
+            padding: 10px 18px;
+            text-decoration: none;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 14px;
+            transition: background-color 0.2s;
         }
         .btn-tambah:hover {
             background-color: #6C5F8A;
         }
-        .table-container {
-            padding: 25px;
+        .card-body {
+            padding: 24px;
         }
-        table { 
-            width: 100%; 
-            border-collapse: separate; 
-            border-spacing: 0 10px;
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: #ffffff;
+            border-radius: 12px;
+            overflow: hidden;
         }
-        th { 
-            color: #2D2738; 
-            font-weight: 700;
-            padding: 12px 16px;
+        th, td {
+            padding: 14px 16px;
             text-align: left;
-            font-size: 0.95rem;
+            font-size: 14px;
         }
-        td { 
-            padding: 14px 16px; 
-            text-align: left; 
-            font-size: 0.95rem;
+        th {
+            background-color: #8174A0; /* Purplish Gray */
             color: #ffffff;
-            background-color: #A888B5;
+            font-weight: 600;
         }
-        td:first-child {
-            border-top-left-radius: 10px;
-            border-bottom-left-radius: 10px;
+        td {
+            border-bottom: 1px solid #f0e6ed;
+            color: #333333;
         }
-        td:last-child {
-            border-top-right-radius: 10px;
-            border-bottom-right-radius: 10px;
+        tr:last-child td {
+            border-bottom: none;
         }
-        tbody tr {
-            transition: transform 0.1s ease;
-        }
-        tbody tr:hover td { 
-            background-color: #9674A3; 
-        }
-        .badge { 
-            padding: 6px 14px; 
-            border-radius: 8px; 
-            font-size: 0.85rem; 
-            font-weight: 600; 
+        .badge {
             display: inline-block;
-            text-align: center;
-        }
-        .dipinjam { 
-            background-color: #8174A0; 
-            color: #ffffff; 
-        }
-        .dikembalikan { 
-            background-color: #FFFBEB; 
-            color: #512B3A; 
-        }
-        .btn-kembali { 
-            background-color: #8174A0; 
-            color: #ffffff; 
-            padding: 8px 16px; 
-            text-decoration: none; 
-            border-radius: 8px; 
-            font-size: 0.85rem; 
-            font-weight: 600; 
-            transition: background-color 0.2s ease;
-            display: inline-block;
-        }
-        .btn-kembali:hover { 
-            background-color: #6C5F8A; 
-        }
-        .text-center {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            background-color: #A888B5; /* Muted Purple */
+            color: #ffffff;
             text-align: center;
         }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <div class="header-section">
+<div class="card">
+    <div class="card-header">
         <h2>Riwayat Peminjaman Barang</h2>
-        <a href="peminjaman.php" class="btn-tambah">+ Tambah Peminjaman</a>
+        <a href="Peminjaman/peminjaman.php" class="btn-tambah">+ Tambah Peminjaman</a>
     </div>
-
-    <div class="table-container">
+    <div class="card-body">
         <table>
             <thead>
                 <tr>
                     <th>No</th>
-                    <th>Peminjam</th>
+                    <th>Nama Peminjam</th>
                     <th>Barang</th>
-                    <th class="text-center">Jumlah</th>
+                    <th>No. HP</th>
+                    <th>Jumlah</th>
                     <th>Tgl Pinjam</th>
-                    <th>Tgl Kembali (Rencana)</th>
-                    <th class="text-center">Status</th>
-                    <th>Aksi</th>
+                    <th>Status</th>
                 </tr>
             </thead>
             <tbody>
-                <?php if (count($data) > 0): ?>
-                    <?php $no = 1; foreach ($data as $row): ?>
-                        <tr>
-                            <td><?= $no++; ?></td>
-                            <td><?= htmlspecialchars($row['nama_user']); ?></td>
-                            <td><?= htmlspecialchars($row['nama_barang']); ?></td>
-                            <td class="text-center"><?= $row['jumlah']; ?></td>
-                            <td><?= date('d/m/Y', strtotime($row['tgl_pinjam'])); ?></td>
-                            <td><?= date('d/m/Y', strtotime($row['tgl_kembali_rencana'])); ?></td>
-                            <td class="text-center">
-                                <span class="badge <?= strtolower($row['status']); ?>">
-                                    <?= $row['status']; ?>
-                                </span>
-                            </td>
-                            <td>
-                                <?php if ($row['status'] === 'Dipinjam'): ?>
-                                    <a href="pengembalian.php?id=<?= $row['id_peminjaman']; ?>" class="btn-kembali">Kembalikan</a>
-                                <?php else: ?>
-                                    <span style="color: #E2D9EE; margin-left: 10px;">-</span>
-                                <?php endif; ?>
-                            </td>
-                        </tr>
-                    <?php endforeach; ?>
-                <?php else: ?>
+                <?php 
+                $no = 1;
+                if ($query && mysqli_num_rows($query) > 0) :
+                    while ($row = mysqli_fetch_assoc($query)) : 
+                ?>
                     <tr>
-                        <td colspan="8" class="text-center" style="padding: 25px; color: #ffffff; background-color: #A888B5; border-radius: 10px;">Belum ada data peminjaman.</td>
+                        <td><?= $no++; ?></td>
+                        <td><?= htmlspecialchars($row['nama_peminjam']); ?></td>
+                        <td><?= htmlspecialchars($row['nama_barang'] ?? 'Barang Dihapus'); ?></td>
+                        <td><?= htmlspecialchars($row['no_hp']); ?></td>
+                        <td><?= $row['jumlah']; ?> Unit</td>
+                        <td><?= date('d-m-Y', strtotime($row['tgl_pinjam'])); ?></td>
+                        <td><span class="badge"><?= htmlspecialchars($row['status']); ?></span></td>
+                    </tr>
+                <?php 
+                    endwhile;
+                else :
+                ?>
+                    <tr>
+                        <td colspan="7" style="text-align:center; color:#888; padding: 20px;">Belum ada data peminjaman.</td>
                     </tr>
                 <?php endif; ?>
             </tbody>

@@ -63,6 +63,17 @@ if (!$data) {
                             'UTF-8' ); ?>
                     </div>
                 </div>
+                <!-- Keterangan Merk -->
+                <div class="detail-item">
+                    <div class="detail-label">Keterangan</div>
+                    <div class="detail-value">
+                        <?= htmlspecialchars(
+                            $data['keterangan'],
+                            ENT_QUOTES,
+                            'UTF-8'
+                        ); ?>
+                    </div>
+                </div>
                 <!-- Tombol Aksi -->
                 <div class="d-flex flex-wrap gap-2 mt-4">
                     <a

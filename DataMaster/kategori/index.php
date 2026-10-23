@@ -120,7 +120,6 @@ $pesan = $_GET['pesan'] ?? '';
                         <thead>
                             <tr>
                                 <th width="65">No.</th>
-                                <th width="130">ID Kategori</th>
                                 <th>Nama Kategori</th>
                                 <th>Keterangan</th>
                                 <th width="190">Aksi</th>
@@ -137,14 +136,6 @@ $pesan = $_GET['pesan'] ?? '';
                                                 <?= $index + 1; ?>
                                             </span>
                                         </td>
-
-                                        <!-- ID KATEGORI -->
-                                        <td>
-                                            <span class="data-id">
-                                                #<?= (int) $data['id_kategori']; ?>
-                                            </span>
-                                        </td>
-
                                         <!-- NAMA KATEGORI -->
                                         <td>
                                             <span class="data-name">
@@ -181,35 +172,28 @@ $pesan = $_GET['pesan'] ?? '';
                                                     href="detail.php?id=<?= (int) $data['id_kategori']; ?>"
                                                     class="data-detail"
                                                     title="Detail"
-                                                    aria-label="Detail kategori"
-                                                >
+                                                    aria-label="Detail kategori" >
                                                     <i class="bi bi-eye"></i>
                                                 </a>
-
                                                 <a
                                                     href="edit.php?id=<?= (int) $data['id_kategori']; ?>"
                                                     class="data-edit"
                                                     title="Edit"
-                                                    aria-label="Edit kategori"
-                                                >
+                                                    aria-label="Edit kategori">
                                                     <i class="bi bi-pencil-square"></i>
                                                 </a>
-
                                                 <a
                                                     href="hapus.php?id=<?= (int) $data['id_kategori']; ?>"
                                                     class="data-delete"
                                                     title="Hapus"
                                                     aria-label="Hapus kategori"
-                                                    onclick="return confirm('Yakin ingin menghapus kategori ini?');"
-                                                >
+                                                    onclick="return confirm('Yakin ingin menghapus kategori ini?');">
                                                     <i class="bi bi-trash"></i>
                                                 </a>
-
                                             </div>
                                         </td>
                                     </tr>
                                 <?php endforeach; ?>
-
                             <?php else: ?>
                                 <tr>
                                     <td colspan="5" class="data-empty">
@@ -225,17 +209,13 @@ $pesan = $_GET['pesan'] ?? '';
 
                     </table>
                 </div>
-
                 <!-- TOTAL DATA -->
                 <div class="data-table-footer">
                     Total kategori:
                     <strong><?= $total_kategori; ?></strong> data
                 </div>
-
             </div>
         </div>
-
     </div>
 </div>
-
 <?php include "../layout/footer.php"; ?>

@@ -71,8 +71,8 @@ if (!$query) {
                         <thead>
                             <tr>
                                 <th width="65">No.</th>
-                                <th width="120">ID Merk</th>
                                 <th>Nama Merk</th>
+                                <th>Keterangan</th>
                                 <th width="180">Aksi</th>
                             </tr>
                         </thead>
@@ -87,15 +87,20 @@ if (!$query) {
                                         <td class="data-number">
                                             <?= $no++; ?>
                                         </td>
-                                        <td>
-                                            <span class="data-id">
-                                                <?= $id_merk; ?>
-                                            </span>
-                                        </td>
+
                                         <td>
                                             <span class="data-name">
                                                 <?= htmlspecialchars(
                                                     $data['nama_merk'],
+                                                    ENT_QUOTES,
+                                                    'UTF-8'
+                                                ); ?>
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span class="data-description">
+                                                <?= htmlspecialchars(
+                                                    $data['keterangan'],
                                                     ENT_QUOTES,
                                                     'UTF-8'
                                                 ); ?>

@@ -78,9 +78,8 @@ $total_data = mysqli_num_rows($query);
                     <thead>
                         <tr>
                             <th width="70">No</th>
-                            <th>ID Kondisi</th>
                             <th>Nama Kondisi</th>
-                            <th>Kategori</th>
+                            <th>Keterangan</th>
                             <th width="180">Aksi</th>
                         </tr>
                     </thead>
@@ -95,24 +94,16 @@ $total_data = mysqli_num_rows($query);
                                     <td class="data-number">
                                         <?= $no++; ?>
                                     </td>
-                                    <!-- ID KONDISI -->
-                                    <td>
-                                        <span class="data-id">
-                                            #<?= (int) $data['id_kondisi']; ?>
-                                        </span>
-                                    </td>
                                     <!-- NAMA KONDISI -->
                                     <td>
                                         <span class="data-name">
                                             <?= htmlspecialchars($data['nama_kondisi']); ?>
                                         </span>
                                     </td>
-                                    <!-- KATEGORI --> 
+ <!-- KETERANGAN -->
                                     <td>
-                                        <span class="data-category">
-                                            <?= htmlspecialchars($data['kategori']); ?>
-                                        </span>
-                                    </td>                                       
+                                        <span class="data-description">
+                                            <?= htmlspecialchars($data['keterangan']); ?>                                          
                                     <!-- AKSI -->
                                     <td>
                                         <div class="data-action">

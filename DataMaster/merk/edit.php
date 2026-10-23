@@ -150,6 +150,27 @@ if (isset($_POST['update'])) {
                             Contoh: Canon, Nikon, Sony, atau Fujifilm.
                         </small>
                     </div>
+                    <!-- Keterangan -->
+                    <div class="mb-4">
+                        <label
+                            for="keterangan"
+                            class="data-form-label">
+                            Keterangan
+                        </label>
+                        <textarea
+                            id="keterangan"
+                            name="keterangan"
+                            class="data-form-control"
+                            placeholder="Masukkan keterangan (opsional)"
+                            rows="3"><?= htmlspecialchars(
+                                $data['keterangan'] ?? '',
+                                ENT_QUOTES,
+                                'UTF-8'
+                            ); ?></textarea>
+                        <small class="text-muted">
+                            Keterangan tambahan mengenai merk (opsional).
+                        </small>
+                    </div>
                     <!-- Tombol -->
                     <div class="d-flex flex-wrap gap-2 mt-4">
                         <button

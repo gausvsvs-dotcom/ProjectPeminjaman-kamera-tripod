@@ -100,10 +100,9 @@ $pesan = $_GET['pesan'] ?? '';
                         <thead>
                             <tr>
                                 <th width="65">No.</th>
-                                <th width="120">ID Pengguna</th>
                                 <th>Nama Pengguna</th>
                                 <th>Username</th>
-                                <th width="130">Role</th>
+                                <th width="200">Role</th>
                                 <th width="150">Aksi</th>
                             </tr>
                         </thead>
@@ -116,12 +115,6 @@ $pesan = $_GET['pesan'] ?? '';
                                         <td>
                                             <span class="data-number">
                                                 <?= $index + 1; ?>
-                                            </span>
-                                        </td>
-                                        <!-- ID -->
-                                        <td>
-                                            <span class="data-id">
-                                                #<?= $id; ?>
                                             </span>
                                         </td>
                                         <!-- NAMA -->
@@ -166,7 +159,6 @@ $pesan = $_GET['pesan'] ?? '';
                                                     aria-label="Detail pengguna">
                                                     <i class="bi bi-eye"></i>
                                                 </a>
-
                                                 <a
                                                     href="edit.php?id=<?= (int) $data['id_user']; ?>"
                                                     class="data-edit"
@@ -174,7 +166,6 @@ $pesan = $_GET['pesan'] ?? '';
                                                     aria-label="Edit pengguna">
                                                     <i class="bi bi-pencil-square"></i>
                                                 </a>
-
                                                 <a
                                                     href="hapus.php?id=<?= (int) $data['id_user']; ?>"
                                                     class="data-delete"

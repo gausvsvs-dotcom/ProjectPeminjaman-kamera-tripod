@@ -90,15 +90,17 @@
                         </div>
                     </div>
                     <div class="profile-dropdown-divider"></div>
-                    <!-- NANTI UNTUK PROFIL -->
-                    <a
-                        href="../pengguna/profile.php"
-                        class="profile-dropdown-link">
+                    <!-- BUKA MODAL PROFIL -->
+                    <button
+                        type="button"
+                        class="profile-dropdown-link border-0 w-100 text-start"
+                        data-bs-toggle="modal"
+                        data-bs-target="#profileModal">
                         <i class="bi bi-person-fill"></i>
                         <span>Profil Saya</span>
-                    </a>
+                    </button>
                     <a
-                        href=".."
+                        href="../pengguna/setting.php"
                         class="profile-dropdown-link">
                         <i class="bi bi-gear-fill"></i>
                         <span>Pengaturan</span>
@@ -188,19 +190,19 @@
         </div>
 
         <a
-            href="../../Transaksi/peminjaman.php"
+            href="../../Transaksi/Peminjaman/peminjaman.php"
             class="menu-item">
             <i class="bi bi-clipboard-check-fill"></i>
             <span>Peminjaman</span>
         </a>
         <a
-            href="../../Transaksi/pengembalian.php "
+            href="../../Transaksi/Pengembalian/pengembalian.php "
             class="menu-item">
             <i class="bi bi-arrow-return-left"></i>
             <span>Pengembalian</span>
         </a>
         <a
-            href="../../Transaksi/pembayaran.php"
+            href="../../Transaksi/Pembayaran/pembayaran.php"
             class="menu-item">
             <i class="bi bi-wallet-fill"></i>
             <span>Pembayaran</span>
@@ -266,3 +268,4 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 });
 </script>
+<?php include __DIR__ . '/profile_modal.php'; ?>

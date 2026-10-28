@@ -1,12 +1,13 @@
-
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 session_start();
-require_once "../config/koneksi.php";
+require_once __DIR__ . '/../config/koneksi.php';
 /** @var mysqli $conn */
 
 // Pastikan pengguna sudah login
 if (!isset($_SESSION['id_user'])) {
-    header("Location: ../login.php");
+    header("Location: ../../login.php");
     exit;
 }
 
@@ -98,9 +99,9 @@ if (isset($_POST['ganti_password'])) {
 }
 ?>
 
-<?php include "../layout/header.php"; ?>
-<link rel="stylesheet" href="../assets/css/data-master.css">
-<?php include "../layout/navbar.php"; ?>
+<?php include __DIR__ . '/../../layout/header.php'; ?>
+<link rel="stylesheet" href="../../assets/css/data-master.css">
+<?php include __DIR__ . '/../../layout/navbar.php'; ?>
 
 <div class="main-content data-master-page">
     <div class="container-fluid">
@@ -239,4 +240,4 @@ if (isset($_POST['ganti_password'])) {
     </div>
 </div>
 
-<?php include "../layout/footer.php"; ?>
+<?php include __DIR__ . '/../../layout/footer.php'; ?>

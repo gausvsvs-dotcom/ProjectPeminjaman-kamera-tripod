@@ -60,7 +60,7 @@
                     data-bs-toggle="dropdown"
                     aria-expanded="false">
                     <img
-                        src="../assets/img/<?= htmlspecialchars($_SESSION['foto'] ?? 'archenPP.jpg'); ?>"
+                        src="/ProjectPeminjaman-kamera-tripod/DataMaster/assets/img/<?= htmlspecialchars($_SESSION['foto'] ?? 'diana.jpg'); ?>"
                         alt="Foto Profil"
                         class="top-profile-photo">
                     <div class="top-profile-info">
@@ -77,7 +77,7 @@
                 <div class="dropdown-menu dropdown-menu-end profile-dropdown">
                     <div class="profile-dropdown-header">
                         <img
-                            src="../assets/img/<?= htmlspecialchars($_SESSION['foto'] ?? 'archenPP.jpg'); ?>"
+                            src="/ProjectPeminjaman-kamera-tripod/DataMaster/assets/img/<?= htmlspecialchars($_SESSION['foto'] ?? 'diana.jpg'); ?>"
                             alt="Foto Profil"
                             class="profile-dropdown-photo">
                         <div>
@@ -125,7 +125,7 @@
     <div class="profile-box">
         <div class="profile-box-top">
             <img
-                src="../assets/img/<?= htmlspecialchars($_SESSION['foto'] ?? 'archenPP.jpg'); ?>"
+                src="/ProjectPeminjaman-kamera-tripod/DataMaster/assets/img/<?= htmlspecialchars($_SESSION['foto'] ?? 'diana.jpg'); ?>"
                 alt="Foto Profil"
                 class="profile-photo">
             <div>

@@ -2871,3 +2871,288 @@ HALAMAN LOGIN
         transition: none !important;
     }
 }
+
+/* ========================================
+   HALAMAN PESAN SAYA
+======================================== */
+
+.pesan-hero {
+    background-color: #f7f3fa;
+    padding: 65px 0 45px;
+    text-align: center;
+}
+
+.pesan-hero .container {
+    max-width: 1140px;
+}
+
+.pesan-label {
+    display: inline-block;
+    background: #eae1f2;
+    color: #8174A0;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    padding: 8px 16px;
+    border-radius: 50px;
+}
+
+.pesan-hero h1 {
+    color: #382b50;
+    font-size: 40px;
+    font-weight: 700;
+    margin: 20px 0 12px;
+}
+
+.pesan-hero p {
+    color: #82758f;
+    font-size: 15px;
+    line-height: 1.8;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+
+/* ========================================
+   SECTION UTAMA
+======================================== */
+
+.pesan-section {
+    background-color: #f7f3fa;
+    padding: 40px 0 90px;
+}
+
+.pesan-section .container {
+    max-width: 1140px;
+}
+
+.pesan-section .row {
+    --bs-gutter-x: 3rem;
+}
+
+
+/* ========================================
+   PANEL KIRI - PUSAT BANTUAN
+======================================== */
+
+.pusat-bantuan {
+    padding: 25px 15px;
+}
+
+.bantuan-ilustrasi {
+    width: 85px;
+    height: 85px;
+    background: #e9dff2;
+    color: #8174A0;
+    border-radius: 24px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 35px;
+    margin-bottom: 28px;
+}
+
+.pusat-bantuan h2 {
+    color: #382b50;
+    font-size: 30px;
+    font-weight: 700;
+    line-height: 1.4;
+    margin-bottom: 16px;
+}
+
+.pusat-bantuan > p {
+    color: #82758f;
+    font-size: 15px;
+    line-height: 1.9;
+    max-width: 440px;
+    margin-bottom: 35px;
+}
+
+
+/* Informasi bantuan */
+
+.bantuan-info {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.bantuan-info-item {
+    display: flex;
+    align-items: center;
+    gap: 17px;
+}
+
+.bantuan-info-item > i {
+    width: 48px;
+    height: 48px;
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: #eae1f2;
+    color: #8174A0;
+    border-radius: 15px;
+    font-size: 17px;
+}
+
+.bantuan-info-item div {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.bantuan-info-item strong {
+    color: #382b50;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.bantuan-info-item span {
+    color: #82758f;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+
+/* ========================================
+   PANEL KANAN - MULAI PERCAKAPAN
+======================================== */
+
+.pesan-card {
+    background: #ffffff;
+    border: 1px solid #eee6f3;
+    border-radius: 24px;
+
+    padding: 38px;
+    height: 100%;
+
+    box-shadow: 0 10px 35px rgba(66, 44, 88, 0.07);
+}
+
+.pesan-card-icon {
+    width: 58px;
+    height: 58px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: #eae1f2;
+    color: #8174A0;
+    border-radius: 17px;
+
+    font-size: 23px;
+    margin-bottom: 24px;
+}
+
+.pesan-card h3 {
+    color: #382b50;
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 13px;
+}
+
+.pesan-card > p {
+    color: #82758f;
+    font-size: 14px;
+    line-height: 1.8;
+    margin-bottom: 28px;
+}
+
+.pesan-card .form-label {
+    color: #382b50;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.pesan-input {
+    width: 100%;
+    padding: 13px 16px;
+
+    border: 1px solid #e3d7ec;
+    border-radius: 12px;
+
+    background: #fcfaff;
+    color: #382b50;
+
+    font-size: 14px;
+    margin: 0 0 20px;
+}
+
+.pesan-input:focus {
+    background: #ffffff;
+    border-color: #8174A0;
+    box-shadow: 0 0 0 4px rgba(129, 116, 160, 0.12);
+}
+
+.pesan-btn {
+    background: #8174A0;
+    color: #ffffff;
+    border: none;
+
+    padding: 14px 20px;
+    border-radius: 12px !important;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    transition: all 0.25s ease;
+}
+
+.pesan-btn:hover {
+    background: #6d608b;
+    color: #ffffff;
+    transform: translateY(-2px);
+}
+
+
+/* Footer keamanan */
+
+.pesan-card-footer {
+    color: #9a90a5;
+    font-size: 12px;
+    text-align: center;
+
+    border-top: 1px solid #f0eaf3;
+    padding-top: 20px;
+    margin-top: 25px;
+}
+
+
+/* ========================================
+   RESPONSIVE TABLET & HP
+======================================== */
+
+@media (max-width: 991px) {
+
+    .pesan-hero {
+        padding: 45px 20px 35px;
+    }
+
+    .pesan-hero h1 {
+        font-size: 32px;
+    }
+
+    .pesan-section {
+        padding: 25px 0 60px;
+    }
+
+    .pesan-section .row {
+        --bs-gutter-x: 1.5rem;
+        --bs-gutter-y: 2rem;
+    }
+
+    .pusat-bantuan {
+        padding: 20px 10px;
+    }
+
+    .pesan-card {
+        padding: 30px 25px;
+    }
+}

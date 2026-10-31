@@ -1,3 +1,4 @@
+
 <?php
 require_once 'includes/koneksi.php';
 
@@ -15,17 +16,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
+    // Membuat kode percakapan unik
+    $kode_chat = bin2hex(random_bytes(5));
+
     $stmt = mysqli_prepare(
         $conn,
-        "INSERT INTO kontak (nama, email, pesan)
-         VALUES (?, ?, ?)"
+        "INSERT INTO kontak (nama, email, pesan, kode_chat)
+         VALUES (?, ?, ?, ?)"
     );
 
-    mysqli_stmt_bind_param($stmt, "sss", $nama, $email, $pesan);
+    mysqli_stmt_bind_param(
+        $stmt,
+        "ssss",
+        $nama,
+        $email,
+        $pesan,
+        $kode_chat
+    );
 
     if (mysqli_stmt_execute($stmt)) {
         mysqli_stmt_close($stmt);
-        header("Location: kontak.php?status=success");
+
+        // Mengarahkan pelanggan ke halaman sukses
+        header("Location: kontak.php?status=success&kode=" . urlencode($kode_chat));
         exit;
     }
 
@@ -34,6 +47,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     exit;
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -125,6 +139,26 @@ function tutupNotifikasi() {
                                 <div class="notifikasi-teks">
                                     <strong>Pesan berhasil dikirim!</strong>
                                     <p>Terima kasih, pesan Anda telah kami terima.</p>
+                                    <?php if (isset($_GET['kode'])) : ?>
+                                        <div class="kode-chat-container">                                            
+                                            <p>
+                                                Simpan kode percakapan Anda. Jika ingin bertanya lebih lanjut
+                                                atau melihat balasan admin, silakan buka halaman
+                                                <a href="pesan_saya.php" style="color: #218653; font-weight: bold;">
+                                                    Pesan Saya
+                                                </a>
+                                                dan masukkan kode berikut.
+                                            </p>
+                                            <div class="kode-chat">
+                                                <strong><?= htmlspecialchars($_GET['kode']); ?></strong>
+                                                <button type="button"
+                                                        onclick="navigator.clipboard.writeText('<?= htmlspecialchars($_GET['kode'], ENT_QUOTES); ?>')"
+                                                        title="Salin kode">
+                                                    <i class="fa-regular fa-copy"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    <?php endif; ?>
                                 </div>
                                 <div class="notifikasi-icon">✓</div>
                             </div>

@@ -67,6 +67,13 @@ $halamanAktif = basename($_SERVER['PHP_SELF']);
                     </a>
                 </li>
 
+                <li class="nav-item">
+                    <a href="pesan_saya.php"
+                    class="nav-link <?php echo $halamanAktif == 'pesan_saya.php' ? 'active' : ''; ?>">
+                        Pesan Saya
+                    </a>
+                </li>
+
             </ul>
 
             <!-- Tombol login admin -->

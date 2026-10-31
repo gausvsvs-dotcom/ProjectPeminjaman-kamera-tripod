@@ -1,4 +1,3 @@
-
 <!-- MODAL PROFIL SAYA -->
 <div
     class="modal fade"
@@ -6,10 +5,8 @@
     tabindex="-1"
     aria-labelledby="profileModalLabel"
     aria-hidden="true">
-
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content profile-modal-content">
-
             <!-- HEADER -->
             <div class="modal-header profile-modal-header">
                 <div>
@@ -19,7 +16,6 @@
                     </h5>
                     <p class="mb-0">Kelola informasi akun administrator kamu.</p>
                 </div>
-
                 <button
                     type="button"
                     class="btn-close"
@@ -27,45 +23,41 @@
                     aria-label="Tutup">
                 </button>
             </div>
-
             <!-- BODY -->
             <div class="modal-body p-4">
-                <form id="profileForm" enctype="multipart/form-data">
-
+                <form 
+                    id="profileForm"
+                    action="../pengguna/proses_profile.php"
+                    method="POST"
+                    enctype="multipart/form-data">
                     <div class="row g-4">
-
                         <!-- FOTO PROFIL -->
                         <div class="col-md-4 text-center">
                             <div class="profile-modal-avatar-wrapper">
                                 <img
                                     id="profilePreview"
-                                    src="../assets/img/<?= htmlspecialchars($_SESSION['foto'] ?? 'archenPP.jpg'); ?>"
+                                    src="../assets/img/<?= htmlspecialchars($_SESSION['foto'] ?? 'mutia.jpg'); ?>"
                                     alt="Foto profil"
                                     class="profile-modal-avatar">
                             </div>
-
                             <h6 class="mt-3 mb-1">
                                 <?= htmlspecialchars($_SESSION['nama'] ?? 'Administrator'); ?>
                             </h6>
-
                             <p class="text-muted small mb-3">
                                 Foto profil akun
                             </p>
-
                             <label
                                 for="profilePhotoInput"
                                 class="btn profile-upload-btn btn-sm">
                                 <i class="bi bi-camera me-1"></i>
                                 Ganti Foto
                             </label>
-
                             <input
                                 type="file"
                                 id="profilePhotoInput"
                                 name="foto"
                                 accept="image/jpeg,image/png,image/webp"
                                 class="d-none">
-
                             <button
                                 type="button"
                                 id="removeProfilePhoto"
@@ -73,24 +65,20 @@
                                 <i class="bi bi-trash me-1"></i>
                                 Hapus Pilihan Foto
                             </button>
-
                             <small class="d-block text-muted mt-2">
                                 JPG, PNG, atau WEBP.
                             </small>
                         </div>
-
                         <!-- INFORMASI AKUN -->
                         <div class="col-md-8">
                             <h6 class="profile-section-title">
                                 <i class="bi bi-person-vcard me-2"></i>
                                 Informasi Akun
                             </h6>
-
                             <div class="mb-3">
                                 <label for="profileName" class="form-label">
                                     Nama Lengkap
                                 </label>
-
                                 <input
                                     type="text"
                                     class="form-control"
@@ -99,12 +87,10 @@
                                     value="<?= htmlspecialchars($_SESSION['nama'] ?? ''); ?>"
                                     required>
                             </div>
-
                             <div class="mb-4">
                                 <label for="profileUsername" class="form-label">
                                     Username
                                 </label>
-
                                 <input
                                     type="text"
                                     class="form-control"
@@ -191,8 +177,9 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     document.getElementById("profileForm").addEventListener("submit", function (event) {
-        event.preventDefault();
-        alert("Tampilan profil sudah siap. Fitur penyimpanan sedang kita hubungkan ke database.");
+        if (!confirm("Simpan perubahan profil?")) {
+            event.preventDefault();
+        }
     });
 });
 </script>

@@ -107,21 +107,21 @@ if (isset($_POST['simpan'])) {
                         <small class="text-muted">
                             Contoh kondisi: Tersedia, Dipinjam, atau Perawatan.
                         </small>
-                        <label
-                            for="kategori"
+                    </div>
+                    <div class="mb-4">
+                         <label
+                            for="keterangan"
                             class="data-form-label">
-                            Kategori
+                            Keterangan
                             <span class="text-danger">*</span>
                         </label>
-                        <input
-                            type="text"
-                            id="kategori"
-                            name="kategori"
+                        <textarea
+                            id="keterangan"
+                            name="keterangan"
                             class="data-form-control"
-                            placeholder="Contoh: Kamera"
-                            maxlength="50"
-                            value="<?= htmlspecialchars($kategori); ?>"
-                            required>
+                            placeholder="Masukkan keterangan kondisi"
+                            rows="3"
+                        ><?= htmlspecialchars($keterangan, ENT_QUOTES, 'UTF-8'); ?></textarea>
                     </div>
                     <!-- BUTTON -->
                     <div class="d-flex gap-2 flex-wrap">

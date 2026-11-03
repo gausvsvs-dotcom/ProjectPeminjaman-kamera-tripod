@@ -1,12 +1,26 @@
 
 <?php
-session_start();
-require_once "koneksi.php";
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 
-function aman($data)
-{
-    return htmlspecialchars((string)($data ?? '-'), ENT_QUOTES, 'UTF-8');
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
 }
+
+require_once "../../DataMaster/config/koneksi.php";
+
+$query = mysqli_query($conn, "
+    SELECT id_peminjaman, nama_peminjam, tgl_peminjaman, status
+    FROM peminjaman
+    ORDER BY id_peminjaman DESC
+");
+
+if (!$query) {
+    die("Query error: " . mysqli_error($conn));
+}
+
+$data_peminjaman = mysqli_fetch_all($query, MYSQLI_ASSOC);
+$total_peminjaman = count($data_peminjaman);
 
 function formatTanggal($tanggal)
 {
@@ -18,140 +32,133 @@ function formatTanggal($tanggal)
     return $timestamp ? date('d-m-Y', $timestamp) : '-';
 }
 
-// Ambil seluruh riwayat peminjaman
-$query = "
-    SELECT 
-        p.id_peminjaman,
-        p.nama_peminjam,
-        p.tgl_peminjaman,
-        p.tgl_jatuh_tempo,
-        p.status
-    FROM peminjaman p
-    ORDER BY p.id_peminjaman DESC
-";
-
-$result = mysqli_query($koneksi, $query);
-
-if (!$result) {
-    die("Gagal mengambil data riwayat peminjaman: " . mysqli_error($koneksi));
+function aman($data)
+{
+    return htmlspecialchars((string)($data ?? '-'), ENT_QUOTES, 'UTF-8');
 }
 ?>
 
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<?php include "../../DataMaster/layout/header.php"; ?>
 
-    <title>Riwayat Peminjaman</title>
+<link rel="stylesheet" href="/ProjectPeminjaman-kamera-tripod/DataMaster/assets/css/data-master.css?v=3">
 
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<?php include "../../DataMaster/layout/navbar.php"; ?>
 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<div class="main-content data-master-page">
+    <div class="container-fluid">
 
-    <link rel="stylesheet" href="style_peminjaman.css">
-</head>
+        <div class="data-page-header">
+            <div class="data-page-icon">
+                <i class="bi bi-clock-history"></i>
+            </div>
 
-<body>
-
-<div class="container-detail">
-
-    <div class="detail-header">
-        <div class="header-icon">
-            <i class="bi bi-clock-history"></i>
+            <div>
+                <h2>Riwayat Peminjaman</h2>
+                <p>Kelola dan lihat riwayat transaksi peminjaman barang.</p>
+            </div>
         </div>
 
-        <div>
-            <h2>Riwayat Peminjaman</h2>
-            <p>Daftar seluruh riwayat transaksi peminjaman barang</p>
+        <div class="data-master-card">
+
+            <div class="data-card-header">
+                <div>
+                    <h3 class="data-card-title">
+                        <i class="bi bi-list-ul me-2"></i>
+                        Daftar Riwayat Peminjaman
+                    </h3>
+                    <p>Informasi seluruh transaksi peminjaman yang tersimpan.</p>
+                </div>
+            </div>
+
+            <div class="data-card-body">
+                <div class="data-table-wrapper">
+                    <table class="data-master-table">
+                        <thead>
+                            <tr>
+                                <th width="65">No.</th>
+                                <th>Nama Peminjam</th>
+                                <th>Tanggal Peminjaman</th>
+                                <th>Status</th>
+                                <th width="120">Aksi</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                        <?php if ($total_peminjaman > 0): ?>
+
+                            <?php foreach ($data_peminjaman as $index => $data): ?>
+                                <?php
+                                $status = $data['status'] ?? '-';
+
+                                if ($status === 'Selesai' || $status === 'Dikembalikan') {
+                                    $classStatus = 'status-dikembalikan';
+                                    $labelStatus = 'Dikembalikan';
+                                } elseif ($status === 'Dipinjam') {
+                                    $classStatus = 'status-dipinjam';
+                                    $labelStatus = 'Dipinjam';
+                                } else {
+                                    $classStatus = 'status-menunggu';
+                                    $labelStatus = $status;
+                                }
+                                ?>
+
+                                <tr>
+                                    <td>
+                                        <span class="data-number">
+                                            <?= $index + 1 ?>
+                                        </span>
+                                    </td>
+
+                                    <td>
+                                        <span class="data-name">
+                                            <?= aman($data['nama_peminjam']) ?>
+                                        </span>
+                                    </td>
+
+                                    <td>
+                                        <?= formatTanggal($data['tgl_peminjaman']) ?>
+                                    </td>
+
+                                    <td>
+                                        <span class="status-badge <?= aman($classStatus) ?>">
+                                            <?= aman($labelStatus) ?>
+                                        </span>
+                                    </td>
+
+                                    <td>
+                                        <div class="data-action">
+                                            <a href="detail_peminjaman.php?id=<?= (int)$data['id_peminjaman'] ?>"
+                                               class="data-detail"
+                                               title="Lihat Detail">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+
+                            <?php endforeach; ?>
+
+                        <?php else: ?>
+                            <tr>
+                                <td colspan="5" class="data-empty">
+                                    <i class="bi bi-inbox"></i>
+                                    <p>Belum ada riwayat peminjaman.</p>
+                                    <span>Data peminjaman akan ditampilkan setelah transaksi dilakukan.</span>
+                                </td>
+                            </tr>
+                        <?php endif; ?>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="data-table-footer">
+                    Total riwayat peminjaman:
+                    <strong><?= $total_peminjaman ?></strong> data
+                </div>
+            </div>
+
         </div>
     </div>
-
-    <div class="detail-body">
-
-        <div class="table-responsive">
-            <table class="table-riwayat">
-
-                <thead>
-                    <tr>
-                        <th>No</th>
-                        <th>Nama Peminjam</th>
-                        <th>Tanggal Peminjaman</th>
-                        <th>Status</th>
-                        <th>Aksi</th>
-                    </tr>
-                </thead>
-
-                <tbody>
-
-                <?php if (mysqli_num_rows($result) > 0): ?>
-
-                    <?php $no = 1; ?>
-
-                    <?php while ($row = mysqli_fetch_assoc($result)): ?>
-
-                        <?php
-                        $status = $row['status'] ?? '-';
-
-                        if ($status === 'Selesai' || $status === 'Dikembalikan') {
-                            $classStatus = 'status-dikembalikan';
-                            $labelStatus = 'Dikembalikan';
-                        } elseif ($status === 'Dipinjam') {
-                            $classStatus = 'status-dipinjam';
-                            $labelStatus = 'Dipinjam';
-                        } else {
-                            $classStatus = 'status-menunggu';
-                            $labelStatus = $status;
-                        }
-                        ?>
-
-                        <tr>
-                            <td><?= $no++; ?></td>
-
-                            <td>
-                                <?= aman($row['nama_peminjam']); ?>
-                            </td>
-
-                            <td>
-                                <?= formatTanggal($row['tgl_peminjaman']); ?>
-                            </td>
-
-                            <td>
-                                <span class="status-badge <?= aman($classStatus); ?>">
-                                    <?= aman($labelStatus); ?>
-                                </span>
-                            </td>
-
-                            <td>
-                                <a href="detail_peminjaman.php?id=<?= aman($row['id_peminjaman']); ?>"
-                                   class="btn-detail">
-                                    <i class="bi bi-eye"></i>
-                                    Detail
-                                </a>
-                            </td>
-                        </tr>
-
-                    <?php endwhile; ?>
-
-                <?php else: ?>
-
-                    <tr>
-                        <td colspan="5" class="data-kosong">
-                            <i class="bi bi-inbox"></i>
-                            <p>Belum ada riwayat peminjaman.</p>
-                        </td>
-                    </tr>
-
-                <?php endif; ?>
-
-                </tbody>
-
-            </table>
-        </div>
-
-    </div>
-
 </div>
 
-</body>
-</html>
+<?php include "../../DataMaster/layout/footer.php"; ?>

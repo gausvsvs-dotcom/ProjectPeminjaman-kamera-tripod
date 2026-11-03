@@ -190,19 +190,19 @@
         </div>
 
         <a
-            href="../../Transaksi/Peminjaman/peminjaman.php"
+            href="../../Transaksi/Peminjaman/detail_peminjaman.php"
             class="menu-item">
             <i class="bi bi-clipboard-check-fill"></i>
             <span>Peminjaman</span>
         </a>
         <a
-            href="../../Transaksi/Pengembalian/pengembalian.php "
+            href="../../Transaksi/Pengembalian/_detail_pengembalian.php "
             class="menu-item">
             <i class="bi bi-arrow-return-left"></i>
             <span>Pengembalian</span>
         </a>
         <a
-            href="../../Transaksi/Pembayaran/pembayaran.php"
+            href="../../Transaksi/Pembayaran/detail_pembayaran.php"
             class="menu-item">
             <i class="bi bi-wallet-fill"></i>
             <span>Pembayaran</span>

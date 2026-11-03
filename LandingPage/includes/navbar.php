@@ -42,7 +42,7 @@ $halamanAktif = basename($_SERVER['PHP_SELF']);
                 <li class="nav-item">
                     <a href="home.php"
                        class="nav-link <?php echo $halamanAktif == 'home.php' ? 'active' : ''; ?>">
-                        Home
+                        Beranda
                     </a>
                 </li>
 
@@ -64,6 +64,13 @@ $halamanAktif = basename($_SERVER['PHP_SELF']);
                     <a href="kontak.php"
                        class="nav-link <?php echo $halamanAktif == 'kontak.php' ? 'active' : ''; ?>">
                         Kontak
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a href="pesan_saya.php"
+                    class="nav-link <?php echo $halamanAktif == 'pesan_saya.php' ? 'active' : ''; ?>">
+                        Pesan Saya
                     </a>
                 </li>
 

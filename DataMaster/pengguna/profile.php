@@ -4,20 +4,20 @@ require_once "../config/koneksi.php";
 /** @var mysqli $conn */
 
 // Pastikan pengguna sudah login
-if (!isset($_SESSION['id_pengguna'])) {
+if (!isset($_SESSION['id_user'])) {
     header("Location: ../login.php");
     exit;
 }
 
 // Ambil ID akun dari session
-$id = (int) $_SESSION['id_pengguna'];
+$id = (int) $_SESSION['id_user'];
 
 // Ambil data profil akun yang sedang login
 $stmt = mysqli_prepare(
     $conn,
-    "SELECT id_pengguna, nama, username, role, foto
+    "SELECT id_user, nama_user, username, role, foto
      FROM pengguna
-     WHERE id_pengguna = ?"
+     WHERE id_user = ?"
 );
 
 mysqli_stmt_bind_param($stmt, "i", $id);
@@ -105,7 +105,7 @@ if (!$data) {
                 <!-- BUTTON -->
                 <div class="d-flex flex-wrap gap-2 mt-4">
                     <a
-                        href="edit.php?id=<?= (int) $data['id_pengguna']; ?>"
+                        href="edit.php?id=<?= (int) $data['id_user']; ?>"
                         class="btn-detail-edit">
                         <i class="bi bi-pencil-square me-1"></i>
                         Edit Profile

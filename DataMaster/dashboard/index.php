@@ -1,5 +1,6 @@
 <?php
 session_start();
+
 require_once "../config/koneksi.php";
 /** @var mysqli $conn */
 /* TOTAL DATA MASTER */

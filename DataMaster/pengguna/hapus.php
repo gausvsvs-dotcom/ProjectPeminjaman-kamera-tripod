@@ -7,7 +7,7 @@ if (isset($_GET['id'])) {
     $id = $_GET['id'];
 
     mysqli_query($conn, "DELETE FROM pengguna
-        WHERE id_pengguna = '$id'");
+        WHERE id_user = '$id'");
 }
 
 header("Location: index.php?pesan=hapus");

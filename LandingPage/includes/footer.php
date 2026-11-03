@@ -12,7 +12,7 @@
             <div class="col-lg-3 col-md-6 mb-4">
                 <ul class="footer-menu">
                     <li class="nav-item">
-                        <a href="home.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'home.php' ? 'active' : ''; ?>"> Home</a>
+                        <a href="home.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'home.php' ? 'active' : ''; ?>"> Beranda</a>
                     </li>
 
                     <li class="nav-item">

@@ -15,7 +15,7 @@ $data = mysqli_fetch_assoc($query);
 
 if ($data && ($password === $data['password'] || password_verify($password, $data['password']))) {
 
-    $_SESSION['id_pengguna'] = $data['id_pengguna'];
+    $_SESSION['id_user'] = $data['id_user'];
     $_SESSION['nama'] = $data['nama_user'];
     $_SESSION['username'] = $data['username'];
     $_SESSION['role'] = $data['role'];

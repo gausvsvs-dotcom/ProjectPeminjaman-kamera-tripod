@@ -108,6 +108,20 @@ if (isset($_POST['simpan'])) {
                             Contoh: Canon, Nikon, Sony, Fujifilm, atau Weifeng.
                         </small>
                     </div>
+                    <div class="mb-4">
+                        <label 
+                        for="keterangan"
+                        class="data-form-label">
+                            Keterangan
+                        </label>
+                        <textarea
+                            id="keterangan"
+                            name="keterangan"
+                            class="data-form-control"
+                            placeholder="Masukkan keterangan merk"
+                            rows="3"
+                        ><?= htmlspecialchars($keterangan, ENT_QUOTES, 'UTF-8'); ?></textarea>
+                    </div>
                     <!-- Tombol -->
                     <div class="d-flex flex-wrap gap-2 mt-4">
                         <button

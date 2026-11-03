@@ -127,59 +127,81 @@ if (isset($_POST["simpan"])) {
                     }
                 }
             }
-            // Simpan barang jika tidak ada error upload
-            if ($error === "") {
-                $sql = "INSERT INTO barang (
-                            kode_barang,
-                            nama_barang,
-                            jenis_barang,
-                            id_kategori,
-                            id_merk,
-                            id_kondisi,
-                            stok,
-                            harga_sewa,
-                            foto,
-                            deskripsi
-                        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-                $stmt = mysqli_prepare($conn, $sql);
-                if (!$stmt) {
-                    $error = "Query penyimpanan gagal disiapkan.";
-                } else {
-                    mysqli_stmt_bind_param(
-                        $stmt,
-                        "sssiiiidss",
-                        $kode_barang,
-                        $nama_barang,
-                        $jenis_barang,
-                        $id_kategori,
-                        $id_merk,
-                        $id_kondisi,
-                        $stok,
-                        $harga_sewa,
-                        $foto,
-                        $deskripsi
-                    );
-                    if (mysqli_stmt_execute($stmt)) {
-                        mysqli_stmt_close($stmt);
+        // Simpan barang jika tidak ada error upload
+if ($error === "") {
 
-                        header("Location: index.php?pesan=tambah");
-                        exit;
-                    } else {
-                        $nomor_error = mysqli_stmt_errno($stmt);
-                        mysqli_stmt_close($stmt);
+    $sql = "INSERT INTO barang (
+        kode_barang,
+        nama_barang,
+        jenis_barang,
+        id_kategori,
+        id_merk,
+        id_kondisi,
+        stok,
+        foto,
+        deskripsi
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-                        if ($nomor_error === 1062) {
-                            $error = "Kode barang sudah digunakan. Silakan coba simpan kembali.";
-                        } else {
-                            $error = "Data barang gagal disimpan. Periksa struktur tabel database.";
-                        }
+    $stmt = mysqli_prepare($conn, $sql);
 
-                        // Hapus foto jika penyimpanan database gagal
-                        if ($file_terunggah !== "" && file_exists($file_terunggah)) {
-                            unlink($file_terunggah);
-                        }
-                    }
-                }
+    if (!$stmt) {
+        $error = "Query penyimpanan gagal disiapkan: "
+            . mysqli_error($conn);
+    } else {
+
+        mysqli_stmt_bind_param(
+            $stmt,
+            "sssiiiiss",
+            $kode_barang,
+            $nama_barang,
+            $jenis_barang,
+            $id_kategori,
+            $id_merk,
+            $id_kondisi,
+            $stok,
+            $foto,
+            $deskripsi
+        );
+
+        if (mysqli_stmt_execute($stmt)) {
+
+            mysqli_stmt_close($stmt);
+
+            header("Location: index.php?pesan=tambah");
+            exit;
+
+        } else {
+
+            $nomor_error = mysqli_stmt_errno($stmt);
+            $pesan_error = mysqli_stmt_error($stmt);
+
+            mysqli_stmt_close($stmt);
+
+            if ($nomor_error === 1062) {
+                $error = "Kode barang sudah digunakan. Silakan coba simpan kembali.";
+            } else {
+                $error = "Data barang gagal disimpan: " . $pesan_error;
+            }
+
+            // Hapus foto jika penyimpanan database gagal
+            if (
+                $file_terunggah !== "" &&
+                file_exists($file_terunggah)
+            ) {
+                unlink($file_terunggah);
+            }
+        }
+    }
+
+    // Hapus foto jika query gagal disiapkan
+    if (
+        $stmt === false &&
+        $file_terunggah !== "" &&
+        file_exists($file_terunggah)
+    ) {
+        unlink($file_terunggah);
+    }
+
 
                 // Hapus foto jika query gagal disiapkan
                 if (

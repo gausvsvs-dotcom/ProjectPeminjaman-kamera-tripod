@@ -23,7 +23,7 @@ $sql = "
             SELECT GROUP_CONCAT(
                 CONCAT(
                     b.nama_barang,
-                    ' (', d.jumlah, ' x Rp', FORMAT(d.harga_sewa, 0), ')'
+                    ' (', d.jumlah, ' x Rp', FORMAT(b.harga_sewa, 0), ')'
                 )
                 SEPARATOR '<br>'
             )

@@ -1,8 +1,6 @@
-
 <?php
 require_once "../config/koneksi.php";
 /** @var mysqli $conn */
-
 // Ambil seluruh data kategori
 $query = mysqli_query(
     $conn,

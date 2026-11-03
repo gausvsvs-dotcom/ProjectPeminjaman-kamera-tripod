@@ -8,13 +8,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $pesan = trim($_POST['pesan'] ?? '');
 
     if (
-        $nama === '' ||
-        !filter_var($email, FILTER_VALIDATE_EMAIL) ||
-        $pesan === ''
+    $nama === '' ||
+    !preg_match('/^[A-Za-z0-9._%+-]+@gmail\.com$/', $email) ||
+    $pesan === ''
     ) {
         header("Location: kontak.php?status=error");
         exit;
-    }
+        }
 
     // Membuat kode percakapan unik
     $kode_chat = bin2hex(random_bytes(5));
@@ -61,7 +61,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <script>
 function tutupNotifikasi() {
-    const notifikasi = document.getElementById('notifikasiSukses');
+    const notifikasi = document.querySelector(
+        '#notifikasiSukses, #notifikasiGagal'
+    );
 
     if (notifikasi) {
         notifikasi.remove();
@@ -75,7 +77,7 @@ function tutupNotifikasi() {
     <section class="kontak-hero">
         <div class="container">
             <div class="text-center">
-                <h1 class="kontak-title">Kontak Kami</h1>
+                <h1 class="kontak-title">Hubungi Kami</h1>
 
                 <p class="kontak-subtitle">
                     Hubungi kami untuk mendapatkan informasi
@@ -131,46 +133,71 @@ function tutupNotifikasi() {
                     <div class="kontak-form">
                         <h2 class="kontak-heading">Hubungi Kami</h2>
 
-                        <?php 
-                        if (isset($_GET['status']) && $_GET['status'] == 'success') : ?>
-                        
-                        <div id="notifikasiSukses" class="notifikasi-sukses">
-                            <div class="notifikasi-isi">
-                                <div class="notifikasi-teks">
-                                    <strong>Pesan berhasil dikirim!</strong>
-                                    <p>Terima kasih, pesan Anda telah kami terima.</p>
-                                    <?php if (isset($_GET['kode'])) : ?>
-                                        <div class="kode-chat-container">                                            
-                                            <p>
-                                                Simpan kode percakapan Anda. Jika ingin bertanya lebih lanjut
-                                                atau melihat balasan admin, silakan buka halaman
-                                                <a href="pesan_saya.php" style="color: #218653; font-weight: bold;">
-                                                    Pesan Saya
-                                                </a>
-                                                dan masukkan kode berikut.
-                                            </p>
-                                            <div class="kode-chat">
-                                                <strong><?= htmlspecialchars($_GET['kode']); ?></strong>
-                                                <button type="button"
-                                                        onclick="navigator.clipboard.writeText('<?= htmlspecialchars($_GET['kode'], ENT_QUOTES); ?>')"
-                                                        title="Salin kode">
-                                                    <i class="fa-regular fa-copy"></i>
-                                                </button>
-                                            </div>
-                                        </div>
-                                    <?php endif; ?>
-                                </div>
-                                <div class="notifikasi-icon">✓</div>
-                            </div>
+                        <?php if (isset($_GET['status']) && $_GET['status'] == 'success') : ?>
+
+    <div id="notifikasiSukses" class="notifikasi-sukses">
+        <div class="notifikasi-isi">
+            <div class="notifikasi-teks">
+                <strong>Pesan berhasil terkirim!</strong>
+                <p>Terima kasih, pesan Anda telah kami terima.</p>
+
+                <?php if (!empty($_GET['kode'])) : ?>
+                    <div class="kode-chat-container">
+                        <p>
+                            Simpan kode percakapan Anda. Jika ingin bertanya lebih lanjut
+                            atau melihat balasan admin, silakan buka halaman
+                            <a href="pesan_saya.php" style="color: #218653; font-weight: bold;">
+                                Pesan Saya
+                            </a>
+                            dan masukkan kode berikut.
+                        </p>
+
+                        <div class="kode-chat">
+                            <strong><?= htmlspecialchars($_GET['kode']); ?></strong>
 
                             <button type="button"
-                                    class="notifikasi-close"
-                                    onclick="tutupNotifikasi()">
-                                ×
+                                    onclick="navigator.clipboard.writeText('<?= htmlspecialchars($_GET['kode'], ENT_QUOTES); ?>')"
+                                    title="Salin kode">
+                                <i class="fa-regular fa-copy"></i>
                             </button>
                         </div>
+                    </div>
+                <?php endif; ?>
+            </div>
 
-                        <?php endif; ?>
+            <div class="notifikasi-icon">✓</div>
+        </div>
+
+        <button type="button"
+                class="notifikasi-close"
+                onclick="tutupNotifikasi()">
+            ×
+        </button>
+    </div>
+
+<?php elseif (isset($_GET['status']) && $_GET['status'] == 'error') : ?>
+
+    <div id="notifikasiGagal" class="notifikasi-gagal">
+        <div class="notifikasi-isi">
+            <div class="notifikasi-teks">
+                <strong>Pesan gagal terkirim!</strong>
+                <p>
+                    Maaf, pesan Anda belum berhasil dikirim.
+                    Silakan periksa kembali data dan coba lagi.
+                </p>
+            </div>
+
+            <div class="notifikasi-icon">✕</div>
+        </div>
+
+        <button type="button"
+                class="notifikasi-close"
+                onclick="tutupNotifikasi()">
+            ×
+        </button>
+    </div>
+
+<?php endif; ?>
 
                         <form action="kontak.php" method="POST">
                             <div class="mb-3">
@@ -188,9 +215,11 @@ function tutupNotifikasi() {
                                     Email
                                 </label>
                                 <input type="email"
-                                       name="email"
-                                       class="form-control"
-                                       placeholder="Masukkan email Anda" required>
+                                name="email"
+                                class="form-control"
+                                placeholder="Contoh: nama@gmail.com"
+                                pattern="[A-Za-z0-9._%+-]+@gmail\.com"
+                                title="Masukkan alamat email Gmail yang lengkap, contoh: nama@gmail.com"required>
                             </div>
 
                             <div class="mb-3">

@@ -1022,6 +1022,36 @@ body.tentang-scroll-up .tentang-scroll-item {
     }
 }
 
+/* Notifikasi pesan gagal */
+.notifikasi-gagal {
+    background-color: #f8d7da;
+    border-left: 7px solid #dc3545;
+    color: #842029;
+    padding: 20px 25px;
+    border-radius: 15px;
+    margin-bottom: 25px;
+    position: relative;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+}
+
+.notifikasi-gagal .notifikasi-icon {
+    background-color: #dc3545;
+    color: white;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 25px;
+    font-weight: bold;
+    flex-shrink: 0;
+}
+
+.notifikasi-gagal .notifikasi-close {
+    color: #842029;
+}
+
 /* 11. Efek hover pada informasi kontak */
 .kontak-info h5 i {
     transition:

@@ -1,229 +1,318 @@
+
+<?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
+require_once "../../DataMaster/config/koneksi.php";
+
+/** @var mysqli $conn */
+
+// Ambil ID peminjaman
+$id_peminjaman = isset($_GET['id_peminjaman'])
+    ? (int) $_GET['id_peminjaman']
+    : (int) ($_POST['id_peminjaman'] ?? 0);
+
+if ($id_peminjaman <= 0) {
+    die("ID peminjaman tidak valid.");
+}
+
+// Ambil data peminjaman
+$stmt = mysqli_prepare($conn, "
+    SELECT id_peminjaman, nama_peminjam, status
+    FROM peminjaman
+    WHERE id_peminjaman = ?
+");
+
+mysqli_stmt_bind_param($stmt, "i", $id_peminjaman);
+mysqli_stmt_execute($stmt);
+
+$result = mysqli_stmt_get_result($stmt);
+$peminjaman = mysqli_fetch_assoc($result);
+mysqli_stmt_close($stmt);
+
+if (!$peminjaman) {
+    die("Data peminjaman tidak ditemukan.");
+}
+
+// Hitung total pembayaran dari detail peminjaman
+$stmt = mysqli_prepare($conn, "
+    SELECT COALESCE(SUM(subtotal), 0) AS total
+    FROM detail_peminjaman
+    WHERE id_peminjaman = ?
+");
+
+mysqli_stmt_bind_param($stmt, "i", $id_peminjaman);
+mysqli_stmt_execute($stmt);
+
+$result = mysqli_stmt_get_result($stmt);
+$data_total = mysqli_fetch_assoc($result);
+
+$total = (float) ($data_total['total'] ?? 0);
+mysqli_stmt_close($stmt);
+
+$pesan = "";
+$error = "";
+$pembayaran = null;
+
+// Cek apakah pembayaran sudah pernah dikirim
+$stmt = mysqli_prepare($conn, "
+    SELECT status_pembayaran, metode_pembayaran, tgl_bayar, total
+    FROM pembayaran
+    WHERE id_peminjaman = ?
+    ORDER BY id_pembayaran DESC
+    LIMIT 1
+");
+
+mysqli_stmt_bind_param($stmt, "i", $id_peminjaman);
+mysqli_stmt_execute($stmt);
+
+$result = mysqli_stmt_get_result($stmt);
+$pembayaran = mysqli_fetch_assoc($result);
+mysqli_stmt_close($stmt);
+
+// Proses form pembayaran
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
+    if ($total <= 0) {
+
+        $error = "Pembayaran belum tersedia karena detail peminjaman belum selesai.";
+
+    } elseif ($pembayaran) {
+
+        $error = "Pembayaran untuk peminjaman ini sudah dikirim.";
+
+    } else {
+
+        $metode_pembayaran = $_POST['metode_pembayaran'] ?? '';
+        $keterangan = trim($_POST['keterangan'] ?? '');
+
+        $metode_valid = ['Tunai', 'Transfer', 'QRIS'];
+
+        if (!in_array($metode_pembayaran, $metode_valid, true)) {
+
+            $error = "Silakan pilih metode pembayaran.";
+
+        } else {
+
+            $tgl_bayar = date('Y-m-d');
+            $status_pembayaran = "Menunggu Konfirmasi";
+
+            $stmt = mysqli_prepare($conn, "
+                INSERT INTO pembayaran (
+                    id_peminjaman,
+                    tgl_bayar,
+                    total,
+                    metode_pembayaran,
+                    status_pembayaran,
+                    keterangan
+                ) VALUES (?, ?, ?, ?, ?, ?)
+            ");
+
+            mysqli_stmt_bind_param(
+                $stmt,
+                "isdsss",
+                $id_peminjaman,
+                $tgl_bayar,
+                $total,
+                $metode_pembayaran,
+                $status_pembayaran,
+                $keterangan
+            );
+
+            if (mysqli_stmt_execute($stmt)) {
+
+                mysqli_stmt_close($stmt);
+
+                header(
+                    "Location: pembayaran.php?id_peminjaman="
+                    . $id_peminjaman . "&sukses=1"
+                );
+                exit;
+
+            } else {
+
+                $error = "Gagal menyimpan pembayaran: "
+                    . mysqli_stmt_error($stmt);
+
+                mysqli_stmt_close($stmt);
+            }
+        }
+    }
+}
+
+// Pesan berhasil
+if (isset($_GET['sukses'])) {
+    $pesan = "Pembayaran berhasil dikirim! Silakan tunggu konfirmasi admin.";
+}
+
+// Ambil data pembayaran terbaru setelah proses
+if (!$pembayaran) {
+
+    $stmt = mysqli_prepare($conn, "
+        SELECT status_pembayaran, metode_pembayaran, tgl_bayar, total
+        FROM pembayaran
+        WHERE id_peminjaman = ?
+        ORDER BY id_pembayaran DESC
+        LIMIT 1
+    ");
+
+    mysqli_stmt_bind_param($stmt, "i", $id_peminjaman);
+    mysqli_stmt_execute($stmt);
+
+    $result = mysqli_stmt_get_result($stmt);
+    $pembayaran = mysqli_fetch_assoc($result);
+    mysqli_stmt_close($stmt);
+}
+?>
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Form Peminjaman & Pembayaran Barang</title>
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
-
-    body {
-      background-color: #f4f5f7;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      padding: 20px;
-    }
-
-    .form-card {
-      background-color: #ffffff;
-      width: 100%;
-      max-width: 480px;
-      border-radius: 12px;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-      overflow: hidden;
-    }
-
-    .form-header {
-      background-color: #8174A0;
-      color: #ffffff;
-      padding: 18px 24px;
-    }
-
-    .form-header h2 {
-      font-size: 1.25rem;
-      font-weight: 600;
-    }
-
-    .form-body {
-      padding: 24px;
-      display: flex;
-      flex-direction: column;
-      gap: 18px;
-    }
-
-    .form-group {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .form-group label {
-      font-size: 0.9rem;
-      font-weight: 700;
-      color: #2d3748;
-    }
-
-    .form-control {
-      width: 100%;
-      padding: 12px 14px;
-      background-color: #F2EEF7;
-      border: 1px solid #E2D9F3;
-      border-radius: 10px;
-      font-size: 0.95rem;
-      color: #4a5568;
-      outline: none;
-      transition: all 0.2s ease;
-    }
-
-    .form-control:focus {
-      background-color: #ffffff;
-      border-color: #A888B5;
-      box-shadow: 0 0 0 3px rgba(168, 136, 181, 0.2);
-    }
-
-    .form-control::placeholder {
-      color: #a0aec0;
-    }
-
-    textarea.form-control {
-      resize: vertical;
-      min-height: 80px;
-    }
-
-    .section-divider {
-      border: none;
-      border-top: 1px dashed #E2D9F3;
-      margin: 5px 0;
-    }
-
-    .section-title {
-      font-size: 0.95rem;
-      font-weight: 700;
-      color: #8174A0;
-      margin-bottom: -5px;
-    }
-
-    .btn-submit {
-      margin-top: 10px;
-      padding: 12px;
-      background-color: #8174A0;
-      color: #ffffff;
-      border: none;
-      border-radius: 10px;
-      font-size: 1rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background-color 0.2s ease;
-    }
-
-    .btn-submit:hover {
-      background-color: #6e618d;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Form Pembayaran</title>
+    <link rel="stylesheet" href="pembayaran.css">
 </head>
+
 <body>
 
-  <div class="form-card">
-    <!-- Header Form -->
+<div class="form-card">
+
     <div class="form-header">
-      <h2>Form Peminjaman & Pembayaran</h2>
+        <h2>Form Pembayaran</h2>
     </div>
 
-    <!-- Body Form -->
-    <form class="form-body" action="#" method="POST">
-      
-      <!-- Nama Peminjam -->
-      <div class="form-group">
-        <label for="nama_peminjam">Nama Peminjam</label>
-        <input 
-          type="text" 
-          id="nama_peminjam" 
-          name="nama_peminjam" 
-          class="form-control" 
-          placeholder="Ketik nama peminjam..." 
-          required 
-        />
-      </div>
+    <form class="form-body" method="POST">
 
-      <!-- No HP -->
-      <div class="form-group">
-        <label for="no_hp">No HP</label>
-        <input 
-          type="tel" 
-          id="no_hp" 
-          name="no_hp" 
-          class="form-control" 
-          placeholder="Masukkan nomor HP..." 
-          required 
-        />
-      </div>
+        <input
+            type="hidden"
+            name="id_peminjaman"
+            value="<?= $id_peminjaman; ?>"
+        >
 
-      <!-- Tanggal Peminjaman -->
-      <div class="form-group">
-        <label for="tgl_peminjaman">Tanggal Peminjaman</label>
-        <input 
-          type="date" 
-          id="tgl_peminjaman" 
-          name="tgl_peminjaman" 
-          class="form-control" 
-          required 
-        />
-      </div>
+        <div class="form-group">
+            <label for="nama_peminjam">Nama Peminjam</label>
 
-      <!-- Tanggal Jatuh Tempo -->
-      <div class="form-group">
-        <label for="tgl_kembali">Tanggal Jatuh Tempo (Rencana Kembali)</label>
-        <input 
-          type="date" 
-          id="tgl_kembali" 
-          name="tgl_kembali" 
-          class="form-control" 
-          required 
-        />
-      </div>
+            <input
+                type="text"
+                id="nama_peminjam"
+                class="form-control"
+                value="<?= htmlspecialchars($peminjaman['nama_peminjam']); ?>"
+                readonly
+            >
+        </div>
 
-      <!-- Alamat -->
-      <div class="form-group">
-        <label for="alamat">Alamat</label>
-        <textarea 
-          id="alamat" 
-          name="alamat" 
-          class="form-control" 
-          placeholder="Masukkan alamat peminjam..." 
-          rows="2"
-          required
-        ></textarea>
-      </div>
+        <div class="total-box">
+            <span>Total Pembayaran</span>
 
-      <hr class="section-divider">
-      <p class="section-title">Informasi Pembayaran / Jaminan</p>
+            <?php if ($total > 0) { ?>
 
-      <!-- Metode Pembayaran / Jaminan -->
-      <div class="form-group">
-        <label for="metode_pembayaran">Metode Pembayaran / Jaminan</label>
-        <select id="metode_pembayaran" name="metode_pembayaran" class="form-control" required>
-          <option value="" disabled selected>Pilih metode...</option>
-          <option value="Tunai">Tunai / Cash</option>
-          <option value="Transfer">Transfer Bank</option>
-          <option value="QRIS">QRIS</option>
-          <option value="Jaminan Kartu Identitas">Jaminan KTP / Kartu Pelajar</option>
-        </select>
-      </div>
+                <strong>
+                    Rp<?= number_format($total, 0, ',', '.'); ?>
+                </strong>
 
-      <!-- Jumlah Biaya / Disposisi -->
-      <div class="form-group">
-        <label for="biaya">Total Biaya / Bayar (Rp)</label>
-        <input 
-          type="number" 
-          id="biaya" 
-          name="biaya" 
-          class="form-control" 
-          placeholder="Masukkan nominal angka (cth: 50000)..." 
-        />
-      </div>
+            <?php } else { ?>
 
-      <!-- Tombol Simpan -->
-      <button type="submit" class="btn-submit">Simpan Transaksi</button>
+                <strong>Menunggu data detail peminjaman</strong>
+
+                <p>
+                    Total pembayaran akan muncul setelah detail barang
+                    peminjaman tersedia.
+                </p>
+
+            <?php } ?>
+        </div>
+
+        <?php if ($pesan) { ?>
+            <div class="alert alert-success">
+                <?= htmlspecialchars($pesan); ?>
+            </div>
+        <?php } ?>
+
+        <?php if ($error) { ?>
+            <div class="alert alert-error">
+                <?= htmlspecialchars($error); ?>
+            </div>
+        <?php } ?>
+
+        <?php if ($pembayaran) { ?>
+
+            <div class="status-box">
+
+                <strong>Status Pembayaran</strong>
+                <p>
+                    <?= htmlspecialchars($pembayaran['status_pembayaran']); ?>
+                </p>
+
+                <br>
+
+                <strong>Metode Pembayaran</strong>
+                <p>
+                    <?= htmlspecialchars($pembayaran['metode_pembayaran']); ?>
+                </p>
+
+                <br>
+
+                <strong>Tanggal Pembayaran</strong>
+                <p>
+                    <?= htmlspecialchars($pembayaran['tgl_bayar']); ?>
+                </p>
+
+                <br>
+
+                <strong>Total Dibayarkan</strong>
+                <p>
+                    Rp<?= number_format($pembayaran['total'], 0, ',', '.'); ?>
+                </p>
+
+            </div>
+
+        <?php } elseif ($total > 0) { ?>
+
+            <div class="form-group">
+                <label for="metode_pembayaran">Metode Pembayaran</label>
+
+                <select
+                    name="metode_pembayaran"
+                    id="metode_pembayaran"
+                    class="form-control"
+                    required
+                >
+                    <option value="">Pilih metode pembayaran</option>
+                    <option value="Tunai">Tunai / Cash</option>
+                    <option value="Transfer">Transfer Bank</option>
+                    <option value="QRIS">QRIS</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="keterangan">Keterangan (Opsional)</label>
+
+                <textarea
+                    name="keterangan"
+                    id="keterangan"
+                    class="form-control"
+                    rows="3"
+                    placeholder="Tambahkan keterangan jika diperlukan"
+            ></textarea>
+            </div>
+
+            <button type="submit" class="btn-submit">
+                Kirim Pembayaran
+            </button>
+
+        <?php } else { ?>
+
+            <div class="alert alert-error">
+                Form pembayaran belum tersedia karena detail
+                peminjaman belum selesai.
+            </div>
+
+        <?php } ?>
 
     </form>
-  </div>
+
+</div>
 
 </body>
 </html>

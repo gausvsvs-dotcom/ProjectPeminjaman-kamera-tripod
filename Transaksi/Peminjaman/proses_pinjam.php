@@ -87,6 +87,7 @@ mysqli_stmt_bind_param(
     $alamat
 );
 
+
 if (mysqli_stmt_execute($stmt)) {
 
     $id_baru = mysqli_insert_id($koneksi);
@@ -101,7 +102,8 @@ if (mysqli_stmt_execute($stmt)) {
 
 } else {
 
-    $_SESSION['pesan_error'] = "Gagal menyimpan pengajuan peminjaman. Silakan coba kembali.";
+    $_SESSION['pesan_error'] = "Gagal menyimpan pengajuan peminjaman: "
+        . mysqli_stmt_error($stmt);
 
     mysqli_stmt_close($stmt);
     mysqli_close($koneksi);
@@ -109,4 +111,3 @@ if (mysqli_stmt_execute($stmt)) {
     header("Location: peminjaman.php");
     exit;
 }
-?>

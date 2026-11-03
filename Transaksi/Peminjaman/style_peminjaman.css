@@ -1,0 +1,363 @@
+
+/* ==============================
+   STYLE FORM PEMINJAMAN
+================================= */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #f3edf5;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 30px 20px;
+    color: #2d2338;
+}
+
+/* Container */
+.container-form {
+    width: 100%;
+    max-width: 520px;
+    background-color: #ffffff;
+    border: 1px solid #e6e1ed;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(129, 116, 160, 0.08);
+}
+
+/* Header */
+.form-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background-color: #8174a0;
+    color: #ffffff;
+    padding: 22px 24px;
+}
+
+.header-icon {
+    width: 45px;
+    height: 45px;
+    background-color: rgba(255, 255, 255, 0.18);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+}
+
+.form-header h2 {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.form-header p {
+    font-size: 12px;
+    color: #f0ebf5;
+    line-height: 1.5;
+}
+
+/* Form Body */
+.form-body {
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Form Group */
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.form-group label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #2d2338;
+}
+
+/* Input & Textarea */
+.form-group input,
+.form-group textarea {
+    width: 100%;
+    padding: 12px 14px;
+    background-color: #f8f6fa;
+    border: 1px solid #d8d0e3;
+    border-radius: 8px;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    color: #2d2338;
+    outline: none;
+    transition: all 0.2s ease;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+    border-color: #8174a0;
+    background-color: #ffffff;
+    box-shadow: 0 0 0 3px rgba(129, 116, 160, 0.12);
+}
+
+.form-group textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+/* Tombol Simpan */
+.btn-simpan {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    padding: 13px;
+    margin-top: 5px;
+    background-color: #8174a0;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.btn-simpan:hover {
+    background-color: #6f628e;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+    body {
+        padding: 15px;
+    }
+
+    .form-header {
+        padding: 18px;
+    }
+
+    .form-body {
+        padding: 20px;
+    }
+}
+
+/* ==============================
+   STYLE DETAIL PEMINJAMAN
+================================= */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #f3edf5;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 30px 20px;
+    color: #2d2338;
+}
+
+/* Container */
+.container-detail {
+    width: 100%;
+    max-width: 600px;
+    background-color: #ffffff;
+    border: 1px solid #e6e1ed;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(129, 116, 160, 0.08);
+}
+
+/* Header */
+.detail-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background-color: #8174a0;
+    color: #ffffff;
+    padding: 22px 24px;
+}
+
+.header-icon {
+    width: 45px;
+    height: 45px;
+    background-color: rgba(255, 255, 255, 0.18);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+}
+
+.detail-header h2 {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.detail-header p {
+    font-size: 12px;
+    color: #f0ebf5;
+}
+
+/* Body */
+.detail-body {
+    padding: 24px;
+}
+
+/* ID Peminjaman */
+.id-peminjaman {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 16px;
+    background-color: #f3edf5;
+    border: 1px solid #e6e1ed;
+    border-radius: 8px;
+    margin-bottom: 25px;
+}
+
+.id-peminjaman span {
+    font-size: 13px;
+    color: #6b6078;
+}
+
+.id-peminjaman strong {
+    font-size: 15px;
+    color: #8174a0;
+}
+
+/* Section Title */
+.section-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #8174a0;
+    margin-bottom: 15px;
+}
+
+/* Detail Group */
+.detail-group {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 25px;
+}
+
+.detail-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 20px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #eee9f2;
+}
+
+.detail-item span:first-child {
+    font-size: 13px;
+    color: #6b6078;
+}
+
+.detail-item strong {
+    font-size: 13px;
+    font-weight: 600;
+    text-align: right;
+    max-width: 60%;
+    overflow-wrap: anywhere;
+}
+
+/* Status */
+.status-badge {
+    display: inline-block;
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.status-menunggu {
+    background-color: #fff3cd;
+    color: #856404;
+}
+
+.status-disetujui {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.status-ditolak {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+.status-dipinjam {
+    background-color: #cce5ff;
+    color: #004085;
+}
+
+.status-dikembalikan {
+    background-color: #e2d9f3;
+    color: #563d7c;
+}
+
+/* Tombol Kembali */
+.btn-kembali {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 11px 18px;
+    background-color: #8174a0;
+    color: #ffffff;
+    text-decoration: none;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    transition: 0.2s;
+}
+
+.btn-kembali:hover {
+    background-color: #6f628e;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+    body {
+        padding: 15px;
+    }
+
+    .detail-header {
+        padding: 18px;
+    }
+
+    .detail-body {
+        padding: 20px;
+    }
+
+    .detail-item {
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .detail-item strong {
+        text-align: left;
+        max-width: 100%;
+    }
+}

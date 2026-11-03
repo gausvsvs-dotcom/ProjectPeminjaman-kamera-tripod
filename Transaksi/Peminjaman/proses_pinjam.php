@@ -18,7 +18,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $nama_peminjam    = isset($_POST['nama_peminjam']) ? mysqli_real_escape_string($koneksi, $_POST['nama_peminjam']) : '';
     $no_hp            = isset($_POST['no_hp']) ? mysqli_real_escape_string($koneksi, $_POST['no_hp']) : '';
     $tgl_peminjaman   = isset($_POST['tgl_peminjaman']) ? mysqli_real_escape_string($koneksi, $_POST['tgl_peminjaman']) : '';
-    $tgl_jatuh_tempo  = isset($_POST['tgl_kembali']) ? mysqli_real_escape_string($koneksi, $_POST['tgl_kembali']) : '';
+    $tgl_jatuh_tempo  = isset($_POST['tgl_jatuh_tempo']) ? mysqli_real_escape_string($koneksi, $_POST['tgl_jatuh_tempo']) : '';
     $alamat           = isset($_POST['alamat']) ? mysqli_real_escape_string($koneksi, $_POST['alamat']) : '';
     $jenis_peminjaman = isset($_POST['jenis_peminjaman']) ? mysqli_real_escape_string($koneksi, $_POST['jenis_peminjaman']) : 'offline';
     

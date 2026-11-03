@@ -1,4 +1,3 @@
-
 <?php
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
@@ -8,6 +7,9 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 require_once "../../DataMaster/config/koneksi.php";
+
+// Header DataMaster (cukup satu kali)
+include "../../DataMaster/layout/header.php";
 
 $query = mysqli_query($conn, "
     SELECT id_peminjaman, nama_peminjam, tgl_peminjaman, status
@@ -38,12 +40,12 @@ function aman($data)
 }
 ?>
 
-<?php include "../../DataMaster/layout/header.php"; ?>
-
+<!-- CSS KHUSUS HALAMAN TRANSAKSI -->
+<link rel="stylesheet" href="/ProjectPeminjaman-kamera-tripod/DataMaster/assets/css/style.css">
+<link rel="stylesheet" href="/ProjectPeminjaman-kamera-tripod/DataMaster/assets/css/navbar.css">
 <link rel="stylesheet" href="/ProjectPeminjaman-kamera-tripod/DataMaster/assets/css/data-master.css?v=3">
 
 <?php include "../../DataMaster/layout/navbar.php"; ?>
-
 <div class="main-content data-master-page">
     <div class="container-fluid">
 

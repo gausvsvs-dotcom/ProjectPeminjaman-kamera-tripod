@@ -1,243 +1,199 @@
-<?php
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-session_start();
-require_once __DIR__ . '/../config/koneksi.php';
-/** @var mysqli $conn */
 
-// Pastikan pengguna sudah login
-if (!isset($_SESSION['id_user'])) {
-    header("Location: ../../login.php");
-    exit;
-}
-
-// Ambil ID hanya dari session pengguna yang login
-$id_user = (int) $_SESSION['id_user'];
-
-$error = "";
-$success = "";
-
-// Proses ganti password
-if (isset($_POST['ganti_password'])) {
-
-    $password_lama = $_POST['password_lama'] ?? '';
-    $password_baru = $_POST['password_baru'] ?? '';
-    $konfirmasi_password = $_POST['konfirmasi_password'] ?? '';
-
-    if (
-        $password_lama === '' ||
-        $password_baru === '' ||
-        $konfirmasi_password === ''
-    ) {
-        $error = "Semua kolom password wajib diisi.";
-
-    } elseif (strlen($password_baru) < 8) {
-        $error = "Password baru minimal 8 karakter.";
-
-    } elseif ($password_baru !== $konfirmasi_password) {
-        $error = "Konfirmasi password baru tidak cocok.";
-
-    } elseif ($password_lama === $password_baru) {
-        $error = "Password baru harus berbeda dari password lama.";
-
-    } else {
-
-        // Ambil password akun yang sedang login
-        $stmt = mysqli_prepare(
-            $conn,
-            "SELECT password
-             FROM pengguna
-             WHERE id_user = ?"
-        );
-
-        mysqli_stmt_bind_param($stmt, "i", $id_user);
-        mysqli_stmt_execute($stmt);
-
-        $hasil = mysqli_stmt_get_result($stmt);
-        $data = mysqli_fetch_assoc($hasil);
-
-        mysqli_stmt_close($stmt);
-
-        if (!$data) {
-            $error = "Data akun tidak ditemukan.";
-
-        } elseif (!password_verify($password_lama, $data['password'])) {
-            $error = "Password lama yang kamu masukkan salah.";
-
-        } else {
-
-            // Buat hash password baru
-            $hash_password = password_hash(
-                $password_baru,
-                PASSWORD_DEFAULT
-            );
-
-            // Update password hanya untuk akun yang sedang login
-            $stmt_update = mysqli_prepare(
-                $conn,
-                "UPDATE pengguna
-                 SET password = ?
-                 WHERE id_user = ?"
-            );
-
-            mysqli_stmt_bind_param(
-                $stmt_update,
-                "si",
-                $hash_password,
-                $id_user
-            );
-
-            if (mysqli_stmt_execute($stmt_update)) {
-                $success = "Password berhasil diubah.";
-            } else {
-                $error = "Password gagal diubah. Silakan coba lagi.";
-            }
-
-            mysqli_stmt_close($stmt_update);
-        }
-    }
-}
-?>
-
-<?php include __DIR__ . '/../../layout/header.php'; ?>
-<link rel="stylesheet" href="../../assets/css/data-master.css">
-<?php include __DIR__ . '/../../layout/navbar.php'; ?>
-
-<div class="main-content data-master-page">
-    <div class="container-fluid">
-
-        <!-- Header -->
-        <div class="data-page-header">
-            <div class="data-page-icon">
-                <i class="bi bi-shield-lock"></i>
-            </div>
-
-            <div>
-                <h2>Ganti Password</h2>
-                <p>
-                    Perbarui password untuk melindungi akunmu.
-                </p>
-            </div>
+<!-- KEAMANAN AKUN -->
+<div class="profile-security-card mt-4">
+    <div class="d-flex align-items-center gap-3">
+        <div class="profile-security-icon">
+            <i class="bi bi-shield-lock"></i>
         </div>
 
-        <!-- Form -->
-        <div class="data-form-card">
+        <div>
+            <h6 class="mb-1">Keamanan Akun</h6>
+            <p class="text-muted mb-2">
+                Ubah password untuk menjaga keamanan akun.
+            </p>
 
-            <div class="data-form-header">
-                <div>
-                    <h5 class="mb-1">Keamanan Akun</h5>
-                    <p class="mb-0">
-                        Masukkan password lama dan password baru.
-                    </p>
-                </div>
-            </div>
-
-            <div class="data-form-body">
-
-                <?php if ($error !== '') { ?>
-                    <div class="alert alert-danger" role="alert">
-                        <i class="bi bi-exclamation-circle me-2"></i>
-                        <?= htmlspecialchars(
-                            $error,
-                            ENT_QUOTES,
-                            'UTF-8'
-                        ); ?>
-                    </div>
-                <?php } ?>
-
-                <?php if ($success !== '') { ?>
-                    <div class="alert alert-success" role="alert">
-                        <i class="bi bi-check-circle me-2"></i>
-                        <?= htmlspecialchars(
-                            $success,
-                            ENT_QUOTES,
-                            'UTF-8'
-                        ); ?>
-                    </div>
-                <?php } ?>
-
-                <form method="POST">
-
-                    <div class="mb-4">
-                        <label for="password_lama" class="data-form-label">
-                            Password Lama
-                        </label>
-
-                        <input
-                            type="password"
-                            id="password_lama"
-                            name="password_lama"
-                            class="data-form-control"
-                            placeholder="Masukkan password lama"
-                            autocomplete="current-password"
-                            required
-                        >
-                    </div>
-
-                    <div class="mb-4">
-                        <label for="password_baru" class="data-form-label">
-                            Password Baru
-                        </label>
-
-                        <input
-                            type="password"
-                            id="password_baru"
-                            name="password_baru"
-                            class="data-form-control"
-                            placeholder="Minimal 8 karakter"
-                            minlength="8"
-                            autocomplete="new-password"
-                            required
-                        >
-
-                        <small class="text-muted">
-                            Gunakan password yang sulit ditebak.
-                        </small>
-                    </div>
-
-                    <div class="mb-4">
-                        <label
-                            for="konfirmasi_password"
-                            class="data-form-label"
-                        >
-                            Konfirmasi Password Baru
-                        </label>
-
-                        <input
-                            type="password"
-                            id="konfirmasi_password"
-                            name="konfirmasi_password"
-                            class="data-form-control"
-                            placeholder="Ulangi password baru"
-                            minlength="8"
-                            autocomplete="new-password"
-                            required
-                        >
-                    </div>
-
-                    <div class="d-flex flex-wrap gap-2 mt-4">
-                        <button
-                            type="submit"
-                            name="ganti_password"
-                            class="btn-form-save"
-                        >
-                            <i class="bi bi-shield-check me-1"></i>
-                            Ganti Password
-                        </button>
-
-                        <a
-                            href="profile.php"
-                            class="btn-form-cancel"
-                        >
-                            <i class="bi bi-arrow-left me-1"></i>
-                            Kembali ke Profil
-                        </a>
-                    </div>
-
-                </form>
-            </div>
+            <button
+                type="button"
+                class="btn-detail-back"
+                id="btnBukaPassword"
+                onclick="toggleFormPassword()"
+            >
+                <i class="bi bi-key me-1"></i>
+                Ganti Password
+                <i class="bi bi-chevron-down ms-1" id="iconPassword"></i>
+            </button>
         </div>
     </div>
-</div>
 
-<?php include __DIR__ . '/../../layout/footer.php'; ?>
+    <!-- FORM GANTI PASSWORD -->
+    <div id="formPassword" style="display: none;" class="mt-3">
+        <hr>
+
+        <div id="pesanPassword"></div>
+
+        <form id="formGantiPassword">
+
+            <div class="mb-3">
+                <label for="password_lama" class="data-form-label">
+                    Password Lama
+                </label>
+                <input
+                    type="password"
+                    id="password_lama"
+                    name="password_lama"
+                    class="data-form-control"
+                    placeholder="Masukkan password lama"
+                    autocomplete="current-password"
+                    required
+            >
+            </div>
+
+            <div class="mb-3">
+                <label for="password_baru" class="data-form-label">
+                    Password Baru
+                </label>
+                <input
+                    type="password"
+                    id="password_baru"
+                    name="password_baru"
+                    class="data-form-control"
+                    placeholder="Minimal 8 karakter"
+                    minlength="8"
+                    autocomplete="new-password"
+                    required
+                >
+                <small class="text-muted">
+                    Gunakan password yang sulit ditebak.
+                </small>
+            </div>
+
+            <div class="mb-3">
+                <label for="konfirmasi_password" class="data-form-label">
+                    Konfirmasi Password Baru
+                </label>
+                <input
+                    type="password"
+                    id="konfirmasi_password"
+                    name="konfirmasi_password"
+                    class="data-form-control"
+                    placeholder="Ulangi password baru"
+                    minlength="8"
+                    autocomplete="new-password"
+                    required
+                >
+            </div>
+
+            <div class="d-flex gap-2 mt-3">
+                <button type="submit" class="btn-form-save" id="btnSimpanPassword">
+                    <i class="bi bi-shield-check me-1"></i>
+                    Simpan Password
+                </button>
+
+                <button
+                    type="button"
+                    class="btn-form-cancel"
+                    onclick="toggleFormPassword()"
+                >
+                    Batal
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+<script>
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    // Buka dan tutup form password di dalam card profil
+    window.toggleFormPassword = function () {
+
+        const form = document.getElementById("formPassword");
+        const icon = document.getElementById("iconPassword");
+
+        if (!form || !icon) return;
+
+        if (form.style.display === "none") {
+            form.style.display = "block";
+            icon.className = "bi bi-chevron-up ms-1";
+        } else {
+            form.style.display = "none";
+            icon.className = "bi bi-chevron-down ms-1";
+        }
+    };
+
+    // Proses submit ganti password
+    const formPassword = document.getElementById("formGantiPassword");
+
+    if (!formPassword) return;
+
+    formPassword.addEventListener("submit", async function (event) {
+
+        event.preventDefault();
+
+        const tombol = document.getElementById("btnSimpanPassword");
+        const pesan = document.getElementById("pesanPassword");
+
+        tombol.disabled = true;
+        tombol.innerHTML = "Menyimpan...";
+        pesan.innerHTML = "";
+
+        const formData = new FormData(this);
+        formData.append("ganti_password", "1");
+
+        try {
+
+            const response = await fetch(
+                "../pengguna/proses_ganti_password.php",
+                {
+                    method: "POST",
+                    body: formData
+                }
+            );
+
+            const data = await response.json();
+
+            if (data.status === "berhasil") {
+
+                pesan.innerHTML = `
+                    <div class="alert alert-success py-2">
+                        <i class="bi bi-check-circle me-2"></i>
+                        ${data.pesan}
+                    </div>
+                `;
+
+                this.reset();
+
+            } else {
+
+                pesan.innerHTML = `
+                    <div class="alert alert-danger py-2">
+                        <i class="bi bi-exclamation-circle me-2"></i>
+                        ${data.pesan}
+                    </div>
+                `;
+
+            }
+
+        } catch (error) {
+
+            pesan.innerHTML = `
+                <div class="alert alert-danger py-2">
+                    Terjadi kesalahan saat menghubungi server.
+                </div>
+            `;
+
+            console.error(error);
+
+        } finally {
+
+            tombol.disabled = false;
+            tombol.innerHTML =
+                '<i class="bi bi-shield-check me-1"></i> Simpan Password';
+
+        }
+
+    });
+
+});
+
+</script>

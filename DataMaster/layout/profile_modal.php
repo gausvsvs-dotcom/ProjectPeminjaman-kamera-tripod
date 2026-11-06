@@ -148,38 +148,148 @@
 </div>
 
 <script>
+
 document.addEventListener("DOMContentLoaded", function () {
+    const profileForm = document.getElementById("profileForm");
     const photoInput = document.getElementById("profilePhotoInput");
     const preview = document.getElementById("profilePreview");
     const removeButton = document.getElementById("removeProfilePhoto");
+    const nameInput = document.getElementById("profileName");
+    const usernameInput = document.getElementById("profileUsername");
+    const saveButton = profileForm.querySelector('[type="submit"]');
 
-    if (!photoInput || !preview || !removeButton) return;
+    if (!profileForm || !photoInput || !preview || !removeButton) return;
 
+    const originalName = nameInput.value;
+    const originalUsername = usernameInput.value;
     const originalPhoto = preview.src;
 
+    let fotoSementara = null;
+
+    // Preview foto
     photoInput.addEventListener("change", function () {
         const file = this.files[0];
 
         if (!file) return;
 
-        if (!file.type.startsWith("image/")) {
-            alert("Pilih file gambar yang valid.");
+        if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
+            alert("Format foto harus JPG, PNG, atau WEBP.");
             this.value = "";
             return;
         }
 
-        preview.src = URL.createObjectURL(file);
+        if (file.size > 2 * 1024 * 1024) {
+            alert("Ukuran foto maksimal 2 MB.");
+            this.value = "";
+            return;
+        }
+
+        if (fotoSementara) {
+            URL.revokeObjectURL(fotoSementara);
+        }
+
+        fotoSementara = URL.createObjectURL(file);
+        preview.src = fotoSementara;
     });
 
+    // Batalkan pilihan foto
     removeButton.addEventListener("click", function () {
         photoInput.value = "";
+
+        if (fotoSementara) {
+            URL.revokeObjectURL(fotoSementara);
+            fotoSementara = null;
+        }
+
         preview.src = originalPhoto;
     });
 
-    document.getElementById("profileForm").addEventListener("submit", function (event) {
-        if (!confirm("Simpan perubahan profil?")) {
-            event.preventDefault();
+    // Simpan profil tanpa pindah halaman
+    profileForm.addEventListener("submit", async function (event) {
+        event.preventDefault();
+
+        const nama = nameInput.value.trim();
+        const username = usernameInput.value.trim();
+        const fotoDipilih = photoInput.files.length > 0;
+
+        if (nama === "" || username === "") {
+            alert("Nama dan username wajib diisi!");
+            return;
+        }
+
+        if (
+            nama === originalName &&
+            username === originalUsername &&
+            !fotoDipilih
+        ) {
+            alert("Tidak ada perubahan profil.");
+            return;
+        }
+
+        const formData = new FormData(profileForm);
+
+        saveButton.disabled = true;
+        saveButton.innerHTML = "Menyimpan...";
+
+        try {
+            const response = await fetch(profileForm.action, {
+                method: "POST",
+                body: formData
+            });
+
+            const data = await response.json();
+
+            if (data.status === "berhasil") {
+                alert(data.pesan);
+
+                // Update nama dan username
+                document.querySelectorAll(
+                    ".top-profile-name, .profile-dropdown-name, .profile-name"
+                ).forEach(el => el.textContent = data.nama);
+
+                document.querySelectorAll(
+                    ".profile-dropdown-username, .profile-username"
+                ).forEach(el => el.textContent = "@" + data.username);
+
+                // Update foto navbar, sidebar, dan modal
+                const fotoBaru =
+                    "/ProjectPeminjaman-kamera-tripod/DataMaster/assets/img/" +
+                    encodeURIComponent(data.foto);
+
+                document.querySelectorAll(
+                    ".top-profile-photo, .profile-dropdown-photo, .profile-photo, #profilePreview"
+                ).forEach(img => {
+                    img.src = fotoBaru;
+                });
+
+                // Simpan nilai terbaru sebagai nilai awal
+                nameInput.value = data.nama;
+                usernameInput.value = data.username;
+
+                photoInput.value = "";
+
+                // Update nama di samping foto dalam modal
+                const namaModal = document.querySelector(
+                    "#profileModal .col-md-4 h6"
+                );
+
+                if (namaModal) {
+                    namaModal.textContent = data.nama;
+                }
+
+            } else {
+                alert(data.pesan);
+            }
+
+        } catch (error) {
+            alert("Terjadi kesalahan saat menyimpan profil.");
+            console.error(error);
+        } finally {
+            saveButton.disabled = false;
+            saveButton.innerHTML =
+                '<i class="bi bi-check2-circle me-1"></i> Simpan Perubahan';
         }
     });
 });
+
 </script>

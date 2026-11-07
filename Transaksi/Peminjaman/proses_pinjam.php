@@ -1,53 +1,113 @@
+
 <?php
 session_start();
 
-$host = "localhost";
-$user = "root";
-$pass = "";
-$db   = "project";
+require_once "koneksi.php";
 
-$koneksi = mysqli_connect($host, $user, $pass, $db);
-
-if (!$koneksi) {
-    die("Koneksi database gagal: " . mysqli_connect_error());
+// Pastikan hanya form POST yang bisa menjalankan proses
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    header("Location: peminjaman.php");
+    exit;
 }
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    
-    // Ambil data dari form dengan aman
-    $nama_peminjam    = isset($_POST['nama_peminjam']) ? mysqli_real_escape_string($koneksi, $_POST['nama_peminjam']) : '';
-    $no_hp            = isset($_POST['no_hp']) ? mysqli_real_escape_string($koneksi, $_POST['no_hp']) : '';
-    $tgl_peminjaman   = isset($_POST['tgl_peminjaman']) ? mysqli_real_escape_string($koneksi, $_POST['tgl_peminjaman']) : '';
-    $tgl_jatuh_tempo  = isset($_POST['tgl_jatuh_tempo']) ? mysqli_real_escape_string($koneksi, $_POST['tgl_jatuh_tempo']) : '';
-    $alamat           = isset($_POST['alamat']) ? mysqli_real_escape_string($koneksi, $_POST['alamat']) : '';
-    $jenis_peminjaman = isset($_POST['jenis_peminjaman']) ? mysqli_real_escape_string($koneksi, $_POST['jenis_peminjaman']) : 'offline';
-    
-    // Ambil ID user secara otomatis untuk menghindari error foreign key
-    $query_user = mysqli_query($koneksi, "SELECT id_user FROM pengguna LIMIT 1");
-    if (mysqli_num_rows($query_user) > 0) {
-        $data_user = mysqli_fetch_assoc($query_user);
-        $id_user = $data_user['id_user'];
-    } else {
-        mysqli_query($koneksi, "INSERT INTO pengguna (nama_user, username, role, password) VALUES ('Admin Sistem', 'admin', 'admin', '123')");
-        $id_user = mysqli_insert_id($koneksi);
-    }
+// Ambil data dari form
+$nama_peminjam   = trim($_POST['nama_peminjam'] ?? '');
+$no_hp           = trim($_POST['no_hp'] ?? '');
+$tgl_peminjaman   = trim($_POST['tgl_peminjaman'] ?? '');
+$tgl_jatuh_tempo = trim($_POST['tgl_jatuh_tempo'] ?? '');
+$alamat           = trim($_POST['alamat'] ?? '');
 
-    // Query INSERT ke tabel peminjaman
-    $query = "INSERT INTO peminjaman (id_user, nama_peminjam, no_hp, tgl_peminjaman, tgl_jatuh_tempo, jenis_peminjaman, Alamat) 
-              VALUES ('$id_user', '$nama_peminjam', '$no_hp', '$tgl_peminjaman', '$tgl_jatuh_tempo', '$jenis_peminjaman', '$alamat')";
+// Simpan input jika terjadi kesalahan
+$_SESSION['old'] = [
+    'nama_peminjam'   => $nama_peminjam,
+    'no_hp'           => $no_hp,
+    'tgl_peminjaman'   => $tgl_peminjaman,
+    'tgl_jatuh_tempo' => $tgl_jatuh_tempo,
+    'alamat'           => $alamat
+];
 
-    $result = mysqli_query($koneksi, $query);
+// Validasi
+if (
+    $nama_peminjam === '' ||
+    $no_hp === '' ||
+    $tgl_peminjaman === '' ||
+    $tgl_jatuh_tempo === '' ||
+    $alamat === ''
+) {
+    $_SESSION['pesan_error'] = "Semua data peminjaman wajib diisi.";
+    header("Location: peminjaman.php");
+    exit;
+}
 
-    if ($result) {
-        echo "<script>
-                alert('Data peminjaman berhasil disimpan!');
-                window.history.go(-1); 
-              </script>";
-    } else {
-        echo "Gagal menyimpan data: " . mysqli_error($koneksi);
-    }
+if (!preg_match('/^[0-9+\-\s]{10,20}$/', $no_hp)) {
+    $_SESSION['pesan_error'] = "Nomor HP tidak valid. Periksa kembali.";
+    header("Location: peminjaman.php");
+    exit;
+}
+
+if ($tgl_jatuh_tempo < $tgl_peminjaman) {
+    $_SESSION['pesan_error'] = "Tanggal pengembalian tidak boleh sebelum tanggal peminjaman.";
+    header("Location: peminjaman.php");
+    exit;
+}
+
+// Konsumen belum login
+$id_user = null;
+
+// Status awal sesuai ENUM database
+$status = "Diajukan";
+
+// Jenis peminjaman diisi otomatis karena tidak ditampilkan di form
+$jenis_peminjaman = "online";
+
+// Simpan data
+$query = "INSERT INTO peminjaman
+    (id_user, nama_peminjam, no_hp, tgl_peminjaman,
+     tgl_jatuh_tempo, status, jenis_peminjaman, Alamat)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+
+$stmt = mysqli_prepare($koneksi, $query);
+
+if (!$stmt) {
+    $_SESSION['pesan_error'] = "Terjadi kesalahan saat menyiapkan penyimpanan data.";
+    header("Location: peminjaman.php");
+    exit;
+}
+
+mysqli_stmt_bind_param(
+    $stmt,
+    "isssssss",
+    $id_user,
+    $nama_peminjam,
+    $no_hp,
+    $tgl_peminjaman,
+    $tgl_jatuh_tempo,
+    $status,
+    $jenis_peminjaman,
+    $alamat
+);
+
+
+if (mysqli_stmt_execute($stmt)) {
+
+    $id_baru = mysqli_insert_id($koneksi);
+
+    unset($_SESSION['old']);
+
+    mysqli_stmt_close($stmt);
+    mysqli_close($koneksi);
+
+    header("Location: detail_peminjaman.php?id=" . $id_baru);
+    exit;
+
 } else {
-    header("Location: form_peminjaman.php");
-    exit();
+
+    $_SESSION['pesan_error'] = "Gagal menyimpan pengajuan peminjaman: "
+        . mysqli_stmt_error($stmt);
+
+    mysqli_stmt_close($stmt);
+    mysqli_close($koneksi);
+
+    header("Location: peminjaman.php");
+    exit;
 }
-?>

@@ -361,3 +361,33 @@ body {
         max-width: 100%;
     }
 }
+
+/* =================================
+   PESAN ERROR DETAIL PEMINJAMAN
+================================= */
+
+.alert-error {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 16px;
+    background-color: #f3edf5;
+    color: #6f628e;
+    border: 1px solid #d8d0e3;
+    border-radius: 8px;
+    font-size: 13px;
+    margin-bottom: 20px;
+}
+/* Pesan validasi pada form */
+.alert-error {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 13px 15px;
+    background-color: #f3edf5;
+    color: #6f628e;
+    border: 1px solid #d8d0e3;
+    border-radius: 8px;
+    font-size: 13px;
+    line-height: 1.5;
+}

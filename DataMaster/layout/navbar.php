@@ -190,7 +190,7 @@
         </div>
 
         <a
-            href="../../Transaksi/Peminjaman/detail_peminjaman.php"
+            href="../peminjaman/index.php"
             class="menu-item">
             <i class="bi bi-clipboard-check-fill"></i>
             <span>Peminjaman</span>

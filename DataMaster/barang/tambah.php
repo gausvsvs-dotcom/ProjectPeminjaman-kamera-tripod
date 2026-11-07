@@ -1,13 +1,9 @@
-
 <?php
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
-
 require_once "../config/koneksi.php";
 /** @var mysqli $conn */
-
 $error = "";
-
 $nama_barang = "";
 $jenis_barang = "";
 $id_kategori = "";
@@ -17,29 +13,23 @@ $harga_sewa = "";
 $deskripsi = "";
 $kondisi_unit_input = [];
 
-// AMBIL DAFTAR KONDISI
 $daftar_kondisi = [];
-
 $query_kondisi = mysqli_query($conn, "
     SELECT id_kondisi, nama_kondisi
     FROM kondisi_barang
     ORDER BY id_kondisi ASC
 ");
-
 if (!$query_kondisi) {
     die("Gagal mengambil data kondisi: " . mysqli_error($conn));
 }
-
 while ($row = mysqli_fetch_assoc($query_kondisi)) {
     $daftar_kondisi[] = $row;
 }
-
 $kondisi_valid = array_map(
     fn($item) => (int) $item["id_kondisi"],
     $daftar_kondisi
 );
 
-// MEMBUAT KODE BARANG OTOMATIS
 function buatKodeBarang($conn, $prefix)
 {
     $stmt = mysqli_prepare($conn, "
@@ -47,190 +37,129 @@ function buatKodeBarang($conn, $prefix)
         FROM barang
         WHERE kode_barang REGEXP ?
     ");
-
     if (!$stmt) {
         throw new Exception(mysqli_error($conn));
     }
-
     $pola = "^" . $prefix . "[0-9]+$";
-
     mysqli_stmt_bind_param($stmt, "s", $pola);
     mysqli_stmt_execute($stmt);
-
     $result = mysqli_stmt_get_result($stmt);
     $data = mysqli_fetch_assoc($result);
-
     mysqli_stmt_close($stmt);
-
     $nomor = (int) ($data["nomor"] ?? 0) + 1;
-
     return $prefix . str_pad($nomor, 3, "0", STR_PAD_LEFT);
 }
-
 // PROSES SIMPAN BARANG
 if (isset($_POST["simpan"])) {
-
     $nama_barang = trim($_POST["nama_barang"] ?? "");
     $jenis_barang = $_POST["jenis_barang"] ?? "";
     $id_kategori = (int) ($_POST["id_kategori"] ?? 0);
     $id_merk = (int) ($_POST["id_merk"] ?? 0);
-
     $stok_input = trim((string) ($_POST["stok"] ?? ""));
     $harga_input = trim((string) ($_POST["harga_sewa"] ?? ""));
     $deskripsi = trim($_POST["deskripsi"] ?? "");
-
     $stok_valid = filter_var($stok_input, FILTER_VALIDATE_INT);
-
     $harga_valid = (
         $harga_input !== "" &&
         is_numeric($harga_input) &&
         is_finite((float) $harga_input)
     );
-
     $kondisi_unit_input = $_POST["kondisi_unit"] ?? [];
-
     if (!is_array($kondisi_unit_input)) {
         $kondisi_unit_input = [];
     }
-
     $kondisi_unit_input = array_map(
         "intval",
         array_values($kondisi_unit_input)
     );
-
     $foto = "";
     $file_terunggah = "";
-
     // VALIDASI
     if ($nama_barang === "") {
-
         $error = "Nama barang wajib diisi.";
-
     } elseif (!in_array($jenis_barang, ["kamera", "tripod"], true)) {
-
         $error = "Jenis barang tidak valid.";
-
     } elseif ($id_kategori <= 0 || $id_merk <= 0) {
-
         $error = "Kategori dan merk wajib dipilih.";
-
     } elseif (
         $stok_valid === false ||
         $stok_valid < 1 ||
         $stok_valid > 500
     ) {
-
         $error = "Stok harus berupa angka antara 1 sampai 500.";
-
     } elseif (
         count($kondisi_unit_input) !== $stok_valid ||
         count(array_diff($kondisi_unit_input, $kondisi_valid)) > 0
     ) {
-
         $error = "Pilih kondisi untuk setiap unit barang.";
-
     } elseif (!$harga_valid || (float) $harga_input <= 0) {
-
         $error = "Harga sewa per paket harus lebih dari 0.";
-
     } else {
-
         $stok = $stok_valid;
         $harga_sewa = (float) $harga_input;
-
         // KONDISI BARANG UTAMA MENGIKUTI UNIT PERTAMA
         $id_kondisi = $kondisi_unit_input[0];
-
         $prefix = ($jenis_barang === "kamera") ? "CAM" : "TRI";
-
         try {
             $kode_barang = buatKodeBarang($conn, $prefix);
         } catch (Throwable $e) {
             $error = "Kode barang gagal dibuat: " . $e->getMessage();
         }
-
         // UPLOAD FOTO
         if ($error === "" && isset($_FILES["foto"]) &&
             $_FILES["foto"]["error"] !== UPLOAD_ERR_NO_FILE) {
-
             if ($_FILES["foto"]["error"] !== UPLOAD_ERR_OK) {
-
                 $error = "Upload foto gagal.";
-
             } else {
-
                 $tmp_foto = $_FILES["foto"]["tmp_name"];
                 $ukuran_foto = $_FILES["foto"]["size"];
                 $nama_asli = $_FILES["foto"]["name"];
-
                 $info_gambar = @getimagesize($tmp_foto);
-
                 $ekstensi = strtolower(
                     pathinfo($nama_asli, PATHINFO_EXTENSION)
                 );
-
                 $ekstensi_diizinkan = [
                     "jpg", "jpeg", "png", "gif", "webp"
                 ];
-
                 $tipe_diizinkan = [
                     IMAGETYPE_JPEG,
                     IMAGETYPE_PNG,
                     IMAGETYPE_GIF,
                     IMAGETYPE_WEBP
                 ];
-
                 if (
                     $info_gambar === false ||
                     !in_array($info_gambar[2], $tipe_diizinkan, true) ||
                     !in_array($ekstensi, $ekstensi_diizinkan, true)
                 ) {
-
                     $error = "File harus berupa gambar JPG, PNG, GIF, atau WEBP.";
-
                 } elseif ($ukuran_foto > 5 * 1024 * 1024) {
-
                     $error = "Ukuran foto maksimal 5 MB.";
-
                 } else {
-
                     $folder_upload = __DIR__ . "/../uploads/barang/";
-
                     if (
                         !is_dir($folder_upload) &&
                         !mkdir($folder_upload, 0755, true)
                     ) {
-
                         $error = "Folder upload gagal dibuat.";
-
                     } else {
-
                         $nama_file = bin2hex(random_bytes(16))
                             . "." . $ekstensi;
-
                         $tujuan_foto = $folder_upload . $nama_file;
-
                         if (move_uploaded_file($tmp_foto, $tujuan_foto)) {
-
                             $foto = $nama_file;
                             $file_terunggah = $tujuan_foto;
-
                         } else {
-
                             $error = "Foto gagal disimpan.";
                         }
                     }
                 }
             }
         }
-
         // SIMPAN BARANG DAN UNIT DALAM SATU TRANSAKSI
         if ($error === "") {
-
             mysqli_begin_transaction($conn);
-
             try {
-
                 // INSERT BARANG UTAMA
                 $sql = "
                     INSERT INTO barang (
@@ -246,13 +175,10 @@ if (isset($_POST["simpan"])) {
                         deskripsi
                     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 ";
-
                 $stmt = mysqli_prepare($conn, $sql);
-
                 if (!$stmt) {
                     throw new Exception(mysqli_error($conn));
                 }
-
                 mysqli_stmt_bind_param(
                     $stmt,
                     "sssiiidsss",
@@ -267,11 +193,9 @@ if (isset($_POST["simpan"])) {
                     $foto,
                     $deskripsi
                 );
-
                 if (!mysqli_stmt_execute($stmt)) {
                     throw new Exception(mysqli_stmt_error($stmt));
                 }
-
                 $id_barang_baru = mysqli_insert_id($conn);
 
                 mysqli_stmt_close($stmt);
@@ -637,104 +561,73 @@ function tampilkanPrefix() {
         kodeBarang.value = "Pilih jenis barang terlebih dahulu";
     }
 }
-
 jenisBarang.addEventListener("change", tampilkanPrefix);
 tampilkanPrefix();
-
 // PILIHAN KONDISI SETIAP UNIT
 const inputStok = document.getElementById("stok");
 const containerKondisi = document.getElementById("kondisi-unit-container");
-
 const daftarKondisi = <?= json_encode(
     $daftar_kondisi,
     JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP
 ); ?>;
-
 const kondisiSebelumnya = <?= json_encode($kondisi_unit_input); ?>;
-
 function buatPilihanKondisi() {
     const jumlah = parseInt(inputStok.value) || 0;
-
     const pilihanLama = Array.from(
         containerKondisi.querySelectorAll("select")
     ).map(select => select.value);
-
     containerKondisi.replaceChildren();
-
     if (jumlah < 1 || jumlah > 500) {
         return;
     }
-
     for (let i = 0; i < jumlah; i++) {
-
         const field = document.createElement("div");
         field.className = "barang-field";
         field.style.marginBottom = "12px";
-
         const label = document.createElement("label");
         label.className = "data-form-label";
         label.textContent = `Kondisi Unit ${String(i + 1).padStart(3, "0")}`;
-
         const select = document.createElement("select");
         select.name = `kondisi_unit[${i}]`;
         select.className = "data-form-control";
         select.required = true;
-
         const pilihanAwal = document.createElement("option");
         pilihanAwal.value = "";
         pilihanAwal.textContent = "-- Pilih Kondisi --";
         select.appendChild(pilihanAwal);
-
         daftarKondisi.forEach(item => {
-
             const option = document.createElement("option");
-
             option.value = item.id_kondisi;
             option.textContent = item.nama_kondisi;
-
             const nilaiLama = pilihanLama[i] || kondisiSebelumnya[i];
-
             if (Number(nilaiLama) === Number(item.id_kondisi)) {
                 option.selected = true;
             }
-
             select.appendChild(option);
         });
-
         field.append(label, select);
         containerKondisi.appendChild(field);
     }
 }
-
 inputStok.addEventListener("input", buatPilihanKondisi);
 buatPilihanKondisi();
-
 // PREVIEW FOTO
 const inputFoto = document.getElementById("foto");
 const previewFoto = document.getElementById("preview_foto");
-
 function tampilkanPlaceholder() {
     previewFoto.replaceChildren();
-
     const placeholder = document.createElement("div");
     placeholder.className = "barang-photo-placeholder";
-
     const icon = document.createElement("i");
     icon.className = "bi bi-image";
-
     const teks = document.createElement("span");
     teks.textContent = "Pratinjau foto barang";
-
     placeholder.append(icon, teks);
     previewFoto.appendChild(placeholder);
 }
-
 inputFoto.addEventListener("change", function () {
-
     previewFoto.replaceChildren();
-
     const file = this.files[0];
-
     if (!file) {
         tampilkanPlaceholder();
         return;
@@ -746,39 +639,31 @@ inputFoto.addEventListener("change", function () {
         "image/gif",
         "image/webp"
     ];
-
     if (!tipeDiizinkan.includes(file.type)) {
         this.value = "";
         tampilkanPlaceholder();
         alert("Pilih foto berformat JPG, PNG, GIF, atau WEBP.");
         return;
     }
-
     if (file.size > 5 * 1024 * 1024) {
         this.value = "";
         tampilkanPlaceholder();
         alert("Ukuran foto maksimal 5 MB.");
         return;
     }
-
     const img = document.createElement("img");
     img.alt = "Pratinjau foto barang";
-
     const urlFoto = URL.createObjectURL(file);
     img.src = urlFoto;
-
     img.onload = function () {
         URL.revokeObjectURL(urlFoto);
     };
-
     img.onerror = function () {
         URL.revokeObjectURL(urlFoto);
         tampilkanPlaceholder();
         alert("Foto tidak dapat ditampilkan. Coba pilih foto lain.");
     };
-
     previewFoto.appendChild(img);
 });
 </script>
-
 <?php include "../layout/footer.php"; ?>

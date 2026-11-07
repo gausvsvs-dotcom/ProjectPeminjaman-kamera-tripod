@@ -1,3 +1,109 @@
+<?php
+session_start();
+
+require_once __DIR__ . '/includes/koneksi.php';
+
+// Inisialisasi keranjang
+if (!isset($_SESSION['keranjang'])) {
+    $_SESSION['keranjang'] = [];
+}
+
+// Proses menambahkan barang ke keranjang
+if (isset($_POST['tambah_keranjang'])) {
+
+    $id_barang = $_POST['id_barang'];
+    $nama_barang = $_POST['nama_barang'];
+    $kategori = $_POST['kategori'];
+    $gambar = $_POST['gambar'];
+
+    if (!isset($_SESSION['keranjang'][$id_barang])) {
+
+        $_SESSION['keranjang'][$id_barang] = [
+            'id' => $id_barang,
+            'nama' => $nama_barang,
+            'kategori' => $kategori,
+            'gambar' => $gambar,
+            'jumlah' => 1
+        ];
+
+        $pesan = $nama_barang . ' berhasil ditambahkan ke keranjang!';
+
+    } else {
+
+        $_SESSION['keranjang'][$id_barang]['jumlah']++;
+
+        $pesan = $nama_barang . ' berhasil ditambahkan lagi!';
+    }
+
+    // Respons untuk AJAX
+    if (isset($_POST['ajax'])) {
+        header('Content-Type: application/json');
+
+        $total = 0;
+        foreach ($_SESSION['keranjang'] as $barang) {
+            $total += $barang['jumlah'];
+        }
+
+        echo json_encode([
+            'pesan' => $pesan,
+            'total' => $total
+        ]);
+
+        exit;
+    }
+
+    $_SESSION['pesan_keranjang'] = $pesan;
+
+    header("Location: kamera&tripod.php");
+    exit;
+}
+
+// Menghitung jumlah barang
+$total_keranjang = 0;
+
+foreach ($_SESSION['keranjang'] as $barang) {
+    $total_keranjang += $barang['jumlah'];
+}
+
+// Mengambil data kamera
+$queryKamera = mysqli_query($conn, "
+    SELECT 
+        b.*,
+        k.nama_kategori,
+        kb.nama_kondisi,
+        m.nama_merk
+    FROM barang b
+    LEFT JOIN kategori k ON b.id_kategori = k.id_kategori
+    LEFT JOIN kondisi_barang kb ON b.id_kondisi = kb.id_kondisi
+    LEFT JOIN merk m ON b.id_merk = m.id_merk
+    WHERE b.jenis_barang = 'kamera'
+    ORDER BY b.id_barang ASC
+");
+
+// Mengambil data tripod
+$queryTripod = mysqli_query($conn, "
+    SELECT 
+        b.*,
+        k.nama_kategori,
+        kb.nama_kondisi,
+        m.nama_merk
+    FROM barang b
+    LEFT JOIN kategori k ON b.id_kategori = k.id_kategori
+    LEFT JOIN kondisi_barang kb ON b.id_kondisi = kb.id_kondisi
+    LEFT JOIN merk m ON b.id_merk = m.id_merk
+    WHERE b.jenis_barang = 'tripod'
+    ORDER BY b.id_barang ASC
+");
+
+// Mengambil data kondisi barang
+$queryKondisi = mysqli_query($conn, "
+    SELECT * FROM kondisi_barang
+    ORDER BY id_kondisi ASC
+");
+
+?>
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,10 +113,19 @@
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="assets/css/style.css?v=100">
+    <link rel="stylesheet" href="assets/css/style.css?v=103">
 </head>
 <body>
     <?php include 'includes/navbar.php'; ?>
+
+    <?php if (isset($_SESSION['pesan_keranjang'])): ?>
+    <div class="notifikasi-keranjang" id="notifikasiKeranjang">
+        <i class="fas fa-check-circle"></i>
+        <span><?= htmlspecialchars($_SESSION['pesan_keranjang']); ?></span>
+    </div>
+
+    <?php unset($_SESSION['pesan_keranjang']); ?>
+    <?php endif; ?>
 
     <section class="hero-section py-5">
 
@@ -36,10 +151,15 @@
 
                     <div class="col-md-3">
                         <select class="form-select search-box" id="filterStatus">
-                        <option value=""> Semua Kondisi </option>
-                        <option value="Tersedia"> Tersedia </option>
-                        <option value="Dipinjam"> Dipinjam </option>
-                        <option value="Perawatan"> Perawatan</option>
+
+                            <option value="">Semua Kondisi</option>
+
+                            <?php while ($kondisi = mysqli_fetch_assoc($queryKondisi)): ?>
+                                <option value="<?= htmlspecialchars($kondisi['nama_kondisi']); ?>">
+                                    <?= htmlspecialchars($kondisi['nama_kondisi']); ?>
+                                </option>
+                            <?php endwhile; ?>
+
                         </select>
                     </div>
                 </div>
@@ -62,313 +182,106 @@
             <button class="kategori-btn" data-kategori="Tripod">
                 Tripod
             </button>
+            <a href="keranjang.php" class="kategori-btn btn btn-ikon-keranjang">
+                <span class="ikon-keranjang-plus">
+                    <span class="tanda-plus">+</span>
+                    <i class="fas fa-shopping-cart"></i>
+                </span>
+
+            <?php if ($total_keranjang > 0): ?>
+                <span class="badge-jumlah-keranjang">
+                <?= $total_keranjang; ?>
+            </span>
+            <?php endif; ?>
+            </a>
         </div>
         </div>
     </section>
 
+
+<!-- SECTION KAMERA -->
 <section class="produk-section py-4" id="sectionKamera">
     <div class="container">
+
         <div class="mb-4">
             <h2 class="section-title">Kamera</h2>
-             <p class="section-text">Pilihan kamera yang tersedia untuk anda dipinjam. </p>
+            <p class="section-text">Pilihan kamera yang tersedia untuk anda dipinjam.</p>
         </div>
+
         <div class="row g-4">
 
-            <div class="col-lg-3 col-md-6 produk-item" data-status="Dipinjam" data-kategori="Kamera">
+            <?php while ($barang = mysqli_fetch_assoc($queryKamera)): ?>
 
-                <div class="card produk-card h-100">
+                <div class="col-lg-3 col-md-6 produk-item"
+                     data-status="<?= htmlspecialchars($barang['nama_kondisi']); ?>"
+                     data-kategori="<?= htmlspecialchars($barang['nama_kategori']); ?>">
 
-                    <img src="assets/images/kamera/canon700d.png"
-                         class="card-img-top produk-img"
-                         alt="Canon EOS 700D">
+                    <div class="card produk-card">
 
-                    <div class="card-body">
+                        <img src="<?= htmlspecialchars($barang['foto']); ?>"
+                             class="card-img-top produk-img"
+                             alt="<?= htmlspecialchars($barang['nama_barang']); ?>">
 
-                        <span class="badge bg-primary mb-2">
-                            Kamera
-                        </span>
+                        <div class="card-body">
 
-                        <h5 class="produk-title">
-                            Canon EOS 700D
-                        </h5>
+                            <span class="badge bg-primary mb-2">
+                                <?= htmlspecialchars($barang['nama_kategori']); ?>
+                            </span>
 
-                        <div class="produk-spesifikasi">
-                            <span>18 MP</span>
-                            <span>APS-C</span>
-                            <span>Full HD</span>
-                        </div>
+                            <h5 class="produk-title">
+                                <?= htmlspecialchars($barang['nama_barang']); ?>
+                            </h5>
 
-                        <div class="produk-status">
-                            Dipinjam
-                        </div>
+                            <p class="produk-deskripsi">
+                                <?= htmlspecialchars($barang['deskripsi']); ?>
+                            </p>
 
-                        <div class="mt-3">
-                            <a href="detail_kamera.php?id=1" class="btn btn-detail btn-sm">
-                                Lihat Detail
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
+                            <div class="produk-status">
+                                <?= htmlspecialchars($barang['nama_kondisi']); ?>
+                            </div>
 
-            <div class="col-lg-3 col-md-6 produk-item" data-status="Tersedia" data-kategori="Kamera">
+                            <div class="d-flex justify-content-between align-items-center mt-3">
 
-                <div class="card produk-card h-100">
+                                <a href="detail_kamera.php?id=<?= (int)$barang['id_barang']; ?>"
+                                   class="btn btn-detail btn-sm">
+                                    Lihat Detail
+                                </a>
 
-                    <img src="assets/images/kamera/NikonD7500.jpg"
-                         class="card-img-top produk-img"
-                         alt="Nikon D5600">
+                                <form method="POST" action="" class="form-keranjang d-inline-flex mb-0 flex-shrink-0">
 
-                    <div class="card-body">
+                                    <input type="hidden" name="id_barang"
+                                           value="<?= (int)$barang['id_barang']; ?>">
 
-                        <span class="badge bg-primary mb-2">
-                            Kamera
-                        </span>
+                                    <input type="hidden" name="nama_barang"
+                                           value="<?= htmlspecialchars($barang['nama_barang']); ?>">
 
-                        <h5 class="produk-title">
-                            Nikon D7500
-                        </h5>
+                                    <input type="hidden" name="kategori"
+                                           value="<?= htmlspecialchars($barang['nama_kategori']); ?>">
 
-                        <div class="produk-spesifikasi">
-                            <span>24.2 MP</span>
-                            <span>APS-C</span>
-                            <span>Full HD</span>
-                        </div>
+                                    <input type="hidden" name="gambar"
+                                           value="<?= htmlspecialchars($barang['foto']); ?>">
 
-                        <div class="produk-status">
-                            Tersedia
-                        </div>
+                                    <button type="submit"
+                                            name="tambah_keranjang"
+                                            value="1"
+                                            class="btn btn-keranjang"
+                                            title="Tambah ke Keranjang">
+                                        
+                                            <span class="ikon-keranjang-plus">
+                                                <span class="tanda-plus">+</span>
+                                                <i class="fas fa-shopping-cart"></i>
+                                            </span>
+                                    </button>
 
-                        <div class="mt-3">
-                            <a href="detail_kamera.php?id=2" class="btn btn-detail btn-sm">
-                                Lihat Detail
-                            </a>
+                                </form>
+
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="col-lg-3 col-md-6 produk-item" data-status="Tersedia" data-kategori="Kamera">
+            <?php endwhile; ?>
 
-                <div class="card produk-card h-100">
-
-                    <img src="assets/images/kamera/NikonD5600.jpg"
-                         class="card-img-top produk-img"
-                         alt="Nikon D7500">
-
-                    <div class="card-body">
-
-                        <span class="badge bg-primary mb-2">
-                            Kamera
-                        </span>
-
-                        <h5 class="produk-title">
-                            Nikon D5600
-                        </h5>
-
-                        <div class="produk-spesifikasi">
-                            <span>20.9 MP</span>
-                            <span>APS-C</span>
-                            <span>4K UHD</span>
-                        </div>
-
-                        <div class="produk-status">
-                            Tersedia
-                        </div>
-
-                        <div class="mt-3">
-                            <a href="detail_kamera.php?id=3" class="btn btn-detail btn-sm">
-                                Lihat Detail
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-lg-3 col-md-6 produk-item" data-status="Tersedia" data-kategori="Kamera">
-
-                <div class="card produk-card h-100">
-
-                    <img src="assets/images/kamera/FujifilmX-S10.jpg"
-                         class="card-img-top produk-img"
-                         alt="Sony Alpha A6000">
-
-                    <div class="card-body">
-
-                        <span class="badge bg-primary mb-2">
-                            Kamera
-                        </span>
-
-                        <h5 class="produk-title">
-                            Fujifilm X-S10
-                        </h5>
-
-                        <div class="produk-spesifikasi">
-                            <span>24.3 MP</span>
-                            <span>APS-C</span>
-                            <span>Full HD</span>
-                        </div>
-
-                        <div class="produk-status">
-                            Tersedia
-                        </div>
-
-                        <div class="mt-3">
-                            <a href="detail_kamera.php?id=4" class="btn btn-detail btn-sm">
-                                Lihat Detail
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-lg-3 col-md-6 produk-item" data-status="Perawatan" data-kategori="Kamera">
-
-                <div class="card produk-card h-100">
-
-                    <img src="assets/images/kamera/SonnyAlphaa6400.jpg"
-                         class="card-img-top produk-img"
-                         alt="Sony Alpha A6400">
-
-                    <div class="card-body">
-
-                        <span class="badge bg-primary mb-2">
-                            Kamera
-                        </span>
-
-                        <h5 class="produk-title">
-                            Sonny Alpha A6400
-                        </h5>
-
-                        <div class="produk-spesifikasi">
-                            <span>24.2 MP</span>
-                            <span>APS-C</span>
-                            <span>4K UHD</span>
-                        </div>
-
-                        <div class="produk-status">
-                            Perawatan
-                        </div>
-
-                        <div class="mt-3">
-                            <a href="detail_kamera.php?id=5" class="btn btn-detail btn-sm">
-                                Lihat Detail
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-lg-3 col-md-6 produk-item" data-status="Dipinjam" data-kategori="Kamera">
-
-                <div class="card produk-card h-100">
-
-                    <img src="assets/images/kamera/FujifilmX-T30.jpg"
-                         class="card-img-top produk-img"
-                         alt="Fujifilm X-T30">
-
-                    <div class="card-body">
-
-                        <span class="badge bg-primary mb-2">
-                            Kamera
-                        </span>
-
-                        <h5 class="produk-title">
-                            Fujifilm X-T30
-                        </h5>
-
-                        <div class="produk-spesifikasi">
-                            <span>26.1 MP</span>
-                            <span>APS-C</span>
-                            <span>4K UHD</span>
-                        </div>
-
-                        <div class="produk-status">
-                            Dipinjam
-                        </div>
-
-                        <div class="mt-3">
-                            <a href="detail_kamera.php?id=6" class="btn btn-detail btn-sm">
-                                Lihat Detail
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-lg-3 col-md-6 produk-item" data-status="Dipinjam" data-kategori="Kamera">
-
-                <div class="card produk-card h-100">
-
-                    <img src="assets/images/kamera/Canon90d.jpg"
-                         class="card-img-top produk-img"
-                         alt="Panasonic Lumix G7">
-
-                    <div class="card-body">
-
-                        <span class="badge bg-primary mb-2">
-                            Kamera
-                        </span>
-
-                        <h5 class="produk-title">
-                            Canon EOS 90D
-                        </h5>
-
-                        <div class="produk-spesifikasi">
-                            <span>16 MP</span>
-                            <span>Micro 4/3</span>
-                            <span>4K UHD</span>
-                        </div>
-
-                        <div class="produk-status">
-                            Dipinjam
-                        </div>
-
-                        <div class="mt-3">
-                            <a href="detail_kamera.php?id=7" class="btn btn-detail btn-sm">
-                                Lihat Detail
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-lg-3 col-md-6 produk-item" data-status="Tersedia" data-kategori="Kamera">
-
-                <div class="card produk-card h-100">
-
-                    <img src="assets/images/kamera/Canon80d.jpg"
-                         class="card-img-top produk-img"
-                         alt="Canon EOS 80D">
-
-                    <div class="card-body">
-
-                        <span class="badge bg-primary mb-2">
-                            Kamera
-                        </span>
-
-                        <h5 class="produk-title">
-                            Canon EOS 80D
-                        </h5>
-
-                        <div class="produk-spesifikasi">
-                            <span>24.1 MP</span>
-                            <span>APS-C</span>
-                            <span>4K UHD</span>
-                        </div>
-
-                        <div class="produk-status">
-                            Tersedia
-                        </div>
-
-                        <div class="mt-3">
-                            <a href="detail_kamera.php?id=8" class="btn btn-detail btn-sm">
-                                Lihat Detail
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
         </div>
 
         <div id="pesanKameraTidakDitemukan" class="text-center py-4" style="display: none;">
@@ -378,121 +291,90 @@
     </div>
 </section>
 
-<section class="produk-section py-4" id="sectionTripod">
 
+<!-- SECTION TRIPOD -->
+<section class="produk-section py-4" id="sectionTripod">
     <div class="container">
-       <div class="mb-4">
+
+        <div class="mb-4">
             <h2 class="section-title">Tripod</h2>
-             <p class="section-text">Pilihan tripod yang tersedia untuk anda dipinjam.</p>
+            <p class="section-text">Pilihan tripod yang tersedia untuk anda dipinjam.</p>
         </div>
 
         <div class="row g-4">
-            <div class="col-lg-3 col-md-6 produk-item" data-status="Perawatan" data-kategori="Tripod">
 
-                <div class="card produk-card h-100">
+            <?php while ($barang = mysqli_fetch_assoc($queryTripod)): ?>
 
-                    <img src="assets/images/tripod/eco-196A.jpg"
-                         class="card-img-top produk-img"
-                         alt="Takara WT-3110">
+                <div class="col-lg-3 col-md-6 produk-item"
+                     data-status="<?= htmlspecialchars($barang['nama_kondisi']); ?>"
+                     data-kategori="<?= htmlspecialchars($barang['nama_kategori']); ?>">
 
-                    <div class="card-body">
+                    <div class="card produk-card">
 
-                        <span class="badge bg-primary mb-2">
-                            Tripod
-                        </span>
+                        <img src="<?= htmlspecialchars($barang['foto']); ?>"
+                             class="card-img-top produk-img"
+                             alt="<?= htmlspecialchars($barang['nama_barang']); ?>">
 
-                        <h5 class="produk-title">
-                            ECO 196A
-                        </h5>
+                        <div class="card-body">
 
-                        <div class="produk-spesifikasi">
-                            <span>125 cm</span>
-                            <span>Aluminium</span>
-                            <span>Ringan</span>
-                        </div>
+                            <span class="badge bg-primary mb-2">
+                                <?= htmlspecialchars($barang['nama_kategori']); ?>
+                            </span>
 
-                        <div class="produk-status">
-                            Perawatan
-                        </div>
+                            <h5 class="produk-title">
+                                <?= htmlspecialchars($barang['nama_barang']); ?>
+                            </h5>
 
-                        <div class="mt-3">
-                            <a href="detail_tripod.php?id=1" class="btn btn-detail btn-sm">
-                                Lihat Detail
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
+                            <p class="produk-deskripsi">
+                                <?= htmlspecialchars($barang['deskripsi']); ?>
+                            </p>
 
-            <div class="col-lg-3 col-md-6 produk-item" data-status="Dipinjam" data-kategori="Tripod">
-                <div class="card produk-card h-100">
-                    <img src="assets/images/tripod/W-3110A.jpg"
-                         class="card-img-top produk-img"
-                         alt="Takara Eco-173A">
+                            <div class="produk-status">
+                                <?= htmlspecialchars($barang['nama_kondisi']); ?>
+                            </div>
 
-                    <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center mt-3">
 
-                        <span class="badge bg-primary mb-2">
-                            Tripod
-                        </span>
+                                <a href="detail_tripod.php?id=<?= (int)$barang['id_barang']; ?>"
+                                   class="btn btn-detail btn-sm">
+                                    Lihat Detail
+                                </a>
 
-                        <h5 class="produk-title">
-                            Weifeng WT-3110A
-                        </h5>
+                                <form method="POST" action="" class="form-keranjang d-inline-flex mb-0 flex-shrink-0">
 
-                        <div class="produk-spesifikasi">
-                            <span>130 cm</span>
-                            <span>Aluminium</span>
-                            <span>Ringan</span>
-                        </div>
+                                    <input type="hidden" name="id_barang"
+                                           value="<?= (int)$barang['id_barang']; ?>">
 
-                        <div class="produk-status">
-                            Dipinjam
-                        </div>
+                                    <input type="hidden" name="nama_barang"
+                                           value="<?= htmlspecialchars($barang['nama_barang']); ?>">
 
-                        <div class="mt-3">
-                            <a href="detail_tripod.php?id=2" class="btn btn-detail btn-sm">
-                                Lihat Detail
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
+                                    <input type="hidden" name="kategori"
+                                           value="<?= htmlspecialchars($barang['nama_kategori']); ?>">
 
-            <div class="col-lg-3 col-md-6 produk-item" data-status="Tersedia" data-kategori="Tripod">
-                <div class="card produk-card h-100">
-                    <img src="assets/images/tripod/W-3520.jpg"
-                         class="card-img-top produk-img"
-                         alt="Takara Eco-193A">
+                                    <input type="hidden" name="gambar"
+                                           value="<?= htmlspecialchars($barang['foto']); ?>">
 
-                    <div class="card-body">
+                                    <button type="submit"
+                                            name="tambah_keranjang"
+                                            value="1"
+                                            class="btn btn-keranjang"
+                                            title="Tambah ke Keranjang">
+                                        
+                                            <span class="ikon-keranjang-plus">
+                                                <span class="tanda-plus">+</span>
+                                                <i class="fas fa-shopping-cart"></i>
+                                            </span>
+                                    </button>
 
-                        <span class="badge bg-primary mb-2">
-                            Tripod
-                        </span>
+                                </form>
 
-                        <h5 class="produk-title">
-                            Weifeng WT-3520
-                        </h5>
-
-                        <div class="produk-spesifikasi">
-                            <span>145 cm</span>
-                            <span>Aluminium</span>
-                            <span>Stabil</span>
-                        </div>
-
-                        <div class="produk-status">
-                            Tersedia
-                        </div>
-
-                        <div class="mt-3">
-                            <a href="detail_tripod.php?id=3" class="btn btn-detail btn-sm">
-                                Lihat Detail
-                            </a>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
+
+            <?php endwhile; ?>
+
         </div>
 
         <div id="pesanTripodTidakDitemukan" class="text-center py-4" style="display: none;">
@@ -501,6 +383,7 @@
 
     </div>
 </section>
+
 
 
     <?php include 'includes/footer.php'; ?>
@@ -603,6 +486,74 @@
 
     });
 
+// Tambah Keranjang tanpa Refresh Halaman
+document.querySelectorAll('.form-keranjang').forEach(form => {
+
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const data = new FormData(form);
+
+        data.append('tambah_keranjang', '1');
+        data.append('ajax', '1');
+
+        fetch(window.location.href, {
+            method: 'POST',
+            body: data
+        })
+        .then(response => response.json())
+        .then(hasil => {
+
+            // Memperbarui jumlah keranjang
+            let badge = document.querySelector('.badge-jumlah-keranjang');
+
+            if (!badge) {
+                badge = document.createElement('span');
+                badge.className = 'badge-jumlah-keranjang';
+
+                document.querySelector('.btn-ikon-keranjang')
+                    .appendChild(badge);
+            }
+
+            badge.textContent = hasil.total;
+
+            // Menampilkan notifikasi
+            let notifikasi = document.getElementById('notifikasiKeranjang');
+
+            if (notifikasi) {
+                notifikasi.remove();
+            }
+
+            notifikasi = document.createElement('div');
+            notifikasi.id = 'notifikasiKeranjang';
+            notifikasi.className = 'notifikasi-keranjang';
+
+            notifikasi.innerHTML = `
+                <i class="fas fa-check-circle"></i>
+                <span></span>
+            `;
+
+            notifikasi.querySelector('span').textContent = hasil.pesan;
+
+            document.body.appendChild(notifikasi);
+
+            // Menghilangkan notifikasi setelah 3,5 detik
+            setTimeout(() => {
+                notifikasi.classList.add('hilang');
+
+                setTimeout(() => {
+                    notifikasi.remove();
+                }, 500);
+
+            }, 3500);
+
+        })
+        .catch(error => {
+            console.error('Gagal menambahkan barang:', error);
+        });
+    });
+
+});
     
 /* =========================================
    ANIMASI BERULANG SAAT SCROLL KE BAWAH
@@ -678,6 +629,19 @@ if (
     });
 }
 
+//keranjang
+ const notifikasi = document.getElementById('notifikasiKeranjang');
+
+    if (notifikasi) {
+        setTimeout(() => {
+            notifikasi.classList.add('hilang');
+
+            setTimeout(() => {
+                notifikasi.remove();
+            }, 500);
+
+        }, 2500);
+    }
     </script>
 </body>
 </html>

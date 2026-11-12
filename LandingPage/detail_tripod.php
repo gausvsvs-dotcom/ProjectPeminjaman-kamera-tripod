@@ -1,39 +1,38 @@
+
 <?php
 
-$id = $_GET['id'] ?? 1;
+require_once __DIR__ . '/includes/koneksi.php';
 
-$tripod = [
-    1 => [
-        'nama' => 'ECO 196A',
-        'gambar' => 'assets/images/tripod/eco-196A.jpg',
-        'deskripsi' => 'ECO 196A merupakan tripod ringan yang dapat digunakan untuk membantu menjaga kamera tetap stabil saat digunakan untuk mengambil foto maupun video.',
-        'spesifikasi' => ['125 cm', 'Aluminium', 'Ringan'],
-        'kondisi' => 'Baik',
-        'status' => 'Perawatan'
-    ],
+// Mengambil ID kamera dari URL
+$id = isset($_GET['id']) ? (int) $_GET['id'] : 0;
 
-    2 => [
-        'nama' => 'Weifeng WT-3110A',
-        'gambar' => 'assets/images/tripod/W-3110A.jpg',
-        'deskripsi' => 'Weifeng WT-3110A merupakan tripod yang dapat digunakan untuk membantu menjaga kamera tetap stabil saat digunakan untuk mengambil foto maupun video.',
-        'spesifikasi' => ['130 cm', 'Aluminium', 'Ringan'],
-        'kondisi' => 'Baik',
-        'status' => 'Dipinjam'
-    ],
+// Mengambil data kamera berdasarkan ID
+$query = mysqli_prepare($conn, "
+    SELECT 
+        b.*,
+        kb.nama_kondisi
+    FROM barang b
+    LEFT JOIN kondisi_barang kb 
+        ON b.id_kondisi = kb.id_kondisi
+    WHERE b.id_barang = ?
+    AND b.jenis_barang = 'tripod'
+    LIMIT 1
+");
 
-    3 => [
-        'nama' => 'Weifeng WT-3520',
-        'gambar' => 'assets/images/tripod/W-3520.jpg',
-        'deskripsi' => 'Weifeng WT-3520 merupakan tripod yang dapat digunakan untuk membantu menjaga kamera tetap stabil saat digunakan untuk mengambil foto maupun video.',
-        'spesifikasi' => ['145 cm', 'Aluminium', 'Stabil'],
-        'kondisi' => 'Baik',
-        'status' => 'Tersedia'
-    ]
-];
+mysqli_stmt_bind_param($query, "i", $id);
+mysqli_stmt_execute($query);
 
-$data = $tripod[$id] ?? $tripod[1];
+$result = mysqli_stmt_get_result($query);
+$data = mysqli_fetch_assoc($result);
+
+// Jika data kamera tidak ditemukan
+if (!$data) {
+    http_response_code(404);
+    exit("Data kamera tidak ditemukan.");
+}
 
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -59,11 +58,11 @@ $data = $tripod[$id] ?? $tripod[1];
 
             <!-- FOTO TRIPOD -->
             <div class="col-lg-6">
-                <div class="detail-produk-image">
-                    <img src="<?= $data['gambar'] ?>"
-                    alt="<?= $data['nama'] ?>"
-                    class="img-fluid">
 
+                <div class="detail-produk-image">
+                    <img src="<?= htmlspecialchars($data['foto']); ?>"
+                    alt="<?= htmlspecialchars($data['nama_barang']); ?>"
+                    class="img-fluid">
                 </div>
 
             </div>
@@ -77,34 +76,17 @@ $data = $tripod[$id] ?? $tripod[1];
                 </span>
 
                 <h1 class="detail-produk-title">
-                    <?= $data['nama'] ?>
+                    <?= htmlspecialchars($data['nama_barang']); ?>
                 </h1>
 
-                <p class="detail-produk-description">
-                    <?= $data['deskripsi'] ?>
+                 <p class="detail-produk-description">
+                    <?= htmlspecialchars($data['deskripsi']); ?>
                 </p>
 
-
-                <h5 class="detail-produk-heading">
-                    Spesifikasi
-                </h5>
-
-                <div class="detail-produk-spesifikasi">
-                    <?php foreach ($data['spesifikasi'] as $spesifikasi): ?>
-                        <span><?= $spesifikasi ?></span>
-                    <?php endforeach; ?>
-                </div>
-
-
                 <div class="detail-produk-info">
-                    <p>
-                        <strong>Kondisi:</strong>
-                        <?= $data['kondisi'] ?>
-                    </p>
-                    
-                    <p>
+                     <p>
                         <strong>Status:</strong>
-                        <?= $data['status'] ?>
+                        <?= htmlspecialchars($data['nama_kondisi']); ?>
                     </p>
                 </div>
 
@@ -113,7 +95,7 @@ $data = $tripod[$id] ?? $tripod[1];
                    ~ Kembali ~
                 </a>
 
-                <a href="/ProjectPeminjaman-kamera-tripod/Transaksi/peminjaman.php?id=<?= $id ?>&jenis=kamera" class="btn btn-ajukan">
+                <a href="/ProjectPeminjaman-kamera-tripod/Transaksi/Peminjaman/peminjaman.php?id=<?= $id ?>&jenis=kamera" class="btn btn-ajukan">
                     ~ Ajukan Peminjaman ~
                 </a>
             </div>

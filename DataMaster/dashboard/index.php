@@ -53,8 +53,7 @@ $query_kondisi = mysqli_query($conn, "
 
 <?php include "../layout/header.php"; ?>
 <link rel="stylesheet" href="../assets/css/dashboard.css?v=3">
-<?php include "../layout/navbar.php"; ?>
-
+<?php include "../layout/navbar.php"; ?>k
 
 <div class="main-content dashboard-wrapper">
     <!--EADER-->

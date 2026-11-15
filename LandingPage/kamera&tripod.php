@@ -236,6 +236,10 @@ $queryKondisi = mysqli_query($conn, "
                                 <?= htmlspecialchars($barang['deskripsi']); ?>
                             </p>
 
+                            <p class="produk-harga">
+                                Rp<?= number_format($barang['harga_sewa'], 0, ',', '.'); ?>
+                            </p>
+
                             <div class="produk-status">
                                 <?= htmlspecialchars($barang['nama_kondisi']); ?>
                             </div>
@@ -327,6 +331,10 @@ $queryKondisi = mysqli_query($conn, "
 
                             <p class="produk-deskripsi">
                                 <?= htmlspecialchars($barang['deskripsi']); ?>
+                            </p>
+
+                            <p class="produk-harga">
+                                Rp<?= number_format($barang['harga_sewa'], 0, ',', '.'); ?>
                             </p>
 
                             <div class="produk-status">

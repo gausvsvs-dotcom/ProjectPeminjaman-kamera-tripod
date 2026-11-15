@@ -339,6 +339,14 @@ body {
 
 }
 
+.produk-harga {
+    font-size: 18px;
+    font-weight: 700;
+    color: #2E236C;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
 .produk-spesifikasi {
     display: flex;
     gap: 8px;

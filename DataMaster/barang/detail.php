@@ -497,28 +497,26 @@ mysqli_stmt_close($stmt_unit);
 
         <!-- BUTTON -->
         <div class="mt-4 mb-4">
-
+            <button
+                type="button"
+                onclick="window.print()"
+                class="btn-detail-edit">
+                <i class="bi bi-printer me-1"></i>
+                Cetak Data Barang
+            </button>
             <a
                 href="edit.php?id=<?= (int) $data["id_barang"]; ?>"
                 class="btn-detail-edit">
-
                 <i class="bi bi-pencil-square me-1"></i>
                 Edit Barang
-
             </a>
-
             <a
                 href="index.php"
                 class="btn-detail-back ms-1">
-
                 <i class="bi bi-arrow-left me-1"></i>
                 Kembali
-
             </a>
-
         </div>
-
     </div>
 </div>
-
 <?php include "../layout/footer.php"; ?>

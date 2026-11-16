@@ -1,4 +1,3 @@
-
 <?php
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
@@ -66,14 +65,6 @@ $halamanAktif = basename($_SERVER['PHP_SELF']);
                         Kontak
                     </a>
                 </li>
-
-                <li class="nav-item">
-                    <a href="pesan_saya.php"
-                    class="nav-link <?php echo $halamanAktif == 'pesan_saya.php' ? 'active' : ''; ?>">
-                        Pesan Saya
-                    </a>
-                </li>
-
             </ul>
 
             <!-- Tombol login admin -->

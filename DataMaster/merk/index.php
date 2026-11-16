@@ -98,20 +98,15 @@ if (!$query) {
                                             </span>
                                         </td>
                                         <td>
-                                            <?php if (!empty($data['keterangan'])): ?>
-                                                <?= nl2br(
-                                                    htmlspecialchars(
-                                                        $data['keterangan'],
-                                                        ENT_QUOTES,
-                                                        'UTF-8'
-                                                    )
+                                            <span class="data-name">
+                                                <?= htmlspecialchars(
+                                                    $data['nama_kategori'] ?? '',
+                                                    ENT_QUOTES,
+                                                    'UTF-8'
                                                 ); ?>
-                                            <?php else: ?>
-                                                <span class="text-muted">
-                                                    Belum ada keterangan
-                                                </span>
-                                            <?php endif; ?>
+                                            </span>
                                         </td>
+
                                         <td>
                                             <div class="data-action">
                                                 <!-- Detail -->

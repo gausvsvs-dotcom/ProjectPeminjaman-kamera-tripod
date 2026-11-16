@@ -1,48 +1,84 @@
-
 <?php
+
 require_once 'includes/koneksi.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
     $nama  = trim($_POST['nama'] ?? '');
     $email = trim($_POST['email'] ?? '');
     $pesan = trim($_POST['pesan'] ?? '');
 
-    if (
-        $nama === '' ||
-        !filter_var($email, FILTER_VALIDATE_EMAIL) ||
-        $pesan === ''
-    ) {
-        header("Location: kontak.php?status=error");
+    $isAjax = isset($_POST['ajax']) && $_POST['ajax'] === '1';
+
+    // Validasi data
+    $error = '';
+
+    if ($nama === '') {
+        $error = 'Nama harus diisi.';
+    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $error = 'Format email tidak valid.';
+    } elseif (!preg_match('/^[A-Za-z0-9._%+-]+@gmail\.com$/', $email)) {
+        $error = 'Gunakan alamat email Gmail yang benar.';
+    } elseif ($pesan === '') {
+        $error = 'Pesan harus diisi.';
+    }
+
+    if ($error !== '') {
+
+        if ($isAjax) {
+            header('Content-Type: application/json');
+            echo json_encode(['status' => 'error', 'pesan' => $error
+        ]);
         exit;
     }
 
-    // Membuat kode percakapan unik
-    $kode_chat = bin2hex(random_bytes(5));
-
+    header("Location: kontak.php?status=error");
+    exit;
+    }
+    
+    // Menyimpan pesan ke database
     $stmt = mysqli_prepare(
         $conn,
-        "INSERT INTO kontak (nama, email, pesan, kode_chat)
-         VALUES (?, ?, ?, ?)"
+        "INSERT INTO kontak (nama, email, pesan)
+         VALUES (?, ?, ?)"
     );
 
     mysqli_stmt_bind_param(
         $stmt,
-        "ssss",
+        "sss",
         $nama,
         $email,
-        $pesan,
-        $kode_chat
+        $pesan
     );
 
     if (mysqli_stmt_execute($stmt)) {
+
         mysqli_stmt_close($stmt);
 
-        // Mengarahkan pelanggan ke halaman sukses
-        header("Location: kontak.php?status=success&kode=" . urlencode($kode_chat));
+        if ($isAjax) {
+            header('Content-Type: application/json');
+            echo json_encode([
+                'status' => 'success',
+                'pesan' => 'Pesan berhasil terkirim!'
+            ]);
+            exit;
+        }
+
+        header("Location: kontak.php?status=success");
         exit;
     }
 
     mysqli_stmt_close($stmt);
+
+    if ($isAjax) {
+        header('Content-Type: application/json');
+        echo json_encode([
+            'status' => 'error',
+            'pesan' => 'Pesan gagal terkirim. Silakan coba lagi.'
+        ]);
+        exit;
+    }
+
     header("Location: kontak.php?status=error");
     exit;
 }
@@ -61,7 +97,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <script>
 function tutupNotifikasi() {
-    const notifikasi = document.getElementById('notifikasiSukses');
+    const notifikasi = document.querySelector(
+        '#notifikasiSukses, #notifikasiGagal'
+    );
 
     if (notifikasi) {
         notifikasi.remove();
@@ -75,7 +113,7 @@ function tutupNotifikasi() {
     <section class="kontak-hero">
         <div class="container">
             <div class="text-center">
-                <h1 class="kontak-title">Kontak Kami</h1>
+                <h1 class="kontak-title">Hubungi Kami</h1>
 
                 <p class="kontak-subtitle">
                     Hubungi kami untuk mendapatkan informasi
@@ -131,48 +169,9 @@ function tutupNotifikasi() {
                     <div class="kontak-form">
                         <h2 class="kontak-heading">Hubungi Kami</h2>
 
-                        <?php 
-                        if (isset($_GET['status']) && $_GET['status'] == 'success') : ?>
-                        
-                        <div id="notifikasiSukses" class="notifikasi-sukses">
-                            <div class="notifikasi-isi">
-                                <div class="notifikasi-teks">
-                                    <strong>Pesan berhasil dikirim!</strong>
-                                    <p>Terima kasih, pesan Anda telah kami terima.</p>
-                                    <?php if (isset($_GET['kode'])) : ?>
-                                        <div class="kode-chat-container">                                            
-                                            <p>
-                                                Simpan kode percakapan Anda. Jika ingin bertanya lebih lanjut
-                                                atau melihat balasan admin, silakan buka halaman
-                                                <a href="pesan_saya.php" style="color: #218653; font-weight: bold;">
-                                                    Pesan Saya
-                                                </a>
-                                                dan masukkan kode berikut.
-                                            </p>
-                                            <div class="kode-chat">
-                                                <strong><?= htmlspecialchars($_GET['kode']); ?></strong>
-                                                <button type="button"
-                                                        onclick="navigator.clipboard.writeText('<?= htmlspecialchars($_GET['kode'], ENT_QUOTES); ?>')"
-                                                        title="Salin kode">
-                                                    <i class="fa-regular fa-copy"></i>
-                                                </button>
-                                            </div>
-                                        </div>
-                                    <?php endif; ?>
-                                </div>
-                                <div class="notifikasi-icon">✓</div>
-                            </div>
+                        <div id="areaNotifikasi"></div>
 
-                            <button type="button"
-                                    class="notifikasi-close"
-                                    onclick="tutupNotifikasi()">
-                                ×
-                            </button>
-                        </div>
-
-                        <?php endif; ?>
-
-                        <form action="kontak.php" method="POST">
+                        <form action="kontak.php" method="POST" id="formKontak">
                             <div class="mb-3">
                                 <label class="form-label">
                                     Nama
@@ -188,9 +187,11 @@ function tutupNotifikasi() {
                                     Email
                                 </label>
                                 <input type="email"
-                                       name="email"
-                                       class="form-control"
-                                       placeholder="Masukkan email Anda" required>
+                                name="email"
+                                class="form-control"
+                                placeholder="Contoh: nama@gmail.com"
+                                pattern="[A-Za-z0-9._%+-]+@gmail\.com"
+                                title="Masukkan alamat email Gmail yang lengkap, contoh: nama@gmail.com"required>
                             </div>
 
                             <div class="mb-3">
@@ -210,5 +211,91 @@ function tutupNotifikasi() {
             </div>
         </div>
     </section>
+
+    <script>
+const formKontak = document.getElementById('formKontak');
+const areaNotifikasi = document.getElementById('areaNotifikasi');
+
+// Menampilkan notifikasi
+function tampilkanNotifikasi(status, pesan) {
+
+    areaNotifikasi.innerHTML = '';
+
+    const notifikasi = document.createElement('div');
+
+    if (status === 'success') {
+        notifikasi.id = 'notifikasiSukses';
+        notifikasi.className = 'notifikasi-sukses';
+    } else {
+        notifikasi.id = 'notifikasiGagal';
+        notifikasi.className = 'notifikasi-gagal';
+    }
+
+    notifikasi.innerHTML = `
+        <div class="notifikasi-isi">
+            <div class="notifikasi-teks">
+                <strong></strong>
+                <p></p>
+            </div>
+
+            <div class="notifikasi-icon">
+                ${status === 'success' ? '✓' : '✕'}
+            </div>
+        </div>
+
+        <button type="button"
+                class="notifikasi-close"
+                onclick="tutupNotifikasi()">
+            ×
+        </button>
+    `;
+
+    notifikasi.querySelector('strong').textContent =
+        status === 'success'
+        ? 'Pesan berhasil terkirim!'
+        : 'Pesan gagal terkirim!';
+
+    notifikasi.querySelector('p').textContent = pesan;
+
+    areaNotifikasi.appendChild(notifikasi);
+}
+
+// Mengirim pesan tanpa refresh halaman
+formKontak.addEventListener('submit', function(e) {
+
+    e.preventDefault();
+
+    const data = new FormData(formKontak);
+    data.append('ajax', '1');
+
+    fetch('kontak.php', {
+        method: 'POST',
+        body: data
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Server error');
+        }
+
+        return response.json();
+    })
+    .then(hasil => {
+
+        tampilkanNotifikasi(hasil.status, hasil.pesan);
+
+        if (hasil.status === 'success') {
+            formKontak.reset();
+        }
+
+    })
+    .catch(() => {
+        tampilkanNotifikasi(
+            'error',
+            'Maaf, terjadi kesalahan. Silakan coba lagi.'
+        );
+    });
+
+});
+</script>
 </body>
 </html>

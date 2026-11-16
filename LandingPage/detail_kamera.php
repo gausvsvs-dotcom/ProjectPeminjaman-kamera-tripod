@@ -1,83 +1,37 @@
 <?php
 
-$id = $_GET['id'] ?? 1;
+require_once __DIR__ . '/includes/koneksi.php';
 
-$kamera = [
-    1 => [
-        'nama' => 'Canon EOS 700D',
-        'gambar' => 'assets/images/kamera/canon700d.png',
-        'deskripsi' => 'Canon EOS 700D merupakan kamera DSLR yang cocok digunakan untuk kebutuhan fotografi maupun dokumentasi.',
-        'spesifikasi' => ['18 MP', 'APS-C', 'Full HD'],
-        'kondisi' => 'Baik',
-        'status' => 'Dipinjam'
-    ],
+// Mengambil ID kamera dari URL
+$id = isset($_GET['id']) ? (int) $_GET['id'] : 0;
 
-    2 => [
-        'nama' => 'Nikon D7500',
-        'gambar' => 'assets/images/kamera/NikonD7500.jpg',
-        'deskripsi' => 'Nikon D7500 merupakan kamera yang cocok digunakan untuk kebutuhan fotografi maupun dokumentasi.',
-        'spesifikasi' => ['24.2 MP', 'APS-C', 'Full HD'],
-        'kondisi' => 'Baik',
-        'status' => 'Tersedia'
-    ],
+// Mengambil data kamera berdasarkan ID
+$query = mysqli_prepare($conn, "
+    SELECT 
+        b.*,
+        kb.nama_kondisi
+    FROM barang b
+    LEFT JOIN kondisi_barang kb 
+        ON b.id_kondisi = kb.id_kondisi
+    WHERE b.id_barang = ?
+    AND b.jenis_barang = 'kamera'
+    LIMIT 1
+");
 
-    3 => [
-        'nama' => 'Nikon D5600',
-        'gambar' => 'assets/images/kamera/NikonD5600.jpg',
-        'deskripsi' => 'Nikon D5600 merupakan kamera yang cocok digunakan untuk kebutuhan fotografi maupun dokumentasi.',
-        'spesifikasi' => ['20.9 MP', 'APS-C', '4K UHD'],
-        'kondisi' => 'Baik',
-        'status' => 'Tersedia'
-    ],
+mysqli_stmt_bind_param($query, "i", $id);
+mysqli_stmt_execute($query);
 
-    4 => [
-        'nama' => 'Fujifilm X-S10',
-        'gambar' => 'assets/images/kamera/FujifilmX-S10.jpg',
-        'deskripsi' => 'Fujifilm X-S10 merupakan kamera mirrorless yang cocok digunakan untuk fotografi dan video.',
-        'spesifikasi' => ['24.3 MP', 'APS-C', 'Full HD'],
-        'kondisi' => 'Baik',
-        'status' => 'Tersedia'
-    ],
+$result = mysqli_stmt_get_result($query);
+$data = mysqli_fetch_assoc($result);
 
-    5 => [
-        'nama' => 'Sony Alpha A6400',
-        'gambar' => 'assets/images/kamera/SonnyAlphaa6400.jpg',
-        'deskripsi' => 'Sony Alpha A6400 merupakan kamera mirrorless yang cocok digunakan untuk kebutuhan fotografi dan video.',
-        'spesifikasi' => ['24.2 MP', 'APS-C', '4K UHD'],
-        'kondisi' => 'Baik',
-        'status' => 'Perawatan'
-    ],
+// Jika data kamera tidak ditemukan
+if (!$data) {
+    http_response_code(404);
+    exit("Data kamera tidak ditemukan.");
+}
 
-    6 => [
-        'nama' => 'Fujifilm X-T30',
-        'gambar' => 'assets/images/kamera/FujifilmX-T30.jpg',
-        'deskripsi' => 'Fujifilm X-T30 merupakan kamera mirrorless yang cocok digunakan untuk fotografi maupun dokumentasi.',
-        'spesifikasi' => ['26.1 MP', 'APS-C', '4K UHD'],
-        'kondisi' => 'Baik',
-        'status' => 'Dipinjam'
-    ],
-
-    7 => [
-        'nama' => 'Canon EOS 90D',
-        'gambar' => 'assets/images/kamera/Canon90d.jpg',
-        'deskripsi' => 'Canon EOS 90D merupakan kamera DSLR yang cocok digunakan untuk kebutuhan fotografi maupun video.',
-        'spesifikasi' => ['16 MP', 'Micro 4/3', '4K UHD'],
-        'kondisi' => 'Baik',
-        'status' => 'Dipinjam'
-    ],
-
-    8 => [
-        'nama' => 'Canon EOS 80D',
-        'gambar' => 'assets/images/kamera/Canon80d.jpg',
-        'deskripsi' => 'Canon EOS 80D merupakan kamera DSLR yang cocok digunakan untuk kebutuhan fotografi maupun dokumentasi.',
-        'spesifikasi' => ['24.1 MP', 'APS-C', '4K UHD'],
-        'kondisi' => 'Baik',
-        'status' => 'Tersedia'
-    ]
-];
-
-$data = $kamera[$id] ?? $kamera[1];
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -103,9 +57,10 @@ $data = $kamera[$id] ?? $kamera[1];
         <div class="row align-items-center g-5">
             <!-- FOTO KAMERA -->
             <div class="col-lg-6">
+
                 <div class="detail-produk-image">
-                    <img src="<?= $data['gambar'] ?>"
-                    alt="<?= $data['nama'] ?>"
+                    <img src="<?= htmlspecialchars($data['foto']); ?>"
+                    alt="<?= htmlspecialchars($data['nama_barang']); ?>"
                     class="img-fluid">
                 </div>
 
@@ -120,32 +75,18 @@ $data = $kamera[$id] ?? $kamera[1];
                 </span>
 
                 <h1 class="detail-produk-title">
-                    <?= $data['nama'] ?>
+                    <?= htmlspecialchars($data['nama_barang']); ?>
                 </h1>
 
                 <p class="detail-produk-description">
-                    <?= $data['deskripsi'] ?>
+                    <?= htmlspecialchars($data['deskripsi']); ?>
                 </p>
 
-
-                <h5 class="detail-produk-heading">
-                    Spesifikasi
-                </h5>
-
-                <div class="detail-produk-spesifikasi">
-
-                    <?php foreach ($data['spesifikasi'] as $spesifikasi): ?>
-                        <span><?= $spesifikasi ?></span>
-                    <?php endforeach; ?>
-
-                </div>
-
-
                 <div class="detail-produk-info">
-
-                    <p><strong>Kondisi:</strong> <?= $data['kondisi'] ?></p>
-                    <p><strong>Status:</strong> <?= $data['status'] ?></p>
-
+                     <p>
+                        <strong>Status:</strong>
+                        <?= htmlspecialchars($data['nama_kondisi']); ?>
+                    </p>
                 </div>
 
 
@@ -154,7 +95,8 @@ $data = $kamera[$id] ?? $kamera[1];
                    ~ Kembali ~
                 </a>
 
-                <a href="/ProjectPeminjaman-kamera-tripod/Transaksi/peminjaman.php?id=<?= $id ?>&jenis=kamera" class="btn btn-ajukan">
+                <a href="/ProjectPeminjaman-kamera-tripod/Transaksi/Peminjaman/peminjaman.php?id=<?= (int) $data['id_barang']; ?>&jenis=kamera"
+                   class="btn btn-ajukan">
                     ~ Ajukan Peminjaman ~
                 </a>
             </div>

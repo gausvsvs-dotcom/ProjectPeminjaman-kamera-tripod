@@ -1,52 +1,107 @@
 <?php
 require_once 'koneksi.php';
 
-$pesan = "";
-$tipe_pesan = "error";
+// Pastikan hanya form POST yang bisa menjalankan proses
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    header("Location: peminjaman.php");
+    exit;
+}
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    // Matikan pengecekan foreign key sementara agar tidak error
-    mysqli_query($conn, "SET foreign_key_checks = 0");
+// Ambil data dari form
+$nama_peminjam   = trim($_POST['nama_peminjam'] ?? '');
+$no_hp           = trim($_POST['no_hp'] ?? '');
+$tgl_peminjaman   = trim($_POST['tgl_peminjaman'] ?? '');
+$tgl_jatuh_tempo = trim($_POST['tgl_jatuh_tempo'] ?? '');
+$alamat          = trim($_POST['alamat'] ?? '');
 
-    $query = "INSERT INTO peminjaman (status) VALUES ('Dipinjam')";
-    $insert = mysqli_query($conn, $query);
+// Simpan input jika terjadi kesalahan
+$_SESSION['old'] = [
+    'nama_peminjam'   => $nama_peminjam,
+    'no_hp'           => $no_hp,
+    'tgl_peminjaman'   => $tgl_peminjaman,
+    'tgl_jatuh_tempo' => $tgl_jatuh_tempo,
+    'alamat'          => $alamat
+];
 
-    // Nyalakan kembali pengecekan foreign key
-    mysqli_query($conn, "SET foreign_key_checks = 1");
+// Validasi
+if (
+    $nama_peminjam === '' ||
+    $no_hp === '' ||
+    $tgl_peminjaman === '' ||
+    $tgl_jatuh_tempo === '' ||
+    $alamat === ''
+) {
+    $_SESSION['pesan_error'] = "Semua data peminjaman wajib diisi.";
+    header("Location: peminjaman.php");
+    exit;
+}
 
-    if ($insert) {
-        $pesan = "Data peminjaman berhasil disimpan!";
-        $tipe_pesan = "sukses";
-    } else {
-        $pesan = "Gagal menyimpan: " . mysqli_error($conn);
-    }
+if (!preg_match('/^[0-9+\-\s]{10,20}$/', $no_hp)) {
+    $_SESSION['pesan_error'] = "Nomor HP tidak valid. Periksa kembali.";
+    header("Location: peminjaman.php");
+    exit;
+}
+
+if ($tgl_jatuh_tempo < $tgl_peminjaman) {
+    $_SESSION['pesan_error'] = "Tanggal pengembalian tidak boleh sebelum tanggal peminjaman.";
+    header("Location: peminjaman.php");
+    exit;
+}
+
+// Konsumen belum login
+$id_user = null;
+
+// Status awal sesuai ENUM database
+$status = "Diajukan";
+
+// Jenis peminjaman diisi otomatis karena tidak ditampilkan di form
+$jenis_peminjaman = "online";
+
+// Simpan data
+$query = "INSERT INTO peminjaman
+    (id_user, nama_peminjam, no_hp, tgl_peminjaman,
+     tgl_jatuh_tempo, status, jenis_peminjaman, Alamat)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+
+$stmt = mysqli_prepare($koneksi, $query);
+
+if (!$stmt) {
+    $_SESSION['pesan_error'] = "Terjadi kesalahan saat menyiapkan penyimpanan data.";
+    header("Location: peminjaman.php");
+    exit;
+}
+
+mysqli_stmt_bind_param(
+    $stmt,
+    "isssssss",
+    $id_user,
+    $nama_peminjam,
+    $no_hp,
+    $tgl_peminjaman,
+    $tgl_jatuh_tempo,
+    $status,
+    $jenis_peminjaman,
+    $alamat
+);
+
+if (mysqli_stmt_execute($stmt)) {
+    $id_baru = mysqli_insert_id($koneksi);
+
+    unset($_SESSION['old']);
+
+    mysqli_stmt_close($stmt);
+    mysqli_close($koneksi);
+
+    header("Location: detail_peminjaman.php?id=" . $id_baru);
+    exit;
 } else {
-    $pesan = "Silakan isi form peminjaman terlebih dahulu.";
+    $_SESSION['pesan_error'] = "Gagal menyimpan pengajuan peminjaman: "
+        . mysqli_stmt_error($stmt);
+
+    mysqli_stmt_close($stmt);
+    mysqli_close($koneksi);
+
+    header("Location: peminjaman.php");
+    exit;
 }
 ?>
-
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <title>Proses Peminjaman</title>
-    <style>
-        body { background-color: #FFFBEB; font-family: 'Segoe UI', Tahoma, sans-serif; padding: 40px; }
-        .container { max-width: 600px; margin: 0 auto; background: #fff; padding: 35px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.06); border-top: 6px solid #8174A0; text-align: center; }
-        h2 { color: #8174A0; margin-top: 0; }
-        .alert { padding: 15px; border-radius: 8px; margin-bottom: 25px; font-weight: 600; }
-        .alert-sukses { background-color: #d4edda; color: #155724; }
-        .alert-error { background-color: #f8d7da; color: #721c24; }
-        .btn { display: inline-block; background: #8174A0; color: white; padding: 12px 25px; border-radius: 8px; text-decoration: none; font-weight: 600; }
-        .btn:hover { background: #6a5d88; }
-    </style>
-</head>
-<body>
-<div class="container">
-    <h2>Status Proses Peminjaman</h2>
-    <div class="alert <?= ($tipe_pesan == 'sukses') ? 'alert-sukses' : 'alert-error'; ?>"><?= $pesan; ?></div>
-    <a href="peminjaman.php" class="btn">Kembali ke Form Peminjaman</a>
-    <a href="../riwayat.php" class="btn" style="background-color: #A888B5; margin-left: 10px;">Lihat Riwayat</a>
-</div>
-</body>
-</html>

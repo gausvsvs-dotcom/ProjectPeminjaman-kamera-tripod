@@ -190,19 +190,19 @@
         </div>
 
         <a
-            href="../../Transaksi/Peminjaman/peminjaman.php"
+            href="../peminjaman/index.php"
             class="menu-item">
             <i class="bi bi-clipboard-check-fill"></i>
             <span>Peminjaman</span>
         </a>
         <a
-            href="../../Transaksi/Pengembalian/pengembalian.php "
+            href="../../Transaksi/Pengembalian/_detail_pengembalian.php "
             class="menu-item">
             <i class="bi bi-arrow-return-left"></i>
             <span>Pengembalian</span>
         </a>
         <a
-            href="../../Transaksi/Pembayaran/pembayaran.php"
+            href="../../Transaksi/Pembayaran/detail_pembayaran.php"
             class="menu-item">
             <i class="bi bi-wallet-fill"></i>
             <span>Pembayaran</span>
@@ -221,7 +221,7 @@
             LAPORAN
         </div> 
         <a
-            href="../laporan/index.php"
+            href="../laporan/peminjaman.php"
             class="menu-item">
             <i class="bi bi-file-earmark-bar-graph-fill"></i>
             <span>Laporan</span>

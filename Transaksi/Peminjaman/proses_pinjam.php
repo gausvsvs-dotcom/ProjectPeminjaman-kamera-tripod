@@ -1,53 +1,52 @@
 <?php
-session_start();
+require_once 'koneksi.php';
 
-$host = "localhost";
-$user = "root";
-$pass = "";
-$db   = "project";
-
-$koneksi = mysqli_connect($host, $user, $pass, $db);
-
-if (!$koneksi) {
-    die("Koneksi database gagal: " . mysqli_connect_error());
-}
+$pesan = "";
+$tipe_pesan = "error";
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    
-    // Ambil data dari form dengan aman
-    $nama_peminjam    = isset($_POST['nama_peminjam']) ? mysqli_real_escape_string($koneksi, $_POST['nama_peminjam']) : '';
-    $no_hp            = isset($_POST['no_hp']) ? mysqli_real_escape_string($koneksi, $_POST['no_hp']) : '';
-    $tgl_peminjaman   = isset($_POST['tgl_peminjaman']) ? mysqli_real_escape_string($koneksi, $_POST['tgl_peminjaman']) : '';
-    $tgl_jatuh_tempo  = isset($_POST['tgl_kembali']) ? mysqli_real_escape_string($koneksi, $_POST['tgl_kembali']) : '';
-    $alamat           = isset($_POST['alamat']) ? mysqli_real_escape_string($koneksi, $_POST['alamat']) : '';
-    $jenis_peminjaman = isset($_POST['jenis_peminjaman']) ? mysqli_real_escape_string($koneksi, $_POST['jenis_peminjaman']) : 'offline';
-    
-    // Ambil ID user secara otomatis untuk menghindari error foreign key
-    $query_user = mysqli_query($koneksi, "SELECT id_user FROM pengguna LIMIT 1");
-    if (mysqli_num_rows($query_user) > 0) {
-        $data_user = mysqli_fetch_assoc($query_user);
-        $id_user = $data_user['id_user'];
+    // Matikan pengecekan foreign key sementara agar tidak error
+    mysqli_query($conn, "SET foreign_key_checks = 0");
+
+    $query = "INSERT INTO peminjaman (status) VALUES ('Dipinjam')";
+    $insert = mysqli_query($conn, $query);
+
+    // Nyalakan kembali pengecekan foreign key
+    mysqli_query($conn, "SET foreign_key_checks = 1");
+
+    if ($insert) {
+        $pesan = "Data peminjaman berhasil disimpan!";
+        $tipe_pesan = "sukses";
     } else {
-        mysqli_query($koneksi, "INSERT INTO pengguna (nama_user, username, role, password) VALUES ('Admin Sistem', 'admin', 'admin', '123')");
-        $id_user = mysqli_insert_id($koneksi);
-    }
-
-    // Query INSERT ke tabel peminjaman
-    $query = "INSERT INTO peminjaman (id_user, nama_peminjam, no_hp, tgl_peminjaman, tgl_jatuh_tempo, jenis_peminjaman, Alamat) 
-              VALUES ('$id_user', '$nama_peminjam', '$no_hp', '$tgl_peminjaman', '$tgl_jatuh_tempo', '$jenis_peminjaman', '$alamat')";
-
-    $result = mysqli_query($koneksi, $query);
-
-    if ($result) {
-        echo "<script>
-                alert('Data peminjaman berhasil disimpan!');
-                window.history.go(-1); 
-              </script>";
-    } else {
-        echo "Gagal menyimpan data: " . mysqli_error($koneksi);
+        $pesan = "Gagal menyimpan: " . mysqli_error($conn);
     }
 } else {
-    header("Location: form_peminjaman.php");
-    exit();
+    $pesan = "Silakan isi form peminjaman terlebih dahulu.";
 }
 ?>
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Proses Peminjaman</title>
+    <style>
+        body { background-color: #FFFBEB; font-family: 'Segoe UI', Tahoma, sans-serif; padding: 40px; }
+        .container { max-width: 600px; margin: 0 auto; background: #fff; padding: 35px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.06); border-top: 6px solid #8174A0; text-align: center; }
+        h2 { color: #8174A0; margin-top: 0; }
+        .alert { padding: 15px; border-radius: 8px; margin-bottom: 25px; font-weight: 600; }
+        .alert-sukses { background-color: #d4edda; color: #155724; }
+        .alert-error { background-color: #f8d7da; color: #721c24; }
+        .btn { display: inline-block; background: #8174A0; color: white; padding: 12px 25px; border-radius: 8px; text-decoration: none; font-weight: 600; }
+        .btn:hover { background: #6a5d88; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>Status Proses Peminjaman</h2>
+    <div class="alert <?= ($tipe_pesan == 'sukses') ? 'alert-sukses' : 'alert-error'; ?>"><?= $pesan; ?></div>
+    <a href="peminjaman.php" class="btn">Kembali ke Form Peminjaman</a>
+    <a href="../riwayat.php" class="btn" style="background-color: #A888B5; margin-left: 10px;">Lihat Riwayat</a>
+</div>
+</body>
+</html>

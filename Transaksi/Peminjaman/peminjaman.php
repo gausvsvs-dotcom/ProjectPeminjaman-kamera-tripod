@@ -3,70 +3,64 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Form Peminjaman Barang</title>
-    <!-- Google Fonts Inter & FontAwesome Icon -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>Form Peminjaman Kamera & Tripod</title>
+    <style>
+        body { background-color: #FFFBEB; font-family: 'Segoe UI', Tahoma, sans-serif; padding: 40px 20px; margin: 0; }
+        .card { max-width: 550px; margin: 0 auto; background: #fff; padding: 35px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.06); border-top: 6px solid #8174A0; }
+        h2 { color: #8174A0; margin-top: 0; text-align: center; margin-bottom: 25px; }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; font-size: 14px; font-weight: 600; color: #555; margin-bottom: 8px; }
+        input, select, textarea { width: 100%; padding: 11px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; background-color: #fafafa; font-size: 14px; }
+        input:focus, select:focus, textarea:focus { border-color: #8174A0; outline: none; background-color: #fff; }
+        .btn { display: block; width: 100%; background: #8174A0; color: white; padding: 12px; border: none; border-radius: 8px; font-weight: 600; font-size: 15px; cursor: pointer; margin-top: 25px; transition: background 0.2s; }
+        .btn:hover { background: #6a5d88; }
+    </style>
 </head>
-<body style="background-color: #f5f3f8 !important; margin: 0; padding: 30px 20px; font-family: 'Inter', sans-serif !important; display: flex; justify-content: center; align-items: center; min-height: 100vh;">
-
-    <!-- Card Container Form -->
-    <div class="card-form" style="width: 100% !important; max-width: 500px !important; background-color: #ffffff !important; border-radius: 16px !important; border: 1px solid #e6e1ed !important; overflow: hidden !important; box-shadow: 0 10px 25px rgba(129, 116, 160, 0.08) !important;">
-        
-        <!-- Header Form -->
-        <div class="card-header" style="background-color: #8174a0 !important; padding: 20px 24px !important; color: #ffffff !important;">
-            <h2 style="font-size: 1.25rem !important; font-weight: 600 !important; color: #ffffff !important; margin: 0 !important; letter-spacing: -0.02em !important;">Form Peminjaman Barang</h2>
+<body>
+<div class="card">
+    <h2>Form Peminjaman Alat</h2>
+    <form action="../konfirmasi.php" method="POST">
+        <div class="form-group">
+            <label>Nama Peminjam</label>
+            <input type="text" name="nama_peminjam" placeholder="Masukkan nama lengkap" required>
         </div>
-
-        <!-- Body Form -->
-        <form class="card-body" action="proses_pinjam.php" method="POST" style="padding: 24px !important; display: flex !important; flex-direction: column !important; gap: 18px !important;">
-            
-            <!-- Nama Peminjam -->
-            <div class="form-group" style="display: flex !important; flex-direction: column !important; gap: 8px !important;">
-                <label for="nama_peminjam" style="font-size: 0.875rem !important; font-weight: 600 !important; color: #2d2338 !important;">Nama Peminjam</label>
-                <input type="text" name="nama_peminjam" id="nama_peminjam" value="Rian adi" placeholder="Ketik nama peminjam..." style="width: 100% !important; padding: 12px 16px !important; background-color: #f0ebf5 !important; border: 1px solid #d8d0e3 !important; border-radius: 10px !important; font-size: 0.925rem !important; color: #2d2338 !important; outline: none !important; box-sizing: border-box !important;">
-            </div>
-
-            <!-- No HP -->
-            <div class="form-group" style="display: flex !important; flex-direction: column !important; gap: 8px !important;">
-                <label for="no_hp" style="font-size: 0.875rem !important; font-weight: 600 !important; color: #2d2338 !important;">No HP</label>
-                <input type="text" name="no_hp" id="no_hp" placeholder="Masukkan nomor HP..." style="width: 100% !important; padding: 12px 16px !important; background-color: #f0ebf5 !important; border: 1px solid #d8d0e3 !important; border-radius: 10px !important; font-size: 0.925rem !important; color: #2d2338 !important; outline: none !important; box-sizing: border-box !important;">
-            </div>
-
-            <!-- Tanggal Peminjaman -->
-            <div class="form-group" style="display: flex !important; flex-direction: column !important; gap: 8px !important;">
-                <label for="tgl_peminjaman" style="font-size: 0.875rem !important; font-weight: 600 !important; color: #2d2338 !important;">Tanggal Peminjaman</label>
-                <input type="date" name="tgl_peminjaman" id="tgl_peminjaman" style="width: 100% !important; padding: 12px 16px !important; background-color: #f0ebf5 !important; border: 1px solid #d8d0e3 !important; border-radius: 10px !important; font-size: 0.925rem !important; color: #2d2338 !important; outline: none !important; box-sizing: border-box !important;">
-            </div>
-
-            <!-- Tanggal Jatuh Tempo -->
-            <div class="form-group" style="display: flex !important; flex-direction: column !important; gap: 8px !important;">
-                <label for="tgl_jatuh_tempo" style="font-size: 0.875rem !important; font-weight: 600 !important; color: #2d2338 !important;">Tanggal Jatuh Tempo (Rencana Kembali)</label>
-                <input type="date" name="tgl_jatuh_tempo" id="tgl_jatuh_tempo" style="width: 100% !important; padding: 12px 16px !important; background-color: #f0ebf5 !important; border: 1px solid #d8d0e3 !important; border-radius: 10px !important; font-size: 0.925rem !important; color: #2d2338 !important; outline: none !important; box-sizing: border-box !important;">
-            </div>
-
-            <!-- Jenis Peminjaman -->
-            <div class="form-group" style="display: flex !important; flex-direction: column !important; gap: 8px !important;">
-                <label for="jenis_peminjaman" style="font-size: 0.875rem !important; font-weight: 600 !important; color: #2d2338 !important;">Jenis Peminjaman</label>
-                <select name="jenis_peminjaman" id="jenis_peminjaman" style="width: 100% !important; padding: 12px 16px !important; background-color: #f0ebf5 !important; border: 1px solid #d8d0e3 !important; border-radius: 10px !important; font-size: 0.925rem !important; color: #2d2338 !important; outline: none !important; box-sizing: border-box !important;">
-                    <option value="offline">Offline</option>
-                    <option value="online">Online</option>
-                </select>
-            </div>
-
-            <!-- Alamat -->
-            <div class="form-group" style="display: flex !important; flex-direction: column !important; gap: 8px !important;">
-                <label for="Alamat" style="font-size: 0.875rem !important; font-weight: 600 !important; color: #2d2338 !important;">Alamat</label>
-                <textarea name="Alamat" id="Alamat" placeholder="Masukkan alamat peminjam..." rows="2" style="width: 100% !important; padding: 12px 16px !important; background-color: #f0ebf5 !important; border: 1px solid #d8d0e3 !important; border-radius: 10px !important; font-size: 0.925rem !important; color: #2d2338 !important; outline: none !important; box-sizing: border-box !important; resize: none;"></textarea>
-            </div>
-
-            <!-- Tombol Simpan -->
-            <button type="submit" name="simpan" style="margin-top: 8px !important; padding: 12px !important; background-color: #8174a0 !important; color: #ffffff !important; border: none !important; border-radius: 10px !important; font-size: 0.95rem !important; font-weight: 600 !important; cursor: pointer !important; width: 100% !important;">
-                Simpan Peminjaman
-            </button>
-
-        </form>
-    </div>
-
+        <div class="form-group">
+            <label>No HP</label>
+            <input type="text" name="no_hp" placeholder="Contoh: 0821xxxxxxx" required>
+        </div>
+        <div class="form-group">
+            <label>Pilihan Kamera & Tripod</label>
+            <select name="nama_alat" required>
+                <option value="Kamera DSLR Canon EOS 3000D + Tripod Standart">Kamera DSLR Canon EOS 3000D + Tripod Standart (Rp 100.000/hari)</option>
+                <option value="Kamera Mirrorless Sony A6000 + Tripod Pro">Kamera Mirrorless Sony A6000 + Tripod Pro (Rp 150.000/hari)</option>
+                <option value="Tripod Saja (Takara / Beike)">Tripod Saja (Takara / Beike) (Rp 30.000/hari)</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Durasi Pinjam (Hari)</label>
+            <input type="number" name="durasi" min="1" value="1" required>
+        </div>
+        <div class="form-group">
+            <label>Tanggal Peminjaman</label>
+            <input type="date" name="tgl_pinjam" required>
+        </div>
+        <div class="form-group">
+            <label>Tanggal Jatuh Tempo (Rencana Kembali)</label>
+            <input type="date" name="tgl_kembali" required>
+        </div>
+        <div class="form-group">
+            <label>Jenis Peminjaman</label>
+            <select name="jenis_pinjam">
+                <option value="Offline">Offline (Datang Langsung)</option>
+                <option value="Online">Online (Antar / Kurir)</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Alamat</label>
+            <textarea name="alamat" rows="3" placeholder="Masukkan alamat peminjam" required></textarea>
+        </div>
+        <button type="submit" class="btn">Lanjut ke Konfirmasi</button>
+    </form>
+</div>
 </body>
 </html>

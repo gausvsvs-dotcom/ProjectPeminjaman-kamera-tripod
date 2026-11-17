@@ -1,8 +1,5 @@
-
 <?php
-session_start();
-
-require_once "koneksi.php";
+require_once 'koneksi.php';
 
 // Pastikan hanya form POST yang bisa menjalankan proses
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -15,7 +12,7 @@ $nama_peminjam   = trim($_POST['nama_peminjam'] ?? '');
 $no_hp           = trim($_POST['no_hp'] ?? '');
 $tgl_peminjaman   = trim($_POST['tgl_peminjaman'] ?? '');
 $tgl_jatuh_tempo = trim($_POST['tgl_jatuh_tempo'] ?? '');
-$alamat           = trim($_POST['alamat'] ?? '');
+$alamat          = trim($_POST['alamat'] ?? '');
 
 // Simpan input jika terjadi kesalahan
 $_SESSION['old'] = [
@@ -23,7 +20,7 @@ $_SESSION['old'] = [
     'no_hp'           => $no_hp,
     'tgl_peminjaman'   => $tgl_peminjaman,
     'tgl_jatuh_tempo' => $tgl_jatuh_tempo,
-    'alamat'           => $alamat
+    'alamat'          => $alamat
 ];
 
 // Validasi
@@ -87,9 +84,7 @@ mysqli_stmt_bind_param(
     $alamat
 );
 
-
 if (mysqli_stmt_execute($stmt)) {
-
     $id_baru = mysqli_insert_id($koneksi);
 
     unset($_SESSION['old']);
@@ -99,9 +94,7 @@ if (mysqli_stmt_execute($stmt)) {
 
     header("Location: detail_peminjaman.php?id=" . $id_baru);
     exit;
-
 } else {
-
     $_SESSION['pesan_error'] = "Gagal menyimpan pengajuan peminjaman: "
         . mysqli_stmt_error($stmt);
 
@@ -111,3 +104,4 @@ if (mysqli_stmt_execute($stmt)) {
     header("Location: peminjaman.php");
     exit;
 }
+?>

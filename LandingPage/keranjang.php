@@ -88,10 +88,12 @@ $jumlah_barang = count($_SESSION['keranjang']);
                                class="checkbox-barang"
                                value="<?= htmlspecialchars($barang['id']); ?>">
 
-                        <img src="<?= htmlspecialchars($barang['gambar']); ?>"
-                             alt="<?= htmlspecialchars($barang['nama']); ?>"
-                             class="keranjang-gambar">
-
+                        <?php if (!empty($barang['gambar'])): ?>
+                            <img src="../DataMaster/uploads/barang/<?= htmlspecialchars($barang['gambar']); ?>"
+                                alt="<?= htmlspecialchars($barang['nama']); ?>"
+                                class="keranjang-gambar">
+                        <?php endif; ?>
+                        
                         <div class="keranjang-info">
 
                             <h5><?= htmlspecialchars($barang['nama']); ?></h5>

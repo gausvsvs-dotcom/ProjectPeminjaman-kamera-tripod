@@ -1,5 +1,6 @@
-
 <?php
+require_once __DIR__ . '/includes/koneksi.php';
+
 session_start();
 
 if (!isset($_SESSION['keranjang'])) {
@@ -15,17 +16,26 @@ if (isset($_POST['ubah_jumlah'])) {
     if (isset($_SESSION['keranjang'][$id_barang])) {
 
         if ($aksi == 'tambah') {
-            $_SESSION['keranjang'][$id_barang]['jumlah']++;
-        } elseif ($aksi == 'kurang') {
+                $queryStok = mysqli_query($conn, "
+                SELECT stok FROM barang
+                WHERE id_barang = " . (int)$id_barang);
 
+            $dataStok = mysqli_fetch_assoc($queryStok);
+            $stokMaks = (int)($dataStok['stok'] ?? 0);
+
+        if ($_SESSION['keranjang'][$id_barang]['jumlah'] < $stokMaks) {
+                $_SESSION['keranjang'][$id_barang]['jumlah']++;
+            }
+        } elseif ($aksi == 'kurang') {
             if ($_SESSION['keranjang'][$id_barang]['jumlah'] > 1) {
                 $_SESSION['keranjang'][$id_barang]['jumlah']--;
             }
         }
-    }
 
     header("Location: keranjang.php");
     exit;
+
+    }
 }
 
 // Menghapus barang
@@ -82,6 +92,15 @@ $jumlah_barang = count($_SESSION['keranjang']);
 
                 <?php foreach ($_SESSION['keranjang'] as $barang): ?>
 
+                    <?php
+                        $queryStok = mysqli_query($conn, "
+                        SELECT stok FROM barang
+                        WHERE id_barang = " . (int)$barang['id']);
+
+                    $dataStok = mysqli_fetch_assoc($queryStok);
+                    $stokMaks = (int)($dataStok['stok'] ?? 0);
+                    ?>
+
                     <div class="keranjang-item">
 
                         <input type="checkbox"
@@ -93,7 +112,7 @@ $jumlah_barang = count($_SESSION['keranjang']);
                                 alt="<?= htmlspecialchars($barang['nama']); ?>"
                                 class="keranjang-gambar">
                         <?php endif; ?>
-                        
+
                         <div class="keranjang-info">
 
                             <h5><?= htmlspecialchars($barang['nama']); ?></h5>
@@ -110,13 +129,12 @@ $jumlah_barang = count($_SESSION['keranjang']);
                             <div class="keranjang-aksi">
 
                                 <form method="POST" action="keranjang.php">
-                                    <input type="hidden" name="id_barang"
-                                           value="<?= htmlspecialchars($barang['id']); ?>">
+                                    <input type="hidden" name="id_barang" value="<?= htmlspecialchars($barang['id']); ?>">
 
                                     <input type="hidden" name="aksi" value="kurang">
 
-                                    <button type="submit" name="ubah_jumlah"
-                                            class="btn-jumlah">
+                                    <button type="submit" name="ubah_jumlah" class="btn-jumlah"
+                                            <?= (int)$barang['jumlah'] <= 1 ? 'disabled' : ''; ?>>
                                         <i class="fas fa-minus"></i>
                                     </button>
                                 </form>
@@ -126,13 +144,13 @@ $jumlah_barang = count($_SESSION['keranjang']);
                                 </span>
 
                                 <form method="POST" action="keranjang.php">
-                                    <input type="hidden" name="id_barang"
-                                           value="<?= htmlspecialchars($barang['id']); ?>">
+                                    <input type="hidden" name="id_barang" value="<?= htmlspecialchars($barang['id']); ?>">
 
                                     <input type="hidden" name="aksi" value="tambah">
 
                                     <button type="submit" name="ubah_jumlah"
-                                            class="btn-jumlah">
+                                        class="btn-jumlah"
+                                            <?= (int)$barang['jumlah'] >= $stokMaks ? 'disabled' : ''; ?>>
                                         <i class="fas fa-plus"></i>
                                     </button>
                                 </form>

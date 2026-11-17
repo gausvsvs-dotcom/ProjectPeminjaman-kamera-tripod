@@ -1,11 +1,8 @@
-
 <?php
 require_once "../config/koneksi.php";
 /** @var mysqli $conn */
-
 $error = "";
 $success = "";
-
 // VALIDASI ID BARANG
 $id = filter_input(INPUT_GET, "id", FILTER_VALIDATE_INT);
 
@@ -13,7 +10,6 @@ if (!$id || $id <= 0) {
     header("Location: index.php");
     exit;
 }
-
 // AMBIL DATA BARANG
 $stmt = mysqli_prepare($conn, "
     SELECT id_barang, kode_barang, nama_barang, jenis_barang
@@ -64,7 +60,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["update_unit"])) {
 
         // PASTIKAN UNIT MILIK BARANG YANG SEDANG DIBUKA
         $stmt_cek = mysqli_prepare($conn, "
-            SELECT id_unit, status_unit
+            SELECT id_unit, id_kondisi, status_unit
             FROM barang_unit
             WHERE id_unit = ? AND id_barang = ?
         ");
@@ -98,7 +94,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["update_unit"])) {
             $unit_lama["status_unit"] === "Dipinjam" &&
             (
                 $status_unit !== "Dipinjam" ||
-                $id_kondisi != $id_kondisi
+                $id_kondisi != $unit_lama["id_kondisi"]
             )
         ) {
             $error = "Unit yang sedang dipinjam tidak boleh diubah sembarangan.";

@@ -221,7 +221,7 @@
             LAPORAN
         </div> 
         <a
-            href="../laporan/index.php"
+            href="../laporan/peminjaman.php"
             class="menu-item">
             <i class="bi bi-file-earmark-bar-graph-fill"></i>
             <span>Laporan</span>

@@ -203,11 +203,8 @@ if (!$query) {
                         </button>
 
                         <a href="peminjaman.php" class="btn-laporan-reset">
+                            <i class="bi bi-arrow-counterclockwise me-1"></i>
                             Reset
-                        </a>
-
-                        <a href="index.php" class="btn-laporan-reset">
-                            Kembali
                         </a>
                     </div>
 

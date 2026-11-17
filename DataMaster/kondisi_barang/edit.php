@@ -29,6 +29,9 @@ if (!$data) {
     exit;
 }
 
+// Simpan data awal untuk pembanding
+$data_awal = $data;
+
 $nama_kondisi = $data['nama_kondisi'];
 $keterangan = $data['keterangan'] ?? '';
 $error = "";
@@ -71,7 +74,19 @@ if (isset($_POST['update'])) {
         mysqli_stmt_close($stmt);
     }
 
-    // Simpan jika tidak ada error
+    // Cek apakah ada perubahan
+    if ($error === "") {
+
+        $ada_perubahan =
+            $nama_kondisi !== (string) $data_awal['nama_kondisi'] ||
+            $keterangan !== (string) ($data_awal['keterangan'] ?? '');
+
+        if (!$ada_perubahan) {
+            $error = "Tidak ada perubahan data. Silakan ubah minimal satu informasi sebelum menyimpan.";
+        }
+    }
+
+    // Simpan jika tidak ada error dan ada perubahan
     if ($error === "") {
 
         $stmt = mysqli_prepare(
@@ -81,21 +96,26 @@ if (isset($_POST['update'])) {
              WHERE id_kondisi = ?"
         );
 
-        mysqli_stmt_bind_param(
-            $stmt,
-            "ssi",
-            $nama_kondisi,
-            $keterangan,
-            $id
-        );
-
-        if (mysqli_stmt_execute($stmt)) {
-            mysqli_stmt_close($stmt);
-            header("Location: index.php?pesan=ubah");
-            exit;
+        if (!$stmt) {
+            $error = "Query gagal disiapkan: " . mysqli_error($conn);
         } else {
-            $error = "Data kondisi gagal diperbarui: " . mysqli_stmt_error($stmt);
-            mysqli_stmt_close($stmt);
+
+            mysqli_stmt_bind_param(
+                $stmt,
+                "ssi",
+                $nama_kondisi,
+                $keterangan,
+                $id
+            );
+
+            if (mysqli_stmt_execute($stmt)) {
+                mysqli_stmt_close($stmt);
+                header("Location: index.php?pesan=ubah");
+                exit;
+            } else {
+                $error = "Data kondisi gagal diperbarui: " . mysqli_stmt_error($stmt);
+                mysqli_stmt_close($stmt);
+            }
         }
     }
 }
@@ -139,7 +159,7 @@ if (isset($_POST['update'])) {
                 <?php if ($error !== "") { ?>
                     <div class="alert alert-danger" role="alert">
                         <i class="bi bi-exclamation-circle me-2"></i>
-                        <?= htmlspecialchars($error); ?>
+                        <?= htmlspecialchars($error, ENT_QUOTES, 'UTF-8'); ?>
                     </div>
                 <?php } ?>
 

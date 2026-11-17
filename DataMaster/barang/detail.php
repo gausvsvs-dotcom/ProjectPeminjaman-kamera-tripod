@@ -127,6 +127,7 @@ while ($unit = mysqli_fetch_assoc($query_unit)) {
 
 mysqli_stmt_close($stmt_unit);
 
+
 ?>
 
 <?php include "../layout/header.php"; ?>
@@ -134,6 +135,123 @@ mysqli_stmt_close($stmt_unit);
 <link rel="stylesheet" href="../assets/css/data-master.css?v=3">
 
 <?php include "../layout/navbar.php"; ?>
+
+<style>
+    .detail-info-layout {
+        display: grid;
+        grid-template-columns: minmax(220px, 0.8fr) minmax(0, 1.5fr);
+        gap: 24px;
+        padding: 24px;
+    }
+
+    .detail-photo-box {
+        background: #f5f1f8;
+        border-radius: 14px;
+        min-height: 280px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+    }
+
+    .detail-photo-box img {
+        width: 100%;
+        max-height: 300px;
+        object-fit: contain;
+        border-radius: 10px;
+    }
+
+    .detail-photo-empty {
+        color: #8174A0;
+        text-align: center;
+    }
+
+    .detail-info-content {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 16px;
+        align-content: start;
+    }
+
+    .detail-info-item {
+        padding: 13px 15px;
+        background: #faf8fc;
+        border: 1px solid #eee8f3;
+        border-radius: 10px;
+    }
+
+    .detail-info-item.full {
+        grid-column: 1 / -1;
+    }
+
+    .detail-info-label {
+        color: #8174A0;
+        font-size: 13px;
+        margin-bottom: 6px;
+    }
+
+    .detail-info-value {
+        font-weight: 600;
+        color: #34303a;
+        overflow-wrap: anywhere;
+    }
+
+    .detail-price {
+        color: #8174A0;
+        font-size: 20px;
+        font-weight: 700;
+    }
+
+    .detail-description {
+        padding: 0 24px 24px;
+    }
+
+    .detail-description-content {
+        background: #faf8fc;
+        border: 1px solid #eee8f3;
+        border-radius: 10px;
+        padding: 15px;
+        line-height: 1.7;
+    }
+
+    @media (max-width: 768px) {
+        .detail-info-layout {
+            grid-template-columns: 1fr;
+            padding: 16px;
+        }
+
+        .detail-info-content {
+            grid-template-columns: 1fr;
+        }
+
+        .detail-info-item.full {
+            grid-column: auto;
+        }
+
+        .detail-description {
+            padding: 0 16px 16px;
+        }
+    }
+
+    @media print {
+        .data-page-header,
+        .data-card-header a,
+        .detail-action-buttons,
+        .data-table-footer {
+            display: none !important;
+        }
+
+        .main-content {
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+        .data-master-card,
+        .data-detail-card {
+            break-inside: avoid;
+        }
+    }
+</style>
 
 <div class="main-content data-master-page">
     <div class="container-fluid">
@@ -150,7 +268,7 @@ mysqli_stmt_close($stmt_unit);
             </div>
         </div>
 
-        <!-- DETAIL CARD -->
+        <!-- INFORMASI BARANG -->
         <div class="data-detail-card">
 
             <div class="data-detail-header">
@@ -158,114 +276,120 @@ mysqli_stmt_close($stmt_unit);
                     <i class="bi bi-info-circle me-2"></i>
                     Informasi Barang
                 </h3>
-
                 <p>Detail data barang yang dipilih.</p>
             </div>
 
-            <div class="data-detail-body">
+            <div class="detail-info-layout">
 
-                <div class="detail-item">
-                    <div class="detail-label">Kode Barang</div>
-                    <div class="detail-value">
-                        <?= htmlspecialchars($data["kode_barang"], ENT_QUOTES, "UTF-8"); ?>
-                    </div>
+                <!-- FOTO BARANG -->
+                <div class="detail-photo-box">
+
+                    <?php if (!empty($data["foto"])): ?>
+
+                        <img
+                            src="../../uploads/barang/<?= htmlspecialchars($data["foto"], ENT_QUOTES, "UTF-8"); ?>"
+                            alt="Foto <?= htmlspecialchars($data["nama_barang"], ENT_QUOTES, "UTF-8"); ?>">
+
+                    <?php else: ?>
+
+                        <div class="detail-photo-empty">
+                            <i class="bi bi-image" style="font-size: 50px;"></i>
+                            <p class="mt-2 mb-0">Tidak ada foto barang</p>
+                        </div>
+
+                    <?php endif; ?>
+
                 </div>
 
-                <div class="detail-item">
-                    <div class="detail-label">Nama Barang</div>
-                    <div class="detail-value">
-                        <?= htmlspecialchars($data["nama_barang"], ENT_QUOTES, "UTF-8"); ?>
-                    </div>
-                </div>
+                <!-- INFORMASI -->
+                <div class="detail-info-content">
 
-                <div class="detail-item">
-                    <div class="detail-label">Jenis Barang</div>
-                    <div class="detail-value">
-                        <?= htmlspecialchars(ucfirst($data["jenis_barang"]), ENT_QUOTES, "UTF-8"); ?>
+                    <div class="detail-info-item">
+                        <div class="detail-info-label">Kode Barang</div>
+                        <div class="detail-info-value">
+                            <?= htmlspecialchars($data["kode_barang"], ENT_QUOTES, "UTF-8"); ?>
+                        </div>
                     </div>
-                </div>
 
-                <div class="detail-item">
-                    <div class="detail-label">Kategori</div>
-                    <div class="detail-value">
-                        <?= htmlspecialchars($data["nama_kategori"], ENT_QUOTES, "UTF-8"); ?>
+                    <div class="detail-info-item">
+                        <div class="detail-info-label">Nama Barang</div>
+                        <div class="detail-info-value">
+                            <?= htmlspecialchars($data["nama_barang"], ENT_QUOTES, "UTF-8"); ?>
+                        </div>
                     </div>
-                </div>
 
-                <div class="detail-item">
-                    <div class="detail-label">Merk</div>
-                    <div class="detail-value">
-                        <?= htmlspecialchars($data["nama_merk"], ENT_QUOTES, "UTF-8"); ?>
+                    <div class="detail-info-item">
+                        <div class="detail-info-label">Jenis Barang</div>
+                        <div class="detail-info-value">
+                            <?= htmlspecialchars(ucfirst($data["jenis_barang"]), ENT_QUOTES, "UTF-8"); ?>
+                        </div>
                     </div>
-                </div>
 
-                <div class="detail-item">
-                    <div class="detail-label">Total Unit</div>
-                    <div class="detail-value">
-                        <?= $total_unit; ?> unit
+                    <div class="detail-info-item">
+                        <div class="detail-info-label">Kategori</div>
+                        <div class="detail-info-value">
+                            <?= htmlspecialchars($data["nama_kategori"], ENT_QUOTES, "UTF-8"); ?>
+                        </div>
                     </div>
-                </div>
 
-                <div class="detail-item">
-                    <div class="detail-label">Unit Siap Dipinjam</div>
-                    <div class="detail-value">
-                        <span class="text-success fw-bold">
+                    <div class="detail-info-item">
+                        <div class="detail-info-label">Merk</div>
+                        <div class="detail-info-value">
+                            <?= htmlspecialchars($data["nama_merk"], ENT_QUOTES, "UTF-8"); ?>
+                        </div>
+                    </div>
+
+                    <div class="detail-info-item">
+                        <div class="detail-info-label">Harga Sewa</div>
+                        <div class="detail-price">
+                            Rp <?= number_format((float) $data["harga_sewa"], 0, ",", "."); ?>
+                        </div>
+                        <small class="text-muted">Per paket</small>
+                    </div>
+
+                    <div class="detail-info-item">
+                        <div class="detail-info-label">Total Unit</div>
+                        <div class="detail-info-value">
+                            <?= $total_unit; ?> unit
+                        </div>
+                    </div>
+
+                    <div class="detail-info-item">
+                        <div class="detail-info-label">Unit Siap Dipinjam</div>
+                        <div class="detail-info-value text-success">
                             <?= $jumlah_tersedia; ?> unit
-                        </span>
+                        </div>
                     </div>
-                </div>
 
-                <div class="detail-item">
-                    <div class="detail-label">Unit Rusak</div>
-                    <div class="detail-value">
-                        <span class="text-danger fw-bold">
+                    <div class="detail-info-item">
+                        <div class="detail-info-label">Unit Rusak</div>
+                        <div class="detail-info-value text-danger">
                             <?= $jumlah_rusak; ?> unit
-                        </span>
+                        </div>
                     </div>
+
                 </div>
-
-                <div class="detail-item">
-                    <div class="detail-label">Foto Barang</div>
-                    <div class="detail-value">
-
-                        <?php if (!empty($data["foto"])): ?>
-
-                            <img
-                                src="../uploads/barang/<?= htmlspecialchars($data["foto"], ENT_QUOTES, "UTF-8"); ?>"
-                                alt="Foto barang"
-                                class="foto-detail">
-
-                        <?php else: ?>
-
-                            <span class="text-muted">
-                                Tidak ada foto
-                            </span>
-
-                        <?php endif; ?>
-
-                    </div>
-                </div>
-
-                <div class="detail-item">
-                    <div class="detail-label">Deskripsi</div>
-                    <div class="detail-value">
-
-                        <?php if (!empty($data["deskripsi"])): ?>
-
-                            <?= nl2br(htmlspecialchars($data["deskripsi"], ENT_QUOTES, "UTF-8")); ?>
-
-                        <?php else: ?>
-
-                            <span class="text-muted">
-                                Tidak ada deskripsi
-                            </span>
-
-                        <?php endif; ?>
-
-                    </div>
-                </div>
-
             </div>
+
+            <!-- DESKRIPSI -->
+            <div class="detail-description">
+                <div class="detail-info-label">Deskripsi Barang</div>
+
+                <div class="detail-description-content">
+
+                    <?php if (!empty($data["deskripsi"])): ?>
+
+                        <?= nl2br(htmlspecialchars($data["deskripsi"], ENT_QUOTES, "UTF-8")); ?>
+
+                    <?php else: ?>
+
+                        <span class="text-muted">Tidak ada deskripsi.</span>
+
+                    <?php endif; ?>
+
+                </div>
+            </div>
+
         </div>
 
         <!-- REKAP KONDISI BARANG -->
@@ -278,9 +402,7 @@ mysqli_stmt_close($stmt_unit);
                         Rekap Kondisi Barang
                     </h3>
 
-                    <p>
-                        Ringkasan jumlah unit berdasarkan kondisi barang.
-                    </p>
+                    <p>Ringkasan jumlah unit berdasarkan kondisi barang.</p>
                 </div>
             </div>
 
@@ -305,7 +427,7 @@ mysqli_stmt_close($stmt_unit);
                         </div>
                     </div>
 
-                    <!-- REKAP SETIAP KONDISI -->
+                    <!-- REKAP KONDISI -->
                     <?php foreach ($rekap_kondisi as $item):
 
                         $nama = strtolower($item["nama_kondisi"]);
@@ -367,9 +489,7 @@ mysqli_stmt_close($stmt_unit);
                         Daftar Unit Barang
                     </h3>
 
-                    <p>
-                        Informasi kondisi dan ketersediaan setiap unit.
-                    </p>
+                    <p>Informasi kondisi dan ketersediaan setiap unit.</p>
                 </div>
 
                 <a
@@ -404,10 +524,7 @@ mysqli_stmt_close($stmt_unit);
                                 <?php foreach ($daftar_unit as $index => $unit): ?>
 
                                     <tr>
-
-                                        <td>
-                                            <?= $index + 1; ?>
-                                        </td>
+                                        <td><?= $index + 1; ?></td>
 
                                         <td>
                                             <span class="data-id">
@@ -460,7 +577,6 @@ mysqli_stmt_close($stmt_unit);
 
                                             <?php endif; ?>
                                         </td>
-
                                     </tr>
 
                                 <?php endforeach; ?>
@@ -470,9 +586,7 @@ mysqli_stmt_close($stmt_unit);
                                 <tr>
                                     <td colspan="5" class="data-empty">
                                         <i class="bi bi-inbox"></i>
-
                                         <p>Belum ada unit barang.</p>
-
                                         <span>
                                             Silakan tambahkan unit melalui menu Kelola Unit.
                                         </span>
@@ -495,28 +609,40 @@ mysqli_stmt_close($stmt_unit);
 
         </div>
 
-        <!-- BUTTON -->
-        <div class="mt-4 mb-4">
+        <!-- TOMBOL AKSI -->
+        <div class="mt-4 mb-4 detail-action-buttons">
+
             <button
                 type="button"
                 onclick="window.print()"
                 class="btn-detail-edit">
+
                 <i class="bi bi-printer me-1"></i>
                 Cetak Data Barang
+
             </button>
+
             <a
                 href="edit.php?id=<?= (int) $data["id_barang"]; ?>"
                 class="btn-detail-edit">
+
                 <i class="bi bi-pencil-square me-1"></i>
                 Edit Barang
+
             </a>
+
             <a
                 href="index.php"
                 class="btn-detail-back ms-1">
+
                 <i class="bi bi-arrow-left me-1"></i>
                 Kembali
+
             </a>
+
         </div>
+
     </div>
 </div>
+
 <?php include "../layout/footer.php"; ?>

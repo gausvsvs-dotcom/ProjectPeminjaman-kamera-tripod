@@ -31,6 +31,16 @@ $notifikasi = [
         'class' => 'danger',
         'icon' => 'check-circle-fill',
         'teks' => 'Data kategori berhasil dihapus!'
+    ],
+    'digunakan' => [
+    'class' => 'danger',
+    'icon' => 'exclamation-circle-fill',
+    'teks' => 'Kategori tidak dapat dihapus karena masih digunakan oleh data barang!'
+    ],
+    'gagal' => [
+        'class' => 'danger',
+        'icon' => 'exclamation-circle-fill',
+        'teks' => 'Data kategori gagal dihapus!'
     ]
 ];
 

@@ -257,6 +257,24 @@
     z-index: 1000;
     overflow-y: auto;
 }
+/* SIDEBAR TOGGLE */
+.sidebar {
+    transition: transform 0.25s ease;
+}
+
+/* SIDEBAR DITUTUP */
+.sidebar.closed {
+    transform: translateX(-100%);
+}
+
+/* KONTEN MENYESUAIKAN SAAT SIDEBAR DITUTUP */
+.main-content {
+    transition: margin-left 0.25s ease, width 0.25s ease;
+}
+
+body.sidebar-closed .main-content {
+    margin-left: 0;
+}
 /* scrollbar */
 .sidebar::-webkit-scrollbar {
     width: 5px;
@@ -850,4 +868,33 @@
     #modalGantiPassword .modal-body {
         padding: 18px;
     }
+}
+/* SEARCH RESULT */
+.navbar-search-wrapper {
+    position: relative;
+    width: 360px;
+}
+
+.navbar-search-wrapper .navbar-search {
+    width: 100%;
+    margin-left: 12px;
+}
+
+.search-results {
+    display: none;
+    position: absolute;
+    top: 48px;
+    left: 12px;
+    width: calc(100% - 12px);
+    max-height: 350px;
+    overflow-y: auto;
+    background: #ffffff;
+    border: 1px solid #eeeaf2;
+    border-radius: 10px;
+    box-shadow: 0 8px 25px rgba(48, 43, 63, 0.12);
+    z-index: 1200;
+}
+
+.search-results.show {
+    display: block;
 }

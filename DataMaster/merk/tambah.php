@@ -1,10 +1,16 @@
+
 <?php
 require_once "../config/koneksi.php";
 /** @var mysqli $conn */
+
 $nama_merk = "";
+$keterangan = "";
 $error = "";
+
 if (isset($_POST['simpan'])) {
     $nama_merk = trim($_POST['nama_merk'] ?? '');
+    $keterangan = trim($_POST['keterangan'] ?? '');
+
     // Validasi nama merk
     if ($nama_merk === "") {
         $error = "Nama merk wajib diisi.";
@@ -17,23 +23,35 @@ if (isset($_POST['simpan'])) {
             "SELECT id_merk FROM merk
              WHERE LOWER(nama_merk) = LOWER(?)"
         );
+
         mysqli_stmt_bind_param($stmt_cek, "s", $nama_merk);
         mysqli_stmt_execute($stmt_cek);
+
         $hasil_cek = mysqli_stmt_get_result($stmt_cek);
         $duplikat = mysqli_num_rows($hasil_cek) > 0;
+
         mysqli_stmt_close($stmt_cek);
+
         if ($duplikat) {
             $error = "Nama merk tersebut sudah terdaftar.";
         } else {
-            // Simpan data merk
+            // Simpan data merk dan keterangan
             $stmt = mysqli_prepare(
                 $conn,
-                "INSERT INTO merk (nama_merk) VALUES (?)"
+                "INSERT INTO merk (nama_merk, keterangan)
+                 VALUES (?, ?)"
             );
-            mysqli_stmt_bind_param($stmt, "s", $nama_merk);
+
+            mysqli_stmt_bind_param(
+                $stmt,
+                "ss",
+                $nama_merk,
+                $keterangan
+            );
 
             if (mysqli_stmt_execute($stmt)) {
                 mysqli_stmt_close($stmt);
+
                 header("Location: index.php?pesan=tambah");
                 exit;
             } else {
@@ -44,11 +62,14 @@ if (isset($_POST['simpan'])) {
     }
 }
 ?>
+
 <?php include "../layout/header.php"; ?>
 <link rel="stylesheet" href="../assets/css/data-master.css?v=3">
 <?php include "../layout/navbar.php"; ?>
+
 <div class="main-content data-master-page">
     <div class="container-fluid">
+
         <!-- Header Halaman -->
         <div class="data-page-header">
             <div class="data-page-icon">
@@ -59,8 +80,10 @@ if (isset($_POST['simpan'])) {
                 <p>Tambahkan merk kamera atau tripod ke dalam sistem.</p>
             </div>
         </div>
+
         <!-- Form Tambah -->
         <div class="data-form-card">
+
             <div class="data-form-header">
                 <div>
                     <h5 class="mb-1">Form Tambah Merk</h5>
@@ -69,7 +92,9 @@ if (isset($_POST['simpan'])) {
                     </p>
                 </div>
             </div>
+
             <div class="data-form-body">
+
                 <!-- Pesan Error -->
                 <?php if ($error !== ""): ?>
                     <div class="alert alert-danger" role="alert">
@@ -81,7 +106,9 @@ if (isset($_POST['simpan'])) {
                         ); ?>
                     </div>
                 <?php endif; ?>
+
                 <form method="POST">
+
                     <!-- Nama Merk -->
                     <div class="mb-4">
                         <label
@@ -90,6 +117,7 @@ if (isset($_POST['simpan'])) {
                             Nama Merk
                             <span class="text-danger">*</span>
                         </label>
+
                         <input
                             type="text"
                             id="nama_merk"
@@ -104,24 +132,32 @@ if (isset($_POST['simpan'])) {
                             maxlength="100"
                             required
                             autofocus>
+
                         <small class="text-muted">
                             Contoh: Canon, Nikon, Sony, Fujifilm, atau Weifeng.
                         </small>
                     </div>
+
+                    <!-- Keterangan -->
                     <div class="mb-4">
-                        <label 
-                        for="keterangan"
-                        class="data-form-label">
+                        <label
+                            for="keterangan"
+                            class="data-form-label">
                             Keterangan
                         </label>
+
                         <textarea
                             id="keterangan"
                             name="keterangan"
                             class="data-form-control"
                             placeholder="Masukkan keterangan merk"
-                            rows="3"
-                        ><?= htmlspecialchars($keterangan, ENT_QUOTES, 'UTF-8'); ?></textarea>
+                            rows="3"><?= htmlspecialchars(
+                                $keterangan,
+                                ENT_QUOTES,
+                                'UTF-8'
+                            ); ?></textarea>
                     </div>
+
                     <!-- Tombol -->
                     <div class="d-flex flex-wrap gap-2 mt-4">
                         <button
@@ -131,6 +167,7 @@ if (isset($_POST['simpan'])) {
                             <i class="bi bi-check-circle me-1"></i>
                             Simpan Merk
                         </button>
+
                         <a
                             href="index.php"
                             class="btn-form-cancel">
@@ -138,9 +175,11 @@ if (isset($_POST['simpan'])) {
                             Kembali
                         </a>
                     </div>
+
                 </form>
             </div>
         </div>
     </div>
 </div>
+
 <?php include "../layout/footer.php"; ?>

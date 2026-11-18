@@ -1,47 +1,135 @@
+
 <?php
-require_once __DIR__ . '/includes/koneksi.php';
 
 session_start();
+
+require_once __DIR__ . '/includes/koneksi.php';
 
 if (!isset($_SESSION['keranjang'])) {
     $_SESSION['keranjang'] = [];
 }
 
-// Mengubah jumlah barang
+
+// ==========================================
+// FUNGSI MENGAMBIL STOK TERSEDIA
+// ==========================================
+
+function ambilStokTersedia($conn, $id_barang)
+{
+    $query = mysqli_prepare($conn, "
+
+        SELECT
+            CASE
+                WHEN COUNT(bu.id_unit) = 0
+                THEN b.stok
+
+                ELSE SUM(
+                    CASE
+                        WHEN LOWER(TRIM(bu.status_unit)) = 'tersedia'
+                        THEN 1
+                        ELSE 0
+                    END
+                )
+            END AS stok_tersedia
+
+        FROM barang b
+
+        LEFT JOIN barang_unit bu
+            ON b.id_barang = bu.id_barang
+
+        WHERE b.id_barang = ?
+
+        GROUP BY b.id_barang, b.stok
+
+    ");
+
+    mysqli_stmt_bind_param($query, "i", $id_barang);
+    mysqli_stmt_execute($query);
+
+    $result = mysqli_stmt_get_result($query);
+    $data = mysqli_fetch_assoc($result);
+
+    return (int) ($data['stok_tersedia'] ?? 0);
+}
+
+
+// ==========================================
+// FUNGSI MENGAMBIL JUMLAH UNIT DIPINJAM
+// ==========================================
+
+function ambilJumlahDipinjam($conn, $id_barang)
+{
+    $query = mysqli_prepare($conn, "
+
+        SELECT COUNT(*) AS jumlah_dipinjam
+
+        FROM barang_unit
+
+        WHERE id_barang = ?
+
+        AND LOWER(TRIM(status_unit)) = 'dipinjam'
+
+    ");
+
+    mysqli_stmt_bind_param($query, "i", $id_barang);
+    mysqli_stmt_execute($query);
+
+    $result = mysqli_stmt_get_result($query);
+    $data = mysqli_fetch_assoc($result);
+
+    return (int) ($data['jumlah_dipinjam'] ?? 0);
+}
+
+
+// ==========================================
+// MENGUBAH JUMLAH BARANG
+// ==========================================
+
 if (isset($_POST['ubah_jumlah'])) {
 
-    $id_barang = $_POST['id_barang'];
-    $aksi = $_POST['aksi'];
+    $id_barang = (int) ($_POST['id_barang'] ?? 0);
+    $aksi = $_POST['aksi'] ?? '';
 
     if (isset($_SESSION['keranjang'][$id_barang])) {
 
-        if ($aksi == 'tambah') {
-                $queryStok = mysqli_query($conn, "
-                SELECT stok FROM barang
-                WHERE id_barang = " . (int)$id_barang);
+        if ($aksi === 'tambah') {
 
-            $dataStok = mysqli_fetch_assoc($queryStok);
-            $stokMaks = (int)($dataStok['stok'] ?? 0);
+            $stokMaks = ambilStokTersedia($conn, $id_barang);
 
-        if ($_SESSION['keranjang'][$id_barang]['jumlah'] < $stokMaks) {
+            if (
+                $_SESSION['keranjang'][$id_barang]['jumlah'] < $stokMaks
+            ) {
+
                 $_SESSION['keranjang'][$id_barang]['jumlah']++;
+
             }
-        } elseif ($aksi == 'kurang') {
-            if ($_SESSION['keranjang'][$id_barang]['jumlah'] > 1) {
+
+        } elseif ($aksi === 'kurang') {
+
+            if (
+                $_SESSION['keranjang'][$id_barang]['jumlah'] > 1
+            ) {
+
                 $_SESSION['keranjang'][$id_barang]['jumlah']--;
+
             }
+
         }
+
+    }
 
     header("Location: keranjang.php");
     exit;
-
-    }
 }
 
-// Menghapus barang
+
+// ==========================================
+// MENGHAPUS BARANG
+// ==========================================
+
 if (isset($_POST['hapus_keranjang'])) {
 
-    $id_barang = $_POST['hapus_keranjang'];
+    $id_barang = (int) $_POST['hapus_keranjang'];
 
     unset($_SESSION['keranjang'][$id_barang]);
 
@@ -49,14 +137,23 @@ if (isset($_POST['hapus_keranjang'])) {
     exit;
 }
 
+
+// ==========================================
+// JUMLAH JENIS BARANG DI KERANJANG
+// ==========================================
+
 $jumlah_barang = count($_SESSION['keranjang']);
+
 ?>
+
 
 <!DOCTYPE html>
 <html lang="id">
 
 <head>
+
     <meta charset="UTF-8">
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Keranjang Peminjaman</title>
@@ -66,240 +163,531 @@ $jumlah_barang = count($_SESSION['keranjang']);
     <link rel="stylesheet" href="assets/css/style.css?v=103">
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
 </head>
+
 
 <body>
 
-    <?php include 'includes/navbar.php'; ?>
+<?php include 'includes/navbar.php'; ?>
 
-    <div class="container keranjang-container">
 
-        <div class="keranjang-header">
-            <h2>Keranjang</h2>
-            <p>Periksa kembali kamera dan tripod yang ingin Anda pinjam.</p>
+<div class="container keranjang-container">
+
+    <div class="keranjang-header">
+
+        <h2>Keranjang</h2>
+
+        <p>
+            Periksa kembali kamera dan tripod yang ingin Anda pinjam.
+        </p>
+
+    </div>
+
+
+    <?php if ($jumlah_barang > 0): ?>
+
+
+        <!-- PILIH SEMUA -->
+
+        <div class="keranjang-pilih-semua">
+
+            <label>
+
+                <input type="checkbox" id="pilihSemua">
+
+                <span>
+                    Pilih Semua (<?= $jumlah_barang; ?> barang)
+                </span>
+
+            </label>
+
         </div>
 
-        <?php if ($jumlah_barang > 0): ?>
 
-            <div class="keranjang-pilih-semua">
-                <label>
-                    <input type="checkbox" id="pilihSemua">
-                    <span>Pilih Semua (<?= $jumlah_barang; ?> barang)</span>
-                </label>
-            </div>
+        <div class="keranjang-daftar">
 
-            <div class="keranjang-daftar">
 
-                <?php foreach ($_SESSION['keranjang'] as $barang): ?>
+            <?php foreach ($_SESSION['keranjang'] as $barang): ?>
 
-                    <?php
-                        $queryStok = mysqli_query($conn, "
-                        SELECT stok FROM barang
-                        WHERE id_barang = " . (int)$barang['id']);
+                <?php
 
-                    $dataStok = mysqli_fetch_assoc($queryStok);
-                    $stokMaks = (int)($dataStok['stok'] ?? 0);
-                    ?>
+                $idBarang = (int) $barang['id'];
 
-                    <div class="keranjang-item">
+                $jumlahKeranjang = (int) $barang['jumlah'];
 
-                        <input type="checkbox"
-                               class="checkbox-barang"
-                               value="<?= htmlspecialchars($barang['id']); ?>">
+                $stokMaks = ambilStokTersedia($conn, $idBarang);
 
-                        <?php if (!empty($barang['gambar'])): ?>
-                            <img src="../uploads/barang/<?= htmlspecialchars($barang['gambar']); ?>"
-                                alt="<?= htmlspecialchars($barang['nama']); ?>"
-                                class="keranjang-gambar">
+                $jumlahDipinjam = ambilJumlahDipinjam($conn, $idBarang);
+
+
+                // MENENTUKAN STATUS BARANG
+                if ($stokMaks > 0) {
+
+                    $statusBarang = 'Tersedia';
+                    $warnaStatus = 'success';
+
+                } elseif ($jumlahDipinjam > 0) {
+
+                    $statusBarang = 'Dipinjam';
+                    $warnaStatus = 'warning';
+
+                } else {
+
+                    $statusBarang = 'Tidak Tersedia';
+                    $warnaStatus = 'danger';
+
+                }
+
+
+                // VALIDASI PEMILIHAN
+                $bisaDipilih = (
+                    $stokMaks > 0 &&
+                    $jumlahKeranjang <= $stokMaks
+                );
+
+                ?>
+
+
+                <div class="keranjang-item">
+
+
+                    <!-- CHECKBOX BARANG -->
+
+                    <input
+                        type="checkbox"
+                        class="checkbox-barang"
+                        value="<?= $idBarang; ?>"
+                        <?= !$bisaDipilih ? 'disabled' : ''; ?>
+                    >
+
+
+                    <!-- GAMBAR BARANG -->
+
+                    <?php if (!empty($barang['gambar'])): ?>
+
+                        <img
+                            src="../uploads/barang/<?= htmlspecialchars($barang['gambar']); ?>"
+                            alt="<?= htmlspecialchars($barang['nama']); ?>"
+                            class="keranjang-gambar"
+                        >
+
+                    <?php endif; ?>
+
+
+                    <div class="keranjang-info">
+
+
+                        <h5>
+
+                            <?= htmlspecialchars($barang['nama']); ?>
+
+                        </h5>
+
+
+                        <span class="keranjang-kategori">
+
+                            <?= htmlspecialchars($barang['kategori']); ?>
+
+                        </span>
+
+
+                        <!-- STATUS BARANG -->
+
+                        <span class="keranjang-status">
+
+                            <i class="fas fa-circle-check"></i>
+
+                            <span class="badge bg-<?= $warnaStatus; ?>">
+
+                                <?= htmlspecialchars($statusBarang); ?>
+
+                            </span>
+
+                        </span>
+
+
+                        <!-- INFORMASI STOK -->
+
+                        <p class="mt-2 mb-2">
+
+                            <small>
+
+                                <?= $jumlahDipinjam; ?> barang dipinjam,
+                                tersisa <?= $stokMaks; ?> barang.
+
+                            </small>
+
+                        </p>
+
+
+                        <?php if ($stokMaks === 0): ?>
+
+                            <p class="text-danger small">
+
+                                Stok sedang tidak tersedia.
+
+                            </p>
+
+                        <?php elseif ($jumlahKeranjang > $stokMaks): ?>
+
+                            <p class="text-danger small">
+
+                                Jumlah di keranjang melebihi stok yang tersedia.
+                                Kurangi jumlah barang terlebih dahulu.
+
+                            </p>
+
                         <?php endif; ?>
 
-                        <div class="keranjang-info">
 
-                            <h5><?= htmlspecialchars($barang['nama']); ?></h5>
+                        <div class="keranjang-aksi">
 
-                            <span class="keranjang-kategori">
-                                <?= htmlspecialchars($barang['kategori']); ?>
+
+                            <!-- TOMBOL KURANG -->
+
+                            <form method="POST" action="keranjang.php">
+
+                                <input
+                                    type="hidden"
+                                    name="id_barang"
+                                    value="<?= $idBarang; ?>"
+                                >
+
+                                <input
+                                    type="hidden"
+                                    name="aksi"
+                                    value="kurang"
+                                >
+
+                                <button
+                                    type="submit"
+                                    name="ubah_jumlah"
+                                    class="btn-jumlah"
+                                    <?= $jumlahKeranjang <= 1 ? 'disabled' : ''; ?>
+                                >
+
+                                    <i class="fas fa-minus"></i>
+
+                                </button>
+
+                            </form>
+
+
+                            <!-- JUMLAH BARANG -->
+
+                            <span class="jumlah-barang">
+
+                                <?= $jumlahKeranjang; ?>
+
                             </span>
 
-                            <span class="keranjang-status">
-                                <i class="fas fa-check-circle"></i>
-                                Tersedia
-                            </span>
 
-                            <div class="keranjang-aksi">
+                            <!-- TOMBOL TAMBAH -->
 
-                                <form method="POST" action="keranjang.php">
-                                    <input type="hidden" name="id_barang" value="<?= htmlspecialchars($barang['id']); ?>">
+                            <form method="POST" action="keranjang.php">
 
-                                    <input type="hidden" name="aksi" value="kurang">
+                                <input
+                                    type="hidden"
+                                    name="id_barang"
+                                    value="<?= $idBarang; ?>"
+                                >
 
-                                    <button type="submit" name="ubah_jumlah" class="btn-jumlah"
-                                            <?= (int)$barang['jumlah'] <= 1 ? 'disabled' : ''; ?>>
-                                        <i class="fas fa-minus"></i>
-                                    </button>
-                                </form>
+                                <input
+                                    type="hidden"
+                                    name="aksi"
+                                    value="tambah"
+                                >
 
-                                <span class="jumlah-barang">
-                                    <?= htmlspecialchars($barang['jumlah']); ?>
-                                </span>
+                                <button
+                                    type="submit"
+                                    name="ubah_jumlah"
+                                    class="btn-jumlah"
+                                    <?= $jumlahKeranjang >= $stokMaks ? 'disabled' : ''; ?>
+                                >
 
-                                <form method="POST" action="keranjang.php">
-                                    <input type="hidden" name="id_barang" value="<?= htmlspecialchars($barang['id']); ?>">
+                                    <i class="fas fa-plus"></i>
 
-                                    <input type="hidden" name="aksi" value="tambah">
+                                </button>
 
-                                    <button type="submit" name="ubah_jumlah"
-                                        class="btn-jumlah"
-                                            <?= (int)$barang['jumlah'] >= $stokMaks ? 'disabled' : ''; ?>>
-                                        <i class="fas fa-plus"></i>
-                                    </button>
-                                </form>
+                            </form>
 
-                                <form method="POST" action="keranjang.php"
-                                      class="form-hapus">
 
-                                    <button type="submit"
-                                            name="hapus_keranjang"
-                                            value="<?= htmlspecialchars($barang['id']); ?>"
-                                            class="btn-hapus">
+                            <!-- TOMBOL HAPUS -->
 
-                                        <i class="fas fa-trash"></i>
-                                        Hapus
+                            <form
+                                method="POST"
+                                action="keranjang.php"
+                                class="form-hapus"
+                            >
 
-                                    </button>
+                                <button
+                                    type="submit"
+                                    name="hapus_keranjang"
+                                    value="<?= $idBarang; ?>"
+                                    class="btn-hapus"
+                                >
 
-                                </form>
+                                    <i class="fas fa-trash"></i>
 
-                            </div>
+                                    Hapus
+
+                                </button>
+
+                            </form>
+
 
                         </div>
 
                     </div>
 
-                <?php endforeach; ?>
+                </div>
+
+
+            <?php endforeach; ?>
+
+
+        </div>
+
+
+        <!-- FOOTER KERANJANG -->
+
+        <div class="keranjang-footer">
+
+
+            <div class="keranjang-footer-info">
+
+                <span>Barang dipilih</span>
+
+                <strong id="jumlahDipilih">
+                    0 barang
+                </strong>
 
             </div>
 
-           <div class="keranjang-footer">
 
-                <div class="keranjang-footer-info">
-                    <span>Barang dipilih</span>
-                    <strong id="jumlahDipilih">0 barang</strong>
-                </div>
+            <div class="keranjang-footer-tombol">
 
-                <div class="keranjang-footer-tombol">
 
-                    <a href="kamera&tripod.php" class="btn-kembali-keranjang">
-                        <i class="fas fa-arrow-left me-2"></i>
-                        Kembali
-                    </a>
+                <a
+                    href="kamera&tripod.php"
+                    class="btn-kembali-keranjang"
+                >
 
-                    <button type="button" id="btnAjukan" class="btn-ajukan-keranjang" disabled>
-                        Ajukan Peminjaman
-                        <i class="fas fa-arrow-right ms-2"></i>
-                    </button>
-                </div>
-            </div>
+                    <i class="fas fa-arrow-left me-2"></i>
 
-        <?php else: ?>
+                    Kembali
 
-            <div class="keranjang-kosong">
-
-                <i class="fas fa-shopping-cart"></i>
-
-                <h4>Keranjang Anda Masih Kosong</h4>
-
-                <p>Silakan pilih kamera atau tripod yang ingin Anda pinjam.</p>
-
-                <a href="kamera&tripod.php" class="btn-kembali-belanja">
-                    Lihat Kamera & Tripod
                 </a>
 
+
+                <button
+                    type="button"
+                    id="btnAjukan"
+                    class="btn-ajukan-keranjang"
+                    disabled
+                >
+
+                    Ajukan Peminjaman
+
+                    <i class="fas fa-arrow-right ms-2"></i>
+
+                </button>
+
+
             </div>
 
-        <?php endif; ?>
+        </div>
 
-    </div>
 
-    <script>
-        const pilihSemua = document.getElementById('pilihSemua');
-        const checkboxBarang = document.querySelectorAll('.checkbox-barang');
-        const jumlahDipilih = document.getElementById('jumlahDipilih');
-        const btnAjukan = document.getElementById('btnAjukan');
+    <?php else: ?>
 
-        function perbaruiPilihan() {
 
-            const totalDipilih = document.querySelectorAll(
-                '.checkbox-barang:checked'
-            ).length;
+        <!-- KERANJANG KOSONG -->
 
-            if (jumlahDipilih) {
-                jumlahDipilih.textContent = totalDipilih + ' barang';
+        <div class="keranjang-kosong">
+
+            <i class="fas fa-shopping-cart"></i>
+
+            <h4>Keranjang Anda Masih Kosong</h4>
+
+            <p>
+                Silakan pilih kamera atau tripod yang ingin Anda pinjam.
+            </p>
+
+            <a
+                href="kamera&tripod.php"
+                class="btn-kembali-belanja"
+            >
+
+                Lihat Kamera & Tripod
+
+            </a>
+
+        </div>
+
+
+    <?php endif; ?>
+
+
+</div>
+
+
+<script>
+
+// ==========================================
+// PILIH BARANG
+// ==========================================
+
+const pilihSemua = document.getElementById('pilihSemua');
+
+const checkboxBarang = document.querySelectorAll('.checkbox-barang');
+
+const jumlahDipilih = document.getElementById('jumlahDipilih');
+
+const btnAjukan = document.getElementById('btnAjukan');
+
+
+function perbaruiPilihan() {
+
+    const checkboxAktif = Array.from(checkboxBarang).filter(
+        checkbox => !checkbox.disabled
+    );
+
+    const totalDipilih = document.querySelectorAll(
+        '.checkbox-barang:checked'
+    ).length;
+
+
+    if (jumlahDipilih) {
+
+        jumlahDipilih.textContent = totalDipilih + ' barang';
+
+    }
+
+
+    if (btnAjukan) {
+
+        btnAjukan.disabled = totalDipilih === 0;
+
+    }
+
+
+    if (pilihSemua) {
+
+        pilihSemua.checked =
+
+            checkboxAktif.length > 0 &&
+
+            checkboxAktif.every(checkbox => checkbox.checked);
+
+
+        pilihSemua.indeterminate =
+
+            totalDipilih > 0 &&
+
+            !pilihSemua.checked;
+
+        pilihSemua.disabled = checkboxAktif.length === 0;
+
+    }
+
+}
+
+
+// ==========================================
+// PILIH SEMUA BARANG
+// ==========================================
+
+if (pilihSemua) {
+
+    pilihSemua.addEventListener('change', function() {
+
+        checkboxBarang.forEach(function(checkbox) {
+
+            if (!checkbox.disabled) {
+
+                checkbox.checked = pilihSemua.checked;
+
             }
 
-            if (btnAjukan) {
-                btnAjukan.disabled = totalDipilih === 0;
-            }
-
-            if (pilihSemua) {
-                pilihSemua.checked =
-                    checkboxBarang.length > 0 &&
-                    totalDipilih === checkboxBarang.length;
-
-                pilihSemua.indeterminate =
-                    totalDipilih > 0 &&
-                    totalDipilih < checkboxBarang.length;
-            }
-        }
-
-        if (pilihSemua) {
-            pilihSemua.addEventListener('change', function () {
-
-                checkboxBarang.forEach(function (checkbox) {
-                    checkbox.checked = pilihSemua.checked;
-                });
-
-                perbaruiPilihan();
-            });
-        }
-
-        checkboxBarang.forEach(function (checkbox) {
-            checkbox.addEventListener('change', perbaruiPilihan);
         });
 
-       if (btnAjukan) {
-            btnAjukan.addEventListener('click', function () {
+        perbaruiPilihan();
+
+    });
+
+}
+
+
+// ==========================================
+// PILIH BARANG SATU PER SATU
+// ==========================================
+
+checkboxBarang.forEach(function(checkbox) {
+
+    checkbox.addEventListener('change', perbaruiPilihan);
+
+});
+
+
+// ==========================================
+// AJUKAN PEMINJAMAN
+// ==========================================
+
+if (btnAjukan) {
+
+    btnAjukan.addEventListener('click', function() {
 
         const barangDipilih = document.querySelectorAll(
-            '.checkbox-barang:checked'
+            '.checkbox-barang:checked:not(:disabled)'
         );
 
         if (barangDipilih.length === 0) {
             return;
         }
 
-        const form = document.createElement('form');
-        form.method = 'POST';
-        form.action = '../Transaksi/peminjaman/peminjaman.php';
 
-        barangDipilih.forEach(function (checkbox) {
+        const form = document.createElement('form');
+
+        form.method = 'POST';
+
+        // MENUJU FOLDER TRANSAKSI/PEMINJAMAN
+        form.action = '../Transaksi/Peminjaman/peminjaman.php';
+
+
+        barangDipilih.forEach(function(checkbox) {
 
             const input = document.createElement('input');
 
             input.type = 'hidden';
+
             input.name = 'barang_dipilih[]';
+
             input.value = checkbox.value;
 
             form.appendChild(input);
+
         });
 
+
         document.body.appendChild(form);
+
         form.submit();
+
     });
+
 }
 
-        perbaruiPilihan();
-    </script>
+
+// ==========================================
+// INISIALISASI
+// ==========================================
+
+perbaruiPilihan();
+
+</script>
+
 
 </body>
 </html>

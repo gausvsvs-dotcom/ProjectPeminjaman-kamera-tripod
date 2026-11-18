@@ -53,7 +53,8 @@ $tanggal_transaksi = date('d-m-Y H:i');
                 <td>Rp <?= number_format((int)$total_harga, 0, ',', '.'); ?></td>
                 <td><span class="badge">Dipinjam</span></td>
                 <td>
-                    <a href="Pengembalian/pengembalian.php?nama=<?= urlencode($nama_peminjam); ?>&alat=<?= urlencode($nama_alat); ?>" class="btn-action">Kembalikan</a>
+                    <!-- Menggunakan ./Pengembalian/ agar mengarah ke folder di dalam direktori yang sama -->
+                    <a href="./Pengembalian/pengembalian.php?nama=<?= urlencode($nama_peminjam); ?>&alat=<?= urlencode($nama_alat); ?>" class="btn-action">Kembalikan</a>
                 </td>
             </tr>
         </tbody>

@@ -65,13 +65,6 @@ if (!$data) {
             <div class="data-detail-body">
 
                 <div class="detail-item">
-                    <div class="detail-label">ID Kategori</div>
-                    <div class="detail-value">
-                        <?= htmlspecialchars((string) $data['id_kategori']); ?>
-                    </div>
-                </div>
-
-                <div class="detail-item">
                     <div class="detail-label">Nama Kategori</div>
                     <div class="detail-value">
                         <?= htmlspecialchars($data['nama_kategori'] ?? '-'); ?>

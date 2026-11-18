@@ -67,12 +67,7 @@ if (!$data) {
 
             <div class="data-detail-body">
 
-                <div class="detail-item">
-                    <div class="detail-label">ID Pengguna</div>
-                    <div class="detail-value">
-                        #<?= (int) $data['id_user']; ?>
-                    </div>
-                </div>
+
 
                 <div class="detail-item">
                     <div class="detail-label">Nama Pengguna</div>

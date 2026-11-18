@@ -248,12 +248,10 @@ if (!$query) {
                         <div class="struk-header">
                             <div>
                                 <span class="struk-label">
-                                    KODE PEMINJAMAN
+                                    STRUK
                                 </span>
 
-                                <h4>
-                                    #<?= (int) $data['id_peminjaman']; ?>
-                                </h4>
+
                             </div>
 
                             <span class="struk-status">
@@ -301,23 +299,7 @@ if (!$query) {
                     <?php } else { ?>
 
                         <!-- HEADER STRUK -->
-                        <div class="struk-header">
-                            <div>
-                                <span class="struk-label">
-                                    KODE PEMINJAMAN
-                                </span>
 
-                                <h4>
-                                    #<?= (int) $data['id_peminjaman']; ?>
-                                </h4>
-                            </div>
-
-                            <span class="struk-status">
-                                <?= htmlspecialchars(
-                                    ucfirst($data['status'] ?? '-')
-                                ); ?>
-                            </span>
-                        </div>
 
                         <!-- DATA PEMINJAM -->
                         <div class="struk-section">

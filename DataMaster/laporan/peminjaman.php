@@ -230,7 +230,7 @@ if (!$query) {
                 <thead>
                     <tr>
                         <th>No.</th>
-                        <th>Kode Peminjaman</th>
+
                         <th>Nama Peminjam</th>
                         <th>Tanggal Peminjaman</th>
                         <th>Jatuh Tempo</th>
@@ -259,11 +259,6 @@ if (!$query) {
                         <td>
                             <span class="data-number"><?= $no++; ?></span>
                         </td>
-
-                        <td>
-                            <span class="data-id">#<?= $id; ?></span>
-                        </td>
-
                         <td>
                             <span class="data-name">
                                 <?= htmlspecialchars($data['nama_peminjam'] ?? '-'); ?>

@@ -175,18 +175,6 @@ if (isset($_POST['update'])) {
 
                 <form method="POST">
 
-                    <!-- ID Merk -->
-                    <div class="mb-4">
-                        <label class="data-form-label">
-                            ID Merk
-                        </label>
-
-                        <input
-                            type="text"
-                            class="data-form-control"
-                            value="<?= (int) $data['id_merk']; ?>"
-                            disabled>
-                    </div>
 
                     <!-- Nama Merk -->
                     <div class="mb-4">

@@ -176,15 +176,7 @@ if (isset($_POST['update'])) {
                 <?php endif; ?>
 
                 <form method="POST">
-                    <div class="mb-4">
-                        <label class="data-form-label">ID Pengguna</label>
-                        <input
-                            type="text"
-                            class="data-form-control"
-                            value="<?= (int) $data['id_user']; ?>"
-                            disabled
-                        >
-                    </div>
+ 
 
                     <div class="mb-4">
                         <label for="nama_user" class="data-form-label">

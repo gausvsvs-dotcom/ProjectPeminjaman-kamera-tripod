@@ -62,13 +62,6 @@ if (!$data) {
 
             <div class="data-detail-body">
 
-                <!-- ID Merk -->
-                <div class="detail-item">
-                    <div class="detail-label">ID Merk</div>
-                    <div class="detail-value">
-                        <?= (int) $data['id_merk']; ?>
-                    </div>
-                </div>
 
                 <!-- Nama Merk -->
                 <div class="detail-item">

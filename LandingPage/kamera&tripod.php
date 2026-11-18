@@ -76,67 +76,21 @@ $queryBarang = mysqli_query($conn, "
         b.*,
         k.nama_kategori,
         m.nama_merk,
-
-        COALESCE(
-            unit.daftar_kondisi,
-            kb_barang.nama_kondisi,
-            'Belum ada kondisi'
-        ) AS daftar_kondisi,
-
-        COALESCE(unit.total_unit, b.stok) AS total_unit,
-
-        COALESCE(unit.jumlah_dipinjam, 0) AS jumlah_dipinjam,
-
-        COALESCE(unit.jumlah_tersedia, b.stok) AS jumlah_tersedia
+        kb.nama_kondisi AS daftar_kondisi,
+        b.stok AS total_unit,
+        0 AS jumlah_dipinjam,
+        b.stok AS jumlah_tersedia
 
     FROM barang b
 
     LEFT JOIN kategori k
         ON b.id_kategori = k.id_kategori
 
-    LEFT JOIN kondisi_barang kb_barang
-        ON b.id_kondisi = kb_barang.id_kondisi
+    LEFT JOIN kondisi_barang kb
+        ON b.id_kondisi = kb.id_kondisi
 
     LEFT JOIN merk m
         ON b.id_merk = m.id_merk
-
-    LEFT JOIN (
-
-        SELECT
-            bu.id_barang,
-
-            GROUP_CONCAT(
-                DISTINCT kb.nama_kondisi
-                ORDER BY kb.id_kondisi
-                SEPARATOR '|'
-            ) AS daftar_kondisi,
-
-            COUNT(*) AS total_unit,
-
-            SUM(
-                CASE
-                    WHEN LOWER(TRIM(bu.status_unit)) = 'dipinjam'
-                    THEN 1
-                    ELSE 0
-                END
-            ) AS jumlah_dipinjam,
-
-            SUM(
-                CASE
-                    WHEN LOWER(TRIM(bu.status_unit)) = 'tersedia'
-                    THEN 1
-                    ELSE 0
-                END
-            ) AS jumlah_tersedia
-
-        FROM barang_unit bu
-
-        LEFT JOIN kondisi_barang kb
-            ON bu.id_kondisi = kb.id_kondisi
-
-        GROUP BY bu.id_barang
-
-    ) unit ON b.id_barang = unit.id_barang
 
     ORDER BY b.id_barang ASC
 
@@ -145,7 +99,6 @@ $queryBarang = mysqli_query($conn, "
 if (!$queryBarang) {
     die("Gagal mengambil data barang: " . mysqli_error($conn));
 }
-
 
 // MEMISAHKAN KAMERA DAN TRIPOD
 $dataKamera = [];

@@ -81,6 +81,25 @@ function ambilJumlahDipinjam($conn, $id_barang)
 }
 
 
+// MENGAMBIL KONDISI BARANG
+function ambilKondisiBarang($conn, $id_barang)
+{
+    $query = mysqli_prepare($conn, "
+        SELECT kb.nama_kondisi
+        FROM barang b
+        LEFT JOIN kondisi_barang kb ON b.id_kondisi = kb.id_kondisi
+        WHERE b.id_barang = ?
+    ");
+
+    mysqli_stmt_bind_param($query, "i", $id_barang);
+    mysqli_stmt_execute($query);
+
+    $result = mysqli_stmt_get_result($query);
+    $data = mysqli_fetch_assoc($result);
+
+    return $data['nama_kondisi'] ?? '';
+}
+
 // ==========================================
 // MENGUBAH JUMLAH BARANG
 // ==========================================
@@ -220,6 +239,7 @@ $jumlah_barang = count($_SESSION['keranjang']);
 
                 $jumlahDipinjam = ambilJumlahDipinjam($conn, $idBarang);
 
+                $kondisiBarang = ambilKondisiBarang($conn, $idBarang);
 
                 // MENENTUKAN STATUS BARANG
                 if ($stokMaks > 0) {
@@ -254,12 +274,11 @@ $jumlah_barang = count($_SESSION['keranjang']);
 
                     <!-- CHECKBOX BARANG -->
 
-                    <input
-                        type="checkbox"
+                    <input type="checkbox"
                         class="checkbox-barang"
                         value="<?= $idBarang; ?>"
-                        <?= !$bisaDipilih ? 'disabled' : ''; ?>
-                    >
+                        data-kondisi="<?= htmlspecialchars($kondisiBarang); ?>"
+                    <?= !$bisaDipilih ? 'disabled' : ''; ?> >
 
 
                     <!-- GAMBAR BARANG -->
@@ -636,9 +655,7 @@ checkboxBarang.forEach(function(checkbox) {
 // ==========================================
 
 if (btnAjukan) {
-
     btnAjukan.addEventListener('click', function() {
-
         const barangDipilih = document.querySelectorAll(
             '.checkbox-barang:checked:not(:disabled)'
         );
@@ -647,36 +664,37 @@ if (btnAjukan) {
             return;
         }
 
+        if (barangDipilih.length > 1) {
+            alert('Silakan pilih satu barang terlebih dahulu.');
+            return;
+        }
 
-        const form = document.createElement('form');
+        const barang = barangDipilih[0];
+        const idBarang = barang.value;
+        const kondisiBarang = barang.dataset.kondisi.trim().toLowerCase();
 
-        form.method = 'POST';
+        if (kondisiBarang === 'rusak') {
+            const hubungiAdmin = confirm(
+                'Barang yang dipilih sedang dalam kondisi rusak dan belum dapat dipinjam.\n\n' +
+                'Silakan hubungi admin untuk informasi lebih lanjut.\n\n' +
+                'Klik OK untuk menuju halaman kontak.'
+            );
 
-        // MENUJU FOLDER TRANSAKSI/PEMINJAMAN
-        form.action = '../Transaksi/Peminjaman/peminjaman.php';
+            if (hubungiAdmin) {
+                window.location.href = 'kontak.php';
+            }
 
+            return;
+        }
 
-        barangDipilih.forEach(function(checkbox) {
+        if (kondisiBarang !== 'baik') {
+            alert('Barang belum dapat dipinjam karena kondisinya tidak memenuhi persyaratan.');
+            return;
+        }
 
-            const input = document.createElement('input');
-
-            input.type = 'hidden';
-
-            input.name = 'barang_dipilih[]';
-
-            input.value = checkbox.value;
-
-            form.appendChild(input);
-
-        });
-
-
-        document.body.appendChild(form);
-
-        form.submit();
-
+        window.location.href =
+            '../Transaksi/Peminjaman/peminjaman.php?id=' + idBarang;
     });
-
 }
 
 

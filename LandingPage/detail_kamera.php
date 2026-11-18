@@ -101,6 +101,7 @@ $jumlahDipinjam = (int) $data['jumlah_dipinjam'];
 
 $jumlahTersedia = (int) $data['jumlah_tersedia'];
 
+$kondisiBarang = strtolower(trim($data['nama_kondisi'] ?? ''));
 
 // ==========================================
 // MENENTUKAN STATUS KETERSEDIAAN
@@ -277,33 +278,23 @@ if ($jumlahTersedia > 0) {
                 </a>
 
 
-
                 <!-- TOMBOL AJUKAN PEMINJAMAN -->
-
-                <?php if ($jumlahTersedia > 0): ?>
-
-                    <a
-                        href="/ProjectPeminjaman-kamera-tripod/Transaksi/Peminjaman/peminjaman.php?id=<?= (int) $data['id_barang']; ?>&jenis=kamera"
-                        class="btn btn-ajukan"
-                    >
-
+                <?php if ($jumlahTersedia > 0 && $kondisiBarang === 'baik'): ?>
+                        <a href="/ProjectPeminjaman-kamera-tripod/Transaksi/Peminjaman/peminjaman.php?id=<?= (int) $data['id_barang']; ?>&jenis=kamera"
+                            class="btn btn-ajukan">
                         ~ Ajukan Peminjaman ~
-
-                    </a>
-
-                <?php else: ?>
-
-                    <button
-                        type="button"
-                        class="btn btn-secondary"
-                        disabled
-                    >
-
-                        ~ Stok Tidak Tersedia ~
-
+                        </a>
+                    <?php elseif ($jumlahTersedia > 0 && $kondisiBarang === 'rusak'): ?>
+                    <button type="button"
+                            class="btn btn-ajukan"
+                            onclick="if (confirm('Kamera ini sedang dalam kondisi rusak dan belum dapat dipinjam. Silakan hubungi admin untuk informasi lebih lanjut. Klik OK untuk menuju halaman kontak.')) { window.location.href = 'kontak.php'; }">
+                         ~ Ajukan Peminjaman ~
                     </button>
-
-                <?php endif; ?>
+                <?php else: ?>
+                    <button type="button" class="btn btn-secondary" disabled>
+                        ~ Stok atau Kondisi Tidak Tersedia ~
+                    </button>
+                <?php endif; ?>                         
 
             </div>
 

@@ -105,57 +105,73 @@ if (isset($_POST["simpan"])) {
         } catch (Throwable $e) {
             $error = "Kode barang gagal dibuat: " . $e->getMessage();
         }
-        // UPLOAD FOTO
-        if ($error === "" && isset($_FILES["foto"]) &&
-            $_FILES["foto"]["error"] !== UPLOAD_ERR_NO_FILE) {
-            if ($_FILES["foto"]["error"] !== UPLOAD_ERR_OK) {
-                $error = "Upload foto gagal.";
-            } else {
-                $tmp_foto = $_FILES["foto"]["tmp_name"];
-                $ukuran_foto = $_FILES["foto"]["size"];
-                $nama_asli = $_FILES["foto"]["name"];
-                $info_gambar = @getimagesize($tmp_foto);
-                $ekstensi = strtolower(
-                    pathinfo($nama_asli, PATHINFO_EXTENSION)
-                );
-                $ekstensi_diizinkan = [
-                    "jpg", "jpeg", "png", "gif", "webp"
-                ];
-                $tipe_diizinkan = [
-                    IMAGETYPE_JPEG,
-                    IMAGETYPE_PNG,
-                    IMAGETYPE_GIF,
-                    IMAGETYPE_WEBP
-                ];
-                if (
-                    $info_gambar === false ||
-                    !in_array($info_gambar[2], $tipe_diizinkan, true) ||
-                    !in_array($ekstensi, $ekstensi_diizinkan, true)
-                ) {
-                    $error = "File harus berupa gambar JPG, PNG, GIF, atau WEBP.";
-                } elseif ($ukuran_foto > 5 * 1024 * 1024) {
-                    $error = "Ukuran foto maksimal 5 MB.";
+// UPLOAD FOTO
+if (
+    $error === "" &&
+    isset($_FILES["foto"]) &&
+    $_FILES["foto"]["error"] !== UPLOAD_ERR_NO_FILE
+) {
+    if ($_FILES["foto"]["error"] !== UPLOAD_ERR_OK) {
+        $kode_error = $_FILES["foto"]["error"];
+
+        $error = "Upload foto gagal. Kode error: " . $kode_error;
+    } else {
+        $tmp_foto = $_FILES["foto"]["tmp_name"];
+        $ukuran_foto = $_FILES["foto"]["size"];
+        $nama_asli = $_FILES["foto"]["name"];
+
+        $info_gambar = @getimagesize($tmp_foto);
+        $ekstensi = strtolower(
+            pathinfo($nama_asli, PATHINFO_EXTENSION)
+        );
+
+        $ekstensi_diizinkan = [
+            "jpg", "jpeg", "png", "gif", "webp"
+        ];
+
+        $tipe_diizinkan = [
+            IMAGETYPE_JPEG,
+            IMAGETYPE_PNG,
+            IMAGETYPE_GIF,
+            IMAGETYPE_WEBP
+        ];
+
+        if ($info_gambar === false) {
+            $error = "PHP tidak dapat membaca isi file sebagai gambar. Ekstensi: " . $ekstensi;
+        } elseif (!in_array($info_gambar[2], $tipe_diizinkan, true)) {
+            $error = "Tipe gambar tidak dikenali. Kode tipe: " . $info_gambar[2];
+        } elseif (!in_array($ekstensi, $ekstensi_diizinkan, true)) {
+            $error = "Ekstensi file tidak diizinkan: " . $ekstensi;
+        } elseif ($ukuran_foto > 5 * 1024 * 1024) {
+            $error = "Ukuran foto maksimal 5 MB.";
+        } else {
+            // Folder uploads berada di luar DataMaster
+            $folder_upload = dirname(__DIR__, 2) . "/uploads/barang/";
+
+            if (!is_dir($folder_upload)) {
+                if (!mkdir($folder_upload, 0755, true)) {
+                    $error = "Folder upload gagal dibuat.";
+                }
+            }
+
+            if ($error === "" && !is_writable($folder_upload)) {
+                $error = "Folder upload tidak memiliki izin tulis.";
+            }
+
+            if ($error === "") {
+                $nama_file = bin2hex(random_bytes(16)) . "." . $ekstensi;
+                $tujuan_foto = $folder_upload . $nama_file;
+
+                if (move_uploaded_file($tmp_foto, $tujuan_foto)) {
+                    $foto = $nama_file;
+                    $file_terunggah = $tujuan_foto;
                 } else {
-                    $folder_upload = __DIR__ . "/../uploads/barang/";
-                    if (
-                        !is_dir($folder_upload) &&
-                        !mkdir($folder_upload, 0755, true)
-                    ) {
-                        $error = "Folder upload gagal dibuat.";
-                    } else {
-                        $nama_file = bin2hex(random_bytes(16))
-                            . "." . $ekstensi;
-                        $tujuan_foto = $folder_upload . $nama_file;
-                        if (move_uploaded_file($tmp_foto, $tujuan_foto)) {
-                            $foto = $nama_file;
-                            $file_terunggah = $tujuan_foto;
-                        } else {
-                            $error = "Foto gagal disimpan.";
-                        }
-                    }
+                    $error = "Foto gagal disimpan.";
                 }
             }
         }
+    }
+}
         // SIMPAN BARANG DAN UNIT DALAM SATU TRANSAKSI
         if ($error === "") {
             mysqli_begin_transaction($conn);
@@ -632,14 +648,17 @@ inputFoto.addEventListener("change", function () {
         tampilkanPlaceholder();
         return;
     }
+        const ekstensi = file.name.split(".").pop().toLowerCase();
 
-    const tipeDiizinkan = [
-        "image/jpeg",
-        "image/png",
-        "image/gif",
-        "image/webp"
-    ];
-    if (!tipeDiizinkan.includes(file.type)) {
+        const ekstensiDiizinkan = [
+            "jpg",
+            "jpeg",
+            "png",
+            "gif",
+            "webp"
+        ];
+
+        if (!ekstensiDiizinkan.includes(ekstensi)) {
         this.value = "";
         tampilkanPlaceholder();
         alert("Pilih foto berformat JPG, PNG, GIF, atau WEBP.");

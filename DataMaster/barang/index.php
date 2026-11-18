@@ -48,6 +48,31 @@ $query = mysqli_query($conn, "
 if (!$query) {
     die("Query error: " . mysqli_error($conn));
 }
+
+// SIMPAN DATA BARANG
+$data_barang = mysqli_fetch_all($query, MYSQLI_ASSOC);
+$total_barang = count($data_barang);
+
+// DAFTAR NOTIFIKASI
+$notifikasi = [
+    'tambah' => [
+        'class' => 'success',
+        'icon' => 'check-circle-fill',
+        'teks' => 'Data barang berhasil ditambahkan!'
+    ],
+    'ubah' => [
+        'class' => 'warning',
+        'icon' => 'check-circle-fill',
+        'teks' => 'Data barang berhasil diubah!'
+    ],
+    'hapus' => [
+        'class' => 'danger',
+        'icon' => 'check-circle-fill',
+        'teks' => 'Data barang berhasil dihapus!'
+    ]
+];
+
+$pesan = $_GET['pesan'] ?? '';
 ?>
 
 <?php include "../layout/header.php"; ?>
@@ -76,6 +101,7 @@ if (!$query) {
         <!-- DATA CARD -->
         <div class="data-master-card">
 
+            <!-- HEADER CARD -->
             <div class="data-card-header">
                 <div>
                     <h3 class="data-card-title">
@@ -94,186 +120,206 @@ if (!$query) {
                 </a>
             </div>
 
-            <!-- NOTIFIKASI -->
-            <?php if (isset($_GET['pesan'])) { ?>
-                <div class="data-notification">
+            <!-- ISI CARD -->
+            <div class="data-card-body">
 
-                    <?php if ($_GET['pesan'] == 'tambah') { ?>
-                        <div class="alert alert-success mb-0">
-                            <i class="bi bi-check-circle me-2"></i>
-                            Data barang berhasil ditambahkan!
+                <!-- NOTIFIKASI -->
+                <?php if (isset($notifikasi[$pesan])): ?>
+                    <?php $notif = $notifikasi[$pesan]; ?>
+
+                    <div class="data-notification">
+                        <div
+                            class="alert alert-<?= htmlspecialchars($notif['class'], ENT_QUOTES, 'UTF-8'); ?> alert-dismissible fade show"
+                            role="alert"
+                        >
+                            <i class="bi bi-<?= htmlspecialchars($notif['icon'], ENT_QUOTES, 'UTF-8'); ?> me-2"></i>
+
+                            <?= htmlspecialchars(
+                                $notif['teks'],
+                                ENT_QUOTES,
+                                'UTF-8'
+                            ); ?>
+
+                            <button
+                                type="button"
+                                class="btn-close"
+                                data-bs-dismiss="alert"
+                                aria-label="Tutup"
+                            ></button>
                         </div>
+                    </div>
+                <?php endif; ?>
 
-                    <?php } elseif ($_GET['pesan'] == 'ubah') { ?>
-                        <div class="alert alert-warning mb-0">
-                            <i class="bi bi-check-circle me-2"></i>
-                            Data barang berhasil diubah!
-                        </div>
+                <!-- TABEL BARANG -->
+                <div class="data-table-wrapper">
+                    <div class="table-responsive">
 
-                    <?php } elseif ($_GET['pesan'] == 'hapus') { ?>
-                        <div class="alert alert-danger mb-0">
-                            <i class="bi bi-check-circle me-2"></i>
-                            Data barang berhasil dihapus!
-                        </div>
-                    <?php } ?>
+                        <table class="data-master-table">
 
-                </div>
-            <?php } ?>
+                            <thead>
+                                <tr>
+                                    <th width="65">No.</th>
+                                    <th>Kode Barang</th>
+                                    <th>Nama Barang</th>
+                                    <th>Jenis Barang</th>
+                                    <th>Stok</th>
+                                    <th>Kondisi Unit</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
 
-            <!-- TABEL BARANG -->
-            <div class="data-table-wrapper">
-                <div class="table-responsive">
+                            <tbody>
 
-                    <table class="data-master-table">
-                        <thead>
-                            <tr>
-                                <th width="65">No.</th>
-                                <th>Kode Barang</th>
-                                <th>Nama Barang</th>
-                                <th>Jenis Barang</th>
-                                <th>Stok</th>
-                                <th>Kondisi Unit</th>
-                                <th>Aksi</th>
-                            </tr>
-                        </thead>
+                                <?php if ($total_barang > 0): ?>
 
-                        <tbody>
+                                    <?php foreach ($data_barang as $index => $data): ?>
 
-                            <?php if (mysqli_num_rows($query) > 0) { ?>
+                                        <?php
+                                        $total_unit = (int) $data['total_unit'];
+                                        $unit_tersedia = (int) $data['unit_tersedia'];
+                                        $unit_rusak = (int) $data['unit_rusak'];
+                                        ?>
 
-                                <?php
-                                $no = 1;
+                                        <tr>
 
-                                while ($data = mysqli_fetch_assoc($query)) {
+                                            <!-- NOMOR -->
+                                            <td>
+                                                <span class="data-number">
+                                                    <?= $index + 1; ?>
+                                                </span>
+                                            </td>
 
-                                    $total_unit = (int) $data['total_unit'];
-                                    $unit_tersedia = (int) $data['unit_tersedia'];
-                                    $unit_rusak = (int) $data['unit_rusak'];
-                                ?>
+                                            <!-- KODE BARANG -->
+                                            <td>
+                                                <span class="data-id">
+                                                    <?= htmlspecialchars(
+                                                        $data['kode_barang'] ?? '',
+                                                        ENT_QUOTES,
+                                                        'UTF-8'
+                                                    ); ?>
+                                                </span>
+                                            </td>
+
+                                            <!-- NAMA BARANG -->
+                                            <td>
+                                                <span class="data-name">
+                                                    <?= htmlspecialchars(
+                                                        $data['nama_barang'] ?? '',
+                                                        ENT_QUOTES,
+                                                        'UTF-8'
+                                                    ); ?>
+                                                </span>
+                                            </td>
+
+                                            <!-- JENIS BARANG -->
+                                            <td>
+                                                <?= htmlspecialchars(
+                                                    ucfirst($data['jenis_barang'] ?? ''),
+                                                    ENT_QUOTES,
+                                                    'UTF-8'
+                                                ); ?>
+                                            </td>
+
+                                            <!-- STOK -->
+                                            <td>
+                                                <strong>
+                                                    <?= $unit_tersedia; ?>
+                                                </strong>
+
+                                                <span class="text-muted">
+                                                    / <?= $total_unit; ?>
+                                                </span>
+                                            </td>
+
+                                            <!-- KONDISI UNIT -->
+                                            <td>
+                                                <?php if ($total_unit == 0): ?>
+
+                                                    <span class="badge bg-secondary">
+                                                        Belum ada unit
+                                                    </span>
+
+                                                <?php elseif ($unit_rusak > 0): ?>
+
+                                                    <span class="badge bg-danger">
+                                                        <?= $unit_rusak; ?> Rusak
+                                                    </span>
+
+                                                <?php else: ?>
+
+                                                    <span class="badge bg-success">
+                                                        Kondisi baik
+                                                    </span>
+
+                                                <?php endif; ?>
+                                            </td>
+
+                                            <!-- AKSI -->
+                                            <td>
+                                                <div class="data-action">
+
+                                                    <a
+                                                        href="detail.php?id=<?= (int) $data['id_barang']; ?>"
+                                                        class="data-detail"
+                                                        title="Detail"
+                                                        aria-label="Detail barang"
+                                                    >
+                                                        <i class="bi bi-eye"></i>
+                                                    </a>
+
+                                                    <a
+                                                        href="edit.php?id=<?= (int) $data['id_barang']; ?>"
+                                                        class="data-edit"
+                                                        title="Edit"
+                                                        aria-label="Edit barang"
+                                                    >
+                                                        <i class="bi bi-pencil-square"></i>
+                                                    </a>
+
+                                                    <a
+                                                        href="hapus.php?id=<?= (int) $data['id_barang']; ?>"
+                                                        class="data-delete"
+                                                        title="Hapus"
+                                                        aria-label="Hapus barang"
+                                                        onclick="return confirm('Yakin ingin menghapus barang ini?')"
+                                                    >
+                                                        <i class="bi bi-trash"></i>
+                                                    </a>
+
+                                                </div>
+                                            </td>
+
+                                        </tr>
+
+                                    <?php endforeach; ?>
+
+                                <?php else: ?>
 
                                     <tr>
-
-                                        <!-- NOMOR -->
-                                        <td>
-                                            <span class="data-number">
-                                                <?= $no++; ?>
+                                        <td colspan="7" class="data-empty">
+                                            <i class="bi bi-inbox"></i>
+                                            <p>Belum ada data barang.</p>
+                                            <span>
+                                                Silakan tambahkan data barang terlebih dahulu.
                                             </span>
                                         </td>
-
-                                        <!-- KODE BARANG -->
-                                        <td>
-                                            <span class="data-id">
-                                                <?= htmlspecialchars($data['kode_barang'] ?? ''); ?>
-                                            </span>
-                                        </td>
-
-                                        <!-- NAMA BARANG -->
-                                        <td>
-                                            <span class="data-name">
-                                                <?= htmlspecialchars($data['nama_barang'] ?? ''); ?>
-                                            </span>
-                                        </td>
-
-                                        <!-- JENIS BARANG -->
-                                        <td>
-                                            <?= htmlspecialchars(ucfirst($data['jenis_barang'] ?? '')); ?>
-                                        </td>
-
-                                        <!-- STOK -->
-                                        <td>
-                                            <strong>
-                                                <?= $unit_tersedia; ?>
-                                            </strong>
-                                            <span class="text-muted">
-                                                / <?= $total_unit; ?>
-                                            </span>
-                                        </td>
-
-                                        <!-- KONDISI -->
-                                        <td>
-                                            <?php if ($total_unit == 0) { ?>
-
-                                                <span class="badge bg-secondary">
-                                                    Belum ada unit
-                                                </span>
-
-                                            <?php } elseif ($unit_rusak > 0) { ?>
-
-                                                <span class="badge bg-danger">
-                                                    <?= $unit_rusak; ?> Rusak
-                                                </span>
-
-                                            <?php } else { ?>
-
-                                                <span class="badge bg-success">
-                                                    Kondisi baik
-                                                </span>
-
-                                            <?php } ?>
-                                        </td>
-
-                                        <!-- AKSI -->
-                                        <td>
-                                            <div class="data-action">
-
-                                                <a
-                                                    href="detail.php?id=<?= (int) $data['id_barang']; ?>"
-                                                    class="data-detail"
-                                                    title="Detail"
-                                                    aria-label="Detail barang">
-                                                    <i class="bi bi-eye"></i>
-                                                </a>
-
-                                                <a
-                                                    href="edit.php?id=<?= (int) $data['id_barang']; ?>"
-                                                    class="data-edit"
-                                                    title="Edit"
-                                                    aria-label="Edit barang">
-                                                    <i class="bi bi-pencil-square"></i>
-                                                </a>
-
-                                                <a
-                                                    href="hapus.php?id=<?= (int) $data['id_barang']; ?>"
-                                                    class="data-delete"
-                                                    title="Hapus"
-                                                    aria-label="Hapus barang"
-                                                    onclick="return confirm('Yakin ingin menghapus barang ini?')">
-                                                    <i class="bi bi-trash"></i>
-                                                </a>
-
-                                            </div>
-                                        </td>
-
                                     </tr>
 
-                                <?php } ?>
+                                <?php endif; ?>
 
-                            <?php } else { ?>
+                            </tbody>
+                        </table>
 
-                                <tr>
-                                    <td colspan="7" class="data-empty">
-                                        <i class="bi bi-inbox"></i>
-                                        <p>Belum ada data barang.</p>
-                                        <span>
-                                            Silakan tambahkan data barang terlebih dahulu.
-                                        </span>
-                                    </td>
-                                </tr>
-
-                            <?php } ?>
-
-                        </tbody>
-                    </table>
-
+                    </div>
                 </div>
-            </div>
 
-            <!-- TOTAL DATA -->
-            <div class="data-table-footer">
-                Total data barang:
-                <strong><?= mysqli_num_rows($query); ?> barang</strong>
-            </div>
+                <!-- TOTAL DATA -->
+                <div class="data-table-footer">
+                    Total data barang:
+                    <strong><?= $total_barang; ?> barang</strong>
+                </div>
 
+            </div>
         </div>
     </div>
 </div>

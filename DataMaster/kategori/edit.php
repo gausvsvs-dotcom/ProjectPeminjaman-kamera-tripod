@@ -1,3 +1,4 @@
+
 <?php
 require_once "../config/koneksi.php";
 /** @var mysqli $conn */
@@ -31,6 +32,9 @@ if (!$data) {
     exit;
 }
 
+// Simpan data awal untuk pembanding
+$data_awal = $data;
+
 // Nilai awal form
 $nama_kategori = $data['nama_kategori'] ?? '';
 $keterangan = $data['keterangan'] ?? '';
@@ -41,9 +45,25 @@ if (isset($_POST['update'])) {
     $nama_kategori = trim($_POST['nama_kategori'] ?? '');
     $keterangan = trim($_POST['keterangan'] ?? '');
 
+    // Validasi nama kategori
     if ($nama_kategori === '') {
         $error = "Nama kategori wajib diisi!";
-    } else {
+    }
+
+    // Cek apakah ada perubahan
+    if ($error === "") {
+
+        $ada_perubahan =
+            $nama_kategori !== (string) $data_awal['nama_kategori'] ||
+            $keterangan !== (string) ($data_awal['keterangan'] ?? '');
+
+        if (!$ada_perubahan) {
+            $error = "Tidak ada perubahan data. Silakan ubah minimal satu informasi sebelum menyimpan.";
+        }
+    }
+
+    // Update jika valid dan ada perubahan
+    if ($error === "") {
 
         $stmt = mysqli_prepare(
             $conn,
@@ -53,6 +73,7 @@ if (isset($_POST['update'])) {
         );
 
         if ($stmt) {
+
             mysqli_stmt_bind_param(
                 $stmt,
                 "ssi",
@@ -66,12 +87,14 @@ if (isset($_POST['update'])) {
 
                 header("Location: index.php?pesan=ubah");
                 exit;
+
             } else {
                 $error = "Data kategori gagal diperbarui: "
-                    . mysqli_error($conn);
+                    . mysqli_stmt_error($stmt);
 
                 mysqli_stmt_close($stmt);
             }
+
         } else {
             $error = "Query gagal disiapkan: "
                 . mysqli_error($conn);
@@ -157,6 +180,7 @@ if (isset($_POST['update'])) {
                             Nama Kategori
                             <span class="text-danger">*</span>
                         </label>
+
                         <input
                             type="text"
                             id="nama_kategori"
@@ -171,6 +195,7 @@ if (isset($_POST['update'])) {
                             maxlength="100"
                             required>
                     </div>
+
                     <!-- KETERANGAN -->
                     <div class="mb-4">
                         <label
@@ -178,21 +203,23 @@ if (isset($_POST['update'])) {
                             class="data-form-label">
                             Keterangan
                         </label>
+
                         <textarea
                             id="keterangan"
                             name="keterangan"
                             class="data-form-control"
                             rows="4"
-                            placeholder="Masukkan keterangan kategori">
-                            <?= htmlspecialchars(
-                            $keterangan,
-                            ENT_QUOTES,
-                            'UTF-8'
-                        ); ?></textarea>
+                            placeholder="Masukkan keterangan kategori"><?= htmlspecialchars(
+                                $keterangan,
+                                ENT_QUOTES,
+                                'UTF-8'
+                            ); ?></textarea>
+
                         <small class="text-muted">
                             Keterangan boleh dikosongkan.
                         </small>
                     </div>
+
                     <!-- TOMBOL -->
                     <div class="d-flex flex-wrap gap-2 mt-4">
                         <button
@@ -202,6 +229,7 @@ if (isset($_POST['update'])) {
                             <i class="bi bi-save"></i>
                             Simpan Perubahan
                         </button>
+
                         <a
                             href="index.php"
                             class="btn-form-cancel">
@@ -209,9 +237,11 @@ if (isset($_POST['update'])) {
                             Kembali
                         </a>
                     </div>
+
                 </form>
             </div>
         </div>
     </div>
 </div>
+
 <?php include "../layout/footer.php"; ?>

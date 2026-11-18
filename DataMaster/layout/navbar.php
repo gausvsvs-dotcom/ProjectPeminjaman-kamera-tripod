@@ -18,13 +18,17 @@
                 <i class="bi bi-list"></i>
             </button>
             <!-- SEARCH -->
-            <div class="navbar-search">
-                <i class="bi bi-search"></i>
-                <input
-                    type="text"
-                    id="menuSearch"
-                    placeholder="Cari menu, data, atau fitur..."
-                    autocomplete="off">
+            <div class="navbar-search-wrapper">
+                <div class="navbar-search">
+                    <i class="bi bi-search"></i>
+                    <input
+                        type="text"
+                        id="menuSearch"
+                        placeholder="Cari menu dan data..."
+                        autocomplete="off"> 
+                </div>
+
+                <div id="searchResults" class="search-results"></div>
             </div>
         </div>
         <!-- RIGHT -->
@@ -47,7 +51,7 @@
                         <i class="bi bi-bell-slash"></i>
                         <p>Tidak ada notifikasi</p>
                         <small>
-                            Notifikasi peminjaman akan muncul di sini.
+                            Notifikasi pembayaran akan muncul di sini.
                         </small>
                     </div>
                 </div>
@@ -99,12 +103,6 @@
                         <i class="bi bi-person-fill"></i>
                         <span>Profil Saya</span>
                     </button>
-                    <a
-                        href="../pengguna/setting.php"
-                        class="profile-dropdown-link">
-                        <i class="bi bi-gear-fill"></i>
-                        <span>Pengaturan</span>
-                    </a>
                     <div class="profile-dropdown-divider"></div>
                     <!-- LOGOUT -->
                     <a
@@ -239,33 +237,131 @@
         </div>
     </div>
 </aside>
+
 <script>
 document.addEventListener("DOMContentLoaded", function () {
-    /*SIDEBAR TOGGLE*/
+
+    // SIDEBAR TOGGLE
     const sidebarToggle = document.getElementById("sidebarToggle");
     const sidebar = document.getElementById("sidebar");
+
     if (sidebarToggle && sidebar) {
         sidebarToggle.addEventListener("click", function () {
             sidebar.classList.toggle("closed");
             document.body.classList.toggle("sidebar-closed");
         });
     }
-    /* SEARCH MENU */
+
+    // SEARCH MENU DAN DATA
     const searchInput = document.getElementById("menuSearch");
+    const searchResults = document.getElementById("searchResults");
     const menuItems = document.querySelectorAll(".sidebar .menu-item");
-    if (searchInput) {
-        searchInput.addEventListener("input", function () {
-            const keyword = this.value.toLowerCase().trim();
-            menuItems.forEach(function (item) {
-                const text = item.innerText.toLowerCase();
-                if (text.includes(keyword)) {
-                    item.style.display = "flex";
-                } else {
-                    item.style.display = "none";
-                }
-            });
+
+    if (!searchInput) return;
+
+    searchInput.addEventListener("input", function () {
+        const keyword = this.value.toLowerCase().trim();
+
+        // FILTER MENU SIDEBAR
+        let menuDitemukan = false;
+
+        menuItems.forEach(function (item) {
+            const cocok = item.innerText.toLowerCase().includes(keyword);
+
+            item.style.display = cocok ? "flex" : "none";
+
+            if (cocok && keyword.length >= 2) {
+                menuDitemukan = true;
+            }
         });
-    }
+
+        if (!searchResults) return;
+
+        searchResults.innerHTML = "";
+
+        // SEMBUNYIKAN HASIL JIKA KURANG DARI 2 KARAKTER
+        if (keyword.length < 2) {
+            searchResults.classList.remove("show");
+            return;
+        }
+
+        // CARI DATA DARI DATABASE
+        fetch("/ProjectPeminjaman-kamera-tripod/DataMaster/search.php?q=" + encodeURIComponent(keyword))
+            .then(function (response) {
+                if (!response.ok) {
+                    throw new Error("Gagal mengambil data pencarian");
+                }
+
+                return response.json();
+            })
+            .then(function (data) {
+
+                searchResults.innerHTML = "";
+
+                // KELOMPOKKAN DATA BERDASARKAN KATEGORI
+                const kelompok = {};
+
+                data.forEach(function (item) {
+                    const kategori = item.kategori || "Data";
+
+                    if (!kelompok[kategori]) {
+                        kelompok[kategori] = [];
+                    }
+
+                    kelompok[kategori].push(item);
+                });
+
+                // TAMPILKAN HASIL DATA
+                Object.keys(kelompok).forEach(function (kategori) {
+
+                    const title = document.createElement("div");
+                    title.className = "search-result-title";
+                    title.textContent = kategori.toUpperCase();
+
+                    searchResults.appendChild(title);
+
+                    kelompok[kategori].forEach(function (item) {
+
+                        const link = document.createElement("a");
+                        link.href = "/ProjectPeminjaman-kamera-tripod/DataMaster/" + item.url;
+                        link.className = "search-result-item";
+
+                        const nama = document.createElement("strong");
+                        nama.textContent = item.nama;
+
+                        const detail = document.createElement("small");
+                        detail.textContent = item.kode + " • " + item.jenis;
+
+                        link.appendChild(nama);
+                        link.appendChild(detail);
+
+                        searchResults.appendChild(link);
+                    });
+                });
+
+                // PESAN JIKA MENU DAN DATA TIDAK DITEMUKAN
+                if (!menuDitemukan && data.length === 0) {
+                    const empty = document.createElement("div");
+                    empty.className = "search-result-empty";
+                    empty.textContent = "Tidak ada hasil pencarian.";
+
+                    searchResults.appendChild(empty);
+                }
+
+                // TAMPILKAN DROPDOWN JIKA ADA HASIL
+                if (menuDitemukan || data.length > 0) {
+                    searchResults.classList.add("show");
+                } else {
+                    searchResults.classList.add("show");
+                }
+
+            })
+            .catch(function (error) {
+                console.error("Pencarian gagal:", error);
+            });
+    });
+
 });
 </script>
+
 <?php include __DIR__ . '/profile_modal.php'; ?>

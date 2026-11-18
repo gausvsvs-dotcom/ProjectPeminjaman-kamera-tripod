@@ -170,6 +170,8 @@ $pendapatan_format = 'Rp ' . number_format(
 
 <?php include "../layout/header.php"; ?>
 <link rel="stylesheet" href="../assets/css/dashboard.css?v=3">
+<link rel="stylesheet" href="../assets/css/data-master.css?v=3">
+<link rel="stylesheet" href="../assets/css/navbar.css?v=3">
 <?php include "../layout/navbar.php"; ?>
 
 <div class="main-content dashboard-wrapper">

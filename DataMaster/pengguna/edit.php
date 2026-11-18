@@ -1,31 +1,41 @@
+
 <?php
 require_once "../config/koneksi.php";
 /** @var mysqli $conn */
 
 // Ambil ID pengguna dari URL
-$id = isset($_GET['id']) ? (int) $_GET['id'] : 0;
+$id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
 
-if ($id <= 0) {
+if (!$id || $id <= 0) {
     die("ID pengguna tidak valid.");
 }
 
 // Ambil data pengguna
-$query = mysqli_query(
+$stmt = mysqli_prepare(
     $conn,
     "SELECT id_user, nama_user, username, role
      FROM pengguna
-     WHERE id_user = $id"
+     WHERE id_user = ?"
 );
 
-if (!$query) {
-    die("Query error: " . mysqli_error($conn));
+if (!$stmt) {
+    die("Query gagal disiapkan: " . mysqli_error($conn));
 }
 
+mysqli_stmt_bind_param($stmt, "i", $id);
+mysqli_stmt_execute($stmt);
+
+$query = mysqli_stmt_get_result($stmt);
 $data = mysqli_fetch_assoc($query);
+
+mysqli_stmt_close($stmt);
 
 if (!$data) {
     die("Data pengguna tidak ditemukan.");
 }
+
+// Simpan data awal untuk pembanding
+$data_awal = $data;
 
 $error = "";
 
@@ -36,14 +46,24 @@ $role = $data['role'];
 
 // Proses simpan perubahan
 if (isset($_POST['update'])) {
+
     $nama_user = trim($_POST['nama_user'] ?? '');
     $username = trim($_POST['username'] ?? '');
     $role = $_POST['role'] ?? '';
 
+    // Validasi wajib diisi
     if ($nama_user === '' || $username === '' || $role === '') {
         $error = "Semua kolom wajib diisi.";
-    } else {
-        // Cek apakah username sudah dipakai pengguna lain
+    }
+
+    // Validasi role
+    elseif (!in_array($role, ['admin', 'petugas', 'pimpinan'], true)) {
+        $error = "Role yang dipilih tidak valid.";
+    }
+
+    // Cek username duplikat
+    if ($error === "") {
+
         $stmt = mysqli_prepare(
             $conn,
             "SELECT id_user
@@ -51,23 +71,50 @@ if (isset($_POST['update'])) {
              WHERE username = ? AND id_user != ?"
         );
 
-        mysqli_stmt_bind_param($stmt, "si", $username, $id);
-        mysqli_stmt_execute($stmt);
-        mysqli_stmt_store_result($stmt);
-
-        $duplikat = mysqli_stmt_num_rows($stmt) > 0;
-        mysqli_stmt_close($stmt);
-
-        if ($duplikat) {
-            $error = "Username sudah digunakan.";
+        if (!$stmt) {
+            $error = "Query gagal disiapkan: " . mysqli_error($conn);
         } else {
-            // Update data pengguna tanpa mengubah password
-            $stmt = mysqli_prepare(
-                $conn,
-                "UPDATE pengguna
-                 SET nama_user = ?, username = ?, role = ?
-                 WHERE id_user = ?"
-            );
+
+            mysqli_stmt_bind_param($stmt, "si", $username, $id);
+            mysqli_stmt_execute($stmt);
+            mysqli_stmt_store_result($stmt);
+
+            $duplikat = mysqli_stmt_num_rows($stmt) > 0;
+
+            mysqli_stmt_close($stmt);
+
+            if ($duplikat) {
+                $error = "Username sudah digunakan.";
+            }
+        }
+    }
+
+    // Cek apakah ada perubahan
+    if ($error === "") {
+
+        $ada_perubahan =
+            $nama_user !== (string) $data_awal['nama_user'] ||
+            $username !== (string) $data_awal['username'] ||
+            $role !== (string) $data_awal['role'];
+
+        if (!$ada_perubahan) {
+            $error = "Tidak ada perubahan data. Silakan ubah minimal satu informasi sebelum menyimpan.";
+        }
+    }
+
+    // Update jika tidak ada error dan ada perubahan
+    if ($error === "") {
+
+        $stmt = mysqli_prepare(
+            $conn,
+            "UPDATE pengguna
+             SET nama_user = ?, username = ?, role = ?
+             WHERE id_user = ?"
+        );
+
+        if (!$stmt) {
+            $error = "Query gagal disiapkan: " . mysqli_error($conn);
+        } else {
 
             mysqli_stmt_bind_param(
                 $stmt,
@@ -83,8 +130,11 @@ if (isset($_POST['update'])) {
 
                 header("Location: index.php?pesan=ubah");
                 exit;
+
             } else {
-                $error = "Gagal mengubah data: " . mysqli_error($conn);
+                $error = "Gagal mengubah data: "
+                    . mysqli_stmt_error($stmt);
+
                 mysqli_stmt_close($stmt);
             }
         }
@@ -175,6 +225,7 @@ if (isset($_POST['update'])) {
                             required
                         >
                             <option value="">-- Pilih Role --</option>
+
                             <?php foreach (['admin', 'petugas', 'pimpinan'] as $pilihan): ?>
                                 <option
                                     value="<?= $pilihan; ?>"

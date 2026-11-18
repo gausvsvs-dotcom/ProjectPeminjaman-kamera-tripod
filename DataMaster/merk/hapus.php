@@ -1,19 +1,52 @@
+
 <?php
 require_once "../config/koneksi.php";
 /** @var mysqli $conn */
 
-if (isset($_GET['id'])) {
+// VALIDASI ID MERK
+$id = filter_input(INPUT_GET, "id", FILTER_VALIDATE_INT);
 
-    $id = $_GET['id'];
-
-    $query = mysqli_query($conn, "DELETE FROM merk
-        WHERE id_merk = '$id'");
-
-    if (!$query) {
-        die("Data tidak bisa dihapus: " . mysqli_error($conn));
-    }
+if (!$id || $id <= 0) {
+    header("Location: index.php?pesan=gagal");
+    exit;
 }
 
-header("Location: index.php?pesan=hapus");
+// CEK APAKAH MERK MASIH DIGUNAKAN BARANG
+$stmt = mysqli_prepare($conn, "
+    SELECT COUNT(*) AS total
+    FROM barang
+    WHERE id_merk = ?
+");
+
+mysqli_stmt_bind_param($stmt, "i", $id);
+mysqli_stmt_execute($stmt);
+
+$result = mysqli_stmt_get_result($stmt);
+$data = mysqli_fetch_assoc($result);
+
+mysqli_stmt_close($stmt);
+
+// JIKA MASIH DIGUNAKAN, BATALKAN HAPUS
+if ($data['total'] > 0) {
+    header("Location: index.php?pesan=digunakan");
+    exit;
+}
+
+// HAPUS MERK
+$stmt = mysqli_prepare($conn, "
+    DELETE FROM merk
+    WHERE id_merk = ?
+");
+
+mysqli_stmt_bind_param($stmt, "i", $id);
+mysqli_stmt_execute($stmt);
+
+if (mysqli_stmt_affected_rows($stmt) > 0) {
+    header("Location: index.php?pesan=hapus");
+} else {
+    header("Location: index.php?pesan=gagal");
+}
+
+mysqli_stmt_close($stmt);
 exit;
 ?>

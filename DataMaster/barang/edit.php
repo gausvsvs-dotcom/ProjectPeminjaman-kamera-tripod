@@ -5,47 +5,56 @@ require_once "../config/koneksi.php";
 
 $error = "";
 
+// Lokasi folder upload di direktori utama project
+$folder_upload = dirname(__DIR__, 2) . "/uploads/barang/";
+
+// VALIDASI ID
 $id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
 
-if (!$id) {
+if (!$id || $id <= 0) {
     header("Location: index.php");
     exit;
 }
 
-// Ambil data barang
+// AMBIL DATA BARANG
 $stmt = mysqli_prepare($conn, "
     SELECT * FROM barang
     WHERE id_barang = ?
 ");
+
 mysqli_stmt_bind_param($stmt, "i", $id);
 mysqli_stmt_execute($stmt);
+
 $result = mysqli_stmt_get_result($stmt);
 $data = mysqli_fetch_assoc($result);
+
 mysqli_stmt_close($stmt);
 
 if (!$data) {
     die("Data barang tidak ditemukan.");
 }
-
-// Ambil data master
+$data_awal = $data;
+// AMBIL DATA MASTER
 $kategori = mysqli_query($conn, "SELECT * FROM kategori");
 $merk = mysqli_query($conn, "SELECT * FROM merk");
+
 $hasil_kondisi = mysqli_query($conn, "
-    SELECT * FROM kondisi_barang ORDER BY id_kondisi ASC
+    SELECT * FROM kondisi_barang
+    ORDER BY id_kondisi ASC
 ");
 
 if (!$kategori || !$merk || !$hasil_kondisi) {
     die("Gagal mengambil data master: " . mysqli_error($conn));
 }
 
-// Simpan kondisi ke array agar bisa digunakan kembali
+// SIMPAN KONDISI KE ARRAY
 $daftar_kondisi = [];
 
 while ($item = mysqli_fetch_assoc($hasil_kondisi)) {
     $daftar_kondisi[] = $item;
 }
 
-// Kondisi default untuk unit baru
+// KONDISI DEFAULT UNIT BARU
 $id_kondisi_default = (int) ($data['id_kondisi'] ?? 0);
 
 if (!empty($daftar_kondisi)) {
@@ -56,18 +65,20 @@ if (!empty($daftar_kondisi)) {
     }
 }
 
-// Proses update
+// PROSES UPDATE
 if (isset($_POST['update'])) {
 
     $foto_lama = $data['foto'];
+    $stok_sebelumnya = (int) $data['stok'];
 
-    // Ambil input
-    $kode_barang = trim($_POST['kode_barang'] ?? "");
+    // AMBIL INPUT
     $nama_barang = trim($_POST['nama_barang'] ?? "");
     $jenis_barang = $_POST['jenis_barang'] ?? "";
+    $kode_barang = $data['kode_barang'];
 
     $id_kategori = filter_input(INPUT_POST, 'id_kategori', FILTER_VALIDATE_INT);
     $id_merk = filter_input(INPUT_POST, 'id_merk', FILTER_VALIDATE_INT);
+
     $id_kondisi_unit_baru = filter_input(
         INPUT_POST,
         'id_kondisi_unit_baru',
@@ -81,7 +92,7 @@ if (isset($_POST['update'])) {
     $foto = $foto_lama;
     $foto_baru = "";
 
-    // Pertahankan input ketika validasi gagal
+    // PERTAHANKAN INPUT JIKA VALIDASI GAGAL
     $data['kode_barang'] = $kode_barang;
     $data['nama_barang'] = $nama_barang;
     $data['jenis_barang'] = $jenis_barang;
@@ -91,9 +102,8 @@ if (isset($_POST['update'])) {
     $data['harga_sewa'] = $harga_sewa;
     $data['deskripsi'] = $deskripsi;
 
-    // Validasi
+    // VALIDASI
     if (
-        $kode_barang === "" ||
         $nama_barang === "" ||
         !in_array($jenis_barang, ['kamera', 'tripod'], true) ||
         !$id_kategori ||
@@ -107,9 +117,27 @@ if (isset($_POST['update'])) {
     ) {
         $error = "Periksa kembali data yang diisi. Pastikan semua kolom wajib diisi dengan benar.";
     }
+    // CEK APAKAH ADA PERUBAHAN DATA
+    if ($error === "") {
 
-    // Validasi kondisi jika stok bertambah
-    if ($error === "" && $stok > (int) $data['stok']) {
+        $ada_perubahan =
+            $nama_barang !== $data_awal['nama_barang'] ||
+            $jenis_barang !== $data_awal['jenis_barang'] ||
+            (int) $id_kategori !== (int) $data_awal['id_kategori'] ||
+            (int) $id_merk !== (int) $data_awal['id_merk'] ||
+            (int) $stok !== (int) $data_awal['stok'] ||
+            (float) $harga_sewa !== (float) $data_awal['harga_sewa'] ||
+            $deskripsi !== (string) ($data_awal['deskripsi'] ?? '') ||
+            !empty($_FILES['foto']['name']);
+
+        if (!$ada_perubahan) {
+            $error = "Tidak ada perubahan data. Silakan ubah minimal satu informasi sebelum menyimpan.";
+        }
+    }
+
+    // VALIDASI KONDISI JIKA STOK BERTAMBAH
+    if ($error === "" && $stok > $stok_sebelumnya) {
+
         $kondisi_ditemukan = false;
 
         foreach ($daftar_kondisi as $item) {
@@ -124,40 +152,49 @@ if (isset($_POST['update'])) {
         }
     }
 
-    // Upload foto baru
+    // UPLOAD FOTO BARU
     if ($error === "" && !empty($_FILES['foto']['name'])) {
 
         if ($_FILES['foto']['error'] !== UPLOAD_ERR_OK) {
             $error = "Foto gagal diunggah. Silakan coba kembali.";
+
         } else {
 
             $tmp_foto = $_FILES['foto']['tmp_name'];
             $ukuran_foto = $_FILES['foto']['size'];
-            $info_foto = getimagesize($tmp_foto);
 
             $ekstensi = strtolower(
                 pathinfo($_FILES['foto']['name'], PATHINFO_EXTENSION)
             );
 
             $ekstensi_diizinkan = ['jpg', 'jpeg', 'png', 'webp'];
+            $info_foto = getimagesize($tmp_foto);
 
             if (
                 $info_foto === false ||
                 !in_array($ekstensi, $ekstensi_diizinkan, true)
             ) {
                 $error = "Format foto harus JPG, JPEG, PNG, atau WEBP.";
+
             } elseif ($ukuran_foto > 5 * 1024 * 1024) {
                 $error = "Ukuran foto maksimal 5 MB.";
+
             } else {
 
-                $folder = "../uploads/barang/";
-
-                if (!is_dir($folder) && !mkdir($folder, 0777, true)) {
+                // BUAT FOLDER JIKA BELUM ADA
+                if (
+                    !is_dir($folder_upload) &&
+                    !mkdir($folder_upload, 0755, true)
+                ) {
                     $error = "Folder upload foto gagal dibuat.";
+
+                } elseif (!is_writable($folder_upload)) {
+                    $error = "Folder upload tidak memiliki izin penulisan.";
+
                 } else {
 
-                    $nama_file = bin2hex(random_bytes(8)) . "." . $ekstensi;
-                    $lokasi_foto = $folder . $nama_file;
+                    $nama_file = bin2hex(random_bytes(16)) . "." . $ekstensi;
+                    $lokasi_foto = $folder_upload . $nama_file;
 
                     if (move_uploaded_file($tmp_foto, $lokasi_foto)) {
                         $foto = $nama_file;
@@ -170,14 +207,14 @@ if (isset($_POST['update'])) {
         }
     }
 
-    // Simpan barang dan sesuaikan unit
+    // SIMPAN BARANG DAN SESUAIKAN UNIT
     if ($error === "") {
 
         mysqli_begin_transaction($conn);
 
         try {
 
-            // Kunci data barang agar stok tidak berubah bersamaan
+            // KUNCI DATA BARANG
             $stmt_lama = mysqli_prepare($conn, "
                 SELECT stok, kode_barang
                 FROM barang
@@ -194,6 +231,7 @@ if (isset($_POST['update'])) {
 
             $hasil_lama = mysqli_stmt_get_result($stmt_lama);
             $barang_lama = mysqli_fetch_assoc($hasil_lama);
+
             mysqli_stmt_close($stmt_lama);
 
             if (!$barang_lama) {
@@ -202,11 +240,35 @@ if (isset($_POST['update'])) {
 
             $stok_lama = (int) $barang_lama['stok'];
             $kode_lama = $barang_lama['kode_barang'];
+            // GENERATE KODE BARANG BERDASARKAN JENIS
+            if ($jenis_barang === 'kamera') {
+                $prefix = 'CAM';
+            } else {
+                $prefix = 'TRI';
+            }
 
-            // Hitung perubahan stok
+            if (substr($kode_lama, 0, 3) !== $prefix) {
+
+                // AMBIL NOMOR URUT DARI KODE LAMA
+                preg_match('/(\d+)$/', $kode_lama, $match);
+
+                $nomor_kode = isset($match[1])
+                    ? (int) $match[1]
+                    : (int) $id;
+
+                $kode_barang = $prefix . str_pad(
+                    $nomor_kode,
+                    3,
+                    '0',
+                    STR_PAD_LEFT
+                );
+
+            }
+
+            // HITUNG PERUBAHAN STOK
             $selisih = (int) $stok - $stok_lama;
 
-            // Update data utama barang
+            // UPDATE DATA BARANG
             $stmt_update = mysqli_prepare($conn, "
                 UPDATE barang SET
                     kode_barang = ?,
@@ -246,7 +308,7 @@ if (isset($_POST['update'])) {
 
             mysqli_stmt_close($stmt_update);
 
-            // Jika kode barang berubah, sesuaikan kode setiap unit
+            // JIKA KODE BARANG BERUBAH, SESUAIKAN KODE UNIT
             if ($kode_lama !== $kode_barang) {
 
                 $stmt_daftar_unit = mysqli_prepare($conn, "
@@ -254,6 +316,10 @@ if (isset($_POST['update'])) {
                     FROM barang_unit
                     WHERE id_barang = ?
                 ");
+
+                if (!$stmt_daftar_unit) {
+                    throw new Exception(mysqli_error($conn));
+                }
 
                 mysqli_stmt_bind_param($stmt_daftar_unit, "i", $id);
                 mysqli_stmt_execute($stmt_daftar_unit);
@@ -273,9 +339,12 @@ if (isset($_POST['update'])) {
                     WHERE id_unit = ? AND id_barang = ?
                 ");
 
+                if (!$stmt_update_kode) {
+                    throw new Exception(mysqli_error($conn));
+                }
+
                 foreach ($daftar_unit as $unit) {
 
-                    // Ambil nomor urut dari kode unit lama
                     if (preg_match('/-(\d+)$/', $unit['kode_unit'], $match)) {
                         $nomor_unit = (int) $match[1];
                     } else {
@@ -301,10 +370,9 @@ if (isset($_POST['update'])) {
                 mysqli_stmt_close($stmt_update_kode);
             }
 
-            // Jika stok bertambah, buat unit baru
+            // JIKA STOK BERTAMBAH, BUAT UNIT BARU
             if ($selisih > 0) {
 
-                // Cari nomor unit terakhir
                 $stmt_max = mysqli_prepare($conn, "
                     SELECT COALESCE(
                         MAX(CAST(SUBSTRING_INDEX(kode_unit, '-', -1) AS UNSIGNED)),
@@ -314,6 +382,10 @@ if (isset($_POST['update'])) {
                     WHERE id_barang = ?
                 ");
 
+                if (!$stmt_max) {
+                    throw new Exception(mysqli_error($conn));
+                }
+
                 mysqli_stmt_bind_param($stmt_max, "i", $id);
                 mysqli_stmt_execute($stmt_max);
 
@@ -322,8 +394,6 @@ if (isset($_POST['update'])) {
 
                 mysqli_stmt_close($stmt_max);
 
-                // Buat unit baru dengan kondisi yang dipilih
-                // Status tetap Tersedia; kondisi rusak dibaca dari id_kondisi
                 $stmt_unit = mysqli_prepare($conn, "
                     INSERT INTO barang_unit
                     (id_barang, kode_unit, id_kondisi, status_unit)
@@ -357,7 +427,7 @@ if (isset($_POST['update'])) {
                 mysqli_stmt_close($stmt_unit);
             }
 
-            // Jika stok berkurang, hapus unit yang tersedia
+            // JIKA STOK BERKURANG, HAPUS UNIT TERSEDIA
             elseif ($selisih < 0) {
 
                 $jumlah_hapus = abs($selisih);
@@ -393,7 +463,6 @@ if (isset($_POST['update'])) {
 
                 mysqli_stmt_close($stmt_cek);
 
-                // Pastikan jumlah unit tersedia mencukupi
                 if (count($unit_dihapus) < $jumlah_hapus) {
                     throw new Exception(
                         "Stok tidak dapat dikurangi karena jumlah unit tersedia tidak mencukupi. Unit yang sedang dipinjam tidak dapat dihapus."
@@ -406,6 +475,10 @@ if (isset($_POST['update'])) {
                     AND id_barang = ?
                     AND status_unit = 'Tersedia'
                 ");
+
+                if (!$stmt_delete) {
+                    throw new Exception(mysqli_error($conn));
+                }
 
                 foreach ($unit_dihapus as $id_unit) {
 
@@ -430,16 +503,17 @@ if (isset($_POST['update'])) {
                 mysqli_stmt_close($stmt_delete);
             }
 
-            // Semua proses berhasil
+            // SEMUA PROSES BERHASIL
             mysqli_commit($conn);
 
-            // Hapus foto lama setelah berhasil update
-            if (
-                $foto_baru !== "" &&
-                !empty($foto_lama) &&
-                is_file("../uploads/barang/" . $foto_lama)
-            ) {
-                unlink("../uploads/barang/" . $foto_lama);
+            // HAPUS FOTO LAMA SETELAH UPDATE BERHASIL
+            if ($foto_baru !== "" && !empty($foto_lama)) {
+
+                $lokasi_foto_lama = $folder_upload . basename($foto_lama);
+
+                if (is_file($lokasi_foto_lama)) {
+                    unlink($lokasi_foto_lama);
+                }
             }
 
             header("Location: index.php?pesan=ubah");
@@ -449,7 +523,7 @@ if (isset($_POST['update'])) {
 
             mysqli_rollback($conn);
 
-            // Hapus foto baru jika proses gagal
+            // HAPUS FOTO BARU JIKA PROSES DATABASE GAGAL
             if ($foto_baru !== "" && is_file($foto_baru)) {
                 unlink($foto_baru);
             }
@@ -461,7 +535,9 @@ if (isset($_POST['update'])) {
 ?>
 
 <?php include "../layout/header.php"; ?>
+
 <link rel="stylesheet" href="../assets/css/data-master.css?v=3">
+
 <?php include "../layout/navbar.php"; ?>
 
 <div class="main-content data-master-page">
@@ -472,6 +548,7 @@ if (isset($_POST['update'])) {
             <div class="data-page-icon">
                 <i class="bi bi-camera"></i>
             </div>
+
             <div>
                 <h2>Edit Barang</h2>
                 <p>Perbarui informasi barang kamera dan tripod.</p>
@@ -480,6 +557,7 @@ if (isset($_POST['update'])) {
 
         <!-- FORM EDIT -->
         <div class="data-form-card">
+
             <div class="data-form-header">
                 <h3>
                     <i class="bi bi-pencil-square"></i>
@@ -493,7 +571,7 @@ if (isset($_POST['update'])) {
                 <?php if ($error !== "") { ?>
                     <div class="alert alert-danger">
                         <i class="bi bi-exclamation-circle me-2"></i>
-                        <?= htmlspecialchars($error); ?>
+                        <?= htmlspecialchars($error, ENT_QUOTES, 'UTF-8'); ?>
                     </div>
                 <?php } ?>
 
@@ -502,12 +580,16 @@ if (isset($_POST['update'])) {
                     <!-- KODE BARANG -->
                     <div class="mb-3">
                         <label class="data-form-label">Kode Barang</label>
+
                         <input
                             type="text"
-                            name="kode_barang"
                             class="data-form-control"
-                            value="<?= htmlspecialchars($data['kode_barang'] ?? ''); ?>"
-                            required>
+                            value="<?= htmlspecialchars($data['kode_barang'] ?? '', ENT_QUOTES, 'UTF-8'); ?>"
+                            readonly>
+
+                        <small class="text-muted">
+                            Kode barang akan menyesuaikan jenis barang secara otomatis.
+                        </small>
                     </div>
 
                     <!-- NAMA BARANG -->
@@ -517,7 +599,7 @@ if (isset($_POST['update'])) {
                             type="text"
                             name="nama_barang"
                             class="data-form-control"
-                            value="<?= htmlspecialchars($data['nama_barang'] ?? ''); ?>"
+                            value="<?= htmlspecialchars($data['nama_barang'] ?? '', ENT_QUOTES, 'UTF-8'); ?>"
                             required>
                     </div>
 
@@ -526,10 +608,12 @@ if (isset($_POST['update'])) {
                         <label class="data-form-label">Jenis Barang</label>
                         <select name="jenis_barang" class="data-form-control" required>
                             <option value="">-- Pilih Jenis Barang --</option>
+
                             <option value="kamera"
                                 <?= ($data['jenis_barang'] ?? '') === 'kamera' ? 'selected' : ''; ?>>
                                 Kamera
                             </option>
+
                             <option value="tripod"
                                 <?= ($data['jenis_barang'] ?? '') === 'tripod' ? 'selected' : ''; ?>>
                                 Tripod
@@ -540,13 +624,15 @@ if (isset($_POST['update'])) {
                     <!-- KATEGORI -->
                     <div class="mb-3">
                         <label class="data-form-label">Kategori</label>
+
                         <select name="id_kategori" class="data-form-control" required>
                             <option value="">-- Pilih Kategori --</option>
+
                             <?php while ($item = mysqli_fetch_assoc($kategori)) { ?>
                                 <option
                                     value="<?= (int) $item['id_kategori']; ?>"
                                     <?= (int) $data['id_kategori'] === (int) $item['id_kategori'] ? 'selected' : ''; ?>>
-                                    <?= htmlspecialchars($item['nama_kategori']); ?>
+                                    <?= htmlspecialchars($item['nama_kategori'], ENT_QUOTES, 'UTF-8'); ?>
                                 </option>
                             <?php } ?>
                         </select>
@@ -555,13 +641,15 @@ if (isset($_POST['update'])) {
                     <!-- MERK -->
                     <div class="mb-3">
                         <label class="data-form-label">Merk</label>
+
                         <select name="id_merk" class="data-form-control" required>
                             <option value="">-- Pilih Merk --</option>
+
                             <?php while ($item = mysqli_fetch_assoc($merk)) { ?>
                                 <option
                                     value="<?= (int) $item['id_merk']; ?>"
                                     <?= (int) $data['id_merk'] === (int) $item['id_merk'] ? 'selected' : ''; ?>>
-                                    <?= htmlspecialchars($item['nama_merk']); ?>
+                                    <?= htmlspecialchars($item['nama_merk'], ENT_QUOTES, 'UTF-8'); ?>
                                 </option>
                             <?php } ?>
                         </select>
@@ -585,7 +673,7 @@ if (isset($_POST['update'])) {
                                 <option
                                     value="<?= (int) $item['id_kondisi']; ?>"
                                     <?= $id_kondisi_default === (int) $item['id_kondisi'] ? 'selected' : ''; ?>>
-                                    <?= htmlspecialchars($item['nama_kondisi']); ?>
+                                    <?= htmlspecialchars($item['nama_kondisi'], ENT_QUOTES, 'UTF-8'); ?>
                                 </option>
                             <?php } ?>
 
@@ -600,12 +688,13 @@ if (isset($_POST['update'])) {
                     <!-- STOK -->
                     <div class="mb-3">
                         <label class="data-form-label">Stok</label>
+
                         <input
                             type="number"
                             name="stok"
                             class="data-form-control"
                             min="0"
-                            value="<?= htmlspecialchars((string) $data['stok']); ?>"
+                            value="<?= htmlspecialchars((string) $data['stok'], ENT_QUOTES, 'UTF-8'); ?>"
                             required>
 
                         <small class="text-muted">
@@ -617,13 +706,14 @@ if (isset($_POST['update'])) {
                     <!-- HARGA SEWA -->
                     <div class="mb-3">
                         <label class="data-form-label">Harga Sewa</label>
+
                         <input
                             type="number"
                             name="harga_sewa"
                             class="data-form-control"
                             min="1"
                             step="0.01"
-                            value="<?= htmlspecialchars((string) ($data['harga_sewa'] ?? '')); ?>"
+                            value="<?= htmlspecialchars((string) ($data['harga_sewa'] ?? ''), ENT_QUOTES, 'UTF-8'); ?>"
                             required>
 
                         <small class="text-muted">
@@ -634,6 +724,7 @@ if (isset($_POST['update'])) {
                     <!-- FOTO -->
                     <div class="mb-3">
                         <label class="data-form-label">Foto Barang</label>
+
                         <input
                             type="file"
                             name="foto"
@@ -648,12 +739,13 @@ if (isset($_POST['update'])) {
                         <?php if (!empty($data['foto'])) { ?>
                             <div class="mt-3">
                                 <label class="data-form-label">Foto Saat Ini</label>
+
                                 <div>
                                     <img
-                                        src="../uploads/barang/<?= htmlspecialchars($data['foto']); ?>"
-                                        alt="Foto <?= htmlspecialchars($data['nama_barang']); ?>"
+                                        src="/../uploads/barang/<?= htmlspecialchars($data['foto'], ENT_QUOTES, 'UTF-8'); ?>"
+                                        alt="Foto <?= htmlspecialchars($data['nama_barang'], ENT_QUOTES, 'UTF-8'); ?>"
                                         class="foto-detail"
-                                        style="max-width: 220px; max-height: 220px;">
+                                        style="max-width: 220px; max-height: 220px; object-fit: contain;">
                                 </div>
                             </div>
                         <?php } ?>
@@ -662,14 +754,16 @@ if (isset($_POST['update'])) {
                     <!-- DESKRIPSI -->
                     <div class="mb-4">
                         <label class="data-form-label">Deskripsi</label>
+
                         <textarea
                             name="deskripsi"
                             class="data-form-control"
-                            rows="4"><?= htmlspecialchars($data['deskripsi'] ?? ''); ?></textarea>
+                            rows="4"><?= htmlspecialchars($data['deskripsi'] ?? '', ENT_QUOTES, 'UTF-8'); ?></textarea>
                     </div>
 
                     <!-- TOMBOL -->
                     <div class="d-flex flex-wrap gap-2">
+
                         <button
                             type="submit"
                             name="update"
@@ -682,6 +776,7 @@ if (isset($_POST['update'])) {
                             <i class="bi bi-arrow-left"></i>
                             Kembali
                         </a>
+
                     </div>
 
                 </form>

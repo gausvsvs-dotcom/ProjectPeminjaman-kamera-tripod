@@ -40,6 +40,7 @@ while ($kondisi = mysqli_fetch_assoc($query_kondisi)) {
     $daftar_kondisi[] = $kondisi;
 }
 
+
 // PROSES UPDATE UNIT
 if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["update_unit"])) {
 
@@ -55,14 +56,23 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["update_unit"])) {
     ];
 
     if (!$id_unit || !$id_kondisi || !in_array($status_unit, $status_valid, true)) {
+
         $error = "Data unit tidak valid.";
+
     } else {
 
         // PASTIKAN UNIT MILIK BARANG YANG SEDANG DIBUKA
         $stmt_cek = mysqli_prepare($conn, "
-            SELECT id_unit, id_kondisi, status_unit
-            FROM barang_unit
-            WHERE id_unit = ? AND id_barang = ?
+            SELECT
+                bu.id_unit,
+                bu.id_kondisi,
+                bu.status_unit,
+                kb.nama_kondisi
+            FROM barang_unit bu
+            LEFT JOIN kondisi_barang kb
+                ON bu.id_kondisi = kb.id_kondisi
+            WHERE bu.id_unit = ?
+            AND bu.id_barang = ?
         ");
 
         mysqli_stmt_bind_param($stmt_cek, "ii", $id_unit, $id);
@@ -88,6 +98,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["update_unit"])) {
         mysqli_stmt_close($stmt_cek_kondisi);
 
         if (!$unit_lama || !$kondisi_dipilih) {
+
             $error = "Unit atau kondisi barang tidak ditemukan.";
 
         } elseif (
@@ -97,47 +108,52 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["update_unit"])) {
                 $id_kondisi != $unit_lama["id_kondisi"]
             )
         ) {
+
             $error = "Unit yang sedang dipinjam tidak boleh diubah sembarangan.";
+
+        } elseif (
+            stripos($kondisi_dipilih["nama_kondisi"], "rusak") !== false &&
+            $status_unit === "Tersedia"
+        ) {
+
+            // VALIDASI UNIT RUSAK
+            $error = "Unit dengan kondisi rusak tidak dapat berstatus tersedia.";
 
         } else {
 
-            // UNIT RUSAK TIDAK BOLEH BERSTATUS TERSEDIA
-            if (
-                stripos($kondisi_dipilih["nama_kondisi"], "rusak") !== false &&
-                $status_unit === "Tersedia"
-            ) {
-                $error = "Unit dengan kondisi rusak tidak dapat berstatus tersedia.";
+            // UPDATE DATA UNIT
+            $stmt_update = mysqli_prepare($conn, "
+                UPDATE barang_unit
+                SET
+                    id_kondisi = ?,
+                    status_unit = ?,
+                    keterangan_kondisi = ?
+                WHERE id_unit = ?
+                AND id_barang = ?
+            ");
+
+            mysqli_stmt_bind_param(
+                $stmt_update,
+                "issii",
+                $id_kondisi,
+                $status_unit,
+                $keterangan,
+                $id_unit,
+                $id
+            );
+
+            if (mysqli_stmt_execute($stmt_update)) {
+
+                mysqli_stmt_close($stmt_update);
+
+                header("Location: unit.php?id=" . $id . "&success=1");
+                exit;
+
             } else {
 
-                $stmt_update = mysqli_prepare($conn, "
-                    UPDATE barang_unit
-                    SET
-                        id_kondisi = ?,
-                        status_unit = ?,
-                        keterangan_kondisi = ?
-                    WHERE id_unit = ?
-                    AND id_barang = ?
-                ");
+                $error = "Gagal memperbarui unit: " . mysqli_stmt_error($stmt_update);
+                mysqli_stmt_close($stmt_update);
 
-                mysqli_stmt_bind_param(
-                    $stmt_update,
-                    "issii",
-                    $id_kondisi,
-                    $status_unit,
-                    $keterangan,
-                    $id_unit,
-                    $id
-                );
-
-                if (mysqli_stmt_execute($stmt_update)) {
-                    mysqli_stmt_close($stmt_update);
-
-                    header("Location: unit.php?id=" . $id . "&success=1");
-                    exit;
-                } else {
-                    $error = "Gagal memperbarui unit: " . mysqli_stmt_error($stmt_update);
-                    mysqli_stmt_close($stmt_update);
-                }
             }
         }
     }

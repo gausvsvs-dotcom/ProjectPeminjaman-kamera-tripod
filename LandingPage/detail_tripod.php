@@ -59,11 +59,13 @@ if (!$data) {
             <!-- FOTO TRIPOD -->
             <div class="col-lg-6">
 
-                <div class="detail-produk-image">
-                    <img src="<?= htmlspecialchars($data['foto']); ?>"
-                    alt="<?= htmlspecialchars($data['nama_barang']); ?>"
-                    class="img-fluid">
-                </div>
+                <?php if (!empty($data['foto'])): ?>
+                    <div class="detail-produk-image">
+                        <img src="../DataMaster/uploads/barang/<?= htmlspecialchars($data['foto']); ?>"
+                            alt="<?= htmlspecialchars($data['nama_barang']); ?>"
+                            class="img-fluid">
+                    </div>
+                <?php endif; ?>
 
             </div>
 

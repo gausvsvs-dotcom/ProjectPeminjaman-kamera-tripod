@@ -60,7 +60,7 @@ if (!$data) {
 
                 <?php if (!empty($data['foto'])): ?>
                     <div class="detail-produk-image">
-                        <img src="../DataMaster/uploads/barang/<?= htmlspecialchars($data['foto']); ?>"
+                        <img src="../uploads/barang/<?= htmlspecialchars($data['foto']); ?>"
                             alt="<?= htmlspecialchars($data['nama_barang']); ?>"
                             class="img-fluid">
                     </div>

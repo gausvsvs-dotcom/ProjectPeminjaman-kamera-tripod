@@ -197,7 +197,7 @@ if (!$queryKondisi) {
                      data-kategori="<?= htmlspecialchars($barang['nama_kategori'] ?? ''); ?>"
                      data-jenis="<?= htmlspecialchars($barang['jenis_barang']); ?>">
                     <div class="card produk-card">
-                        <img src="../DataMaster/uploads/barang/<?= htmlspecialchars($barang['foto']); ?>"
+                        <img src="../uploads/barang/<?= htmlspecialchars($barang['foto']); ?>"
                              class="card-img-top produk-img"
                              alt="<?= htmlspecialchars($barang['nama_barang']); ?>">
 
@@ -275,7 +275,7 @@ if (!$queryKondisi) {
                      data-jenis="<?= htmlspecialchars($barang['jenis_barang']); ?>">
                     <div class="card produk-card">
 
-                        <img src="../DataMaster/uploads/barang/<?= htmlspecialchars($barang['foto']); ?>"
+                        <img src="..uploads/barang/<?= htmlspecialchars($barang['foto']); ?>"
                              class="card-img-top produk-img"
                              alt="<?= htmlspecialchars($barang['nama_barang']); ?>">
 

@@ -108,7 +108,7 @@ $jumlah_barang = count($_SESSION['keranjang']);
                                value="<?= htmlspecialchars($barang['id']); ?>">
 
                         <?php if (!empty($barang['gambar'])): ?>
-                            <img src="../DataMaster/uploads/barang/<?= htmlspecialchars($barang['gambar']); ?>"
+                            <img src="../uploads/barang/<?= htmlspecialchars($barang['gambar']); ?>"
                                 alt="<?= htmlspecialchars($barang['nama']); ?>"
                                 class="keranjang-gambar">
                         <?php endif; ?>

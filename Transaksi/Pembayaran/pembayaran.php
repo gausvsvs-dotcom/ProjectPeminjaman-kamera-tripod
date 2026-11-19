@@ -58,7 +58,8 @@ $total_harga   = isset($_POST['total_harga']) ? $_POST['total_harga'] : '150000'
         <b style="color: #e67e22; font-size: 15px;">Menunggu Pembayaran</b>
     </div>
 
-    <form action="../riwayat.php" method="POST">
+    <!-- Mengarah ke struk.php di dalam folder yang sama -->
+    <form action="struk.php" method="POST">
         <input type="hidden" name="nama_peminjam" value="<?= htmlspecialchars($nama_peminjam); ?>">
         <input type="hidden" name="no_hp" value="<?= htmlspecialchars($no_hp); ?>">
         <input type="hidden" name="nama_alat" value="<?= htmlspecialchars($nama_alat); ?>">

@@ -8,13 +8,15 @@ $tgl_kembali   = isset($_POST['tgl_kembali']) ? $_POST['tgl_kembali'] : '-';
 $jenis_pinjam  = isset($_POST['jenis_pinjam']) ? $_POST['jenis_pinjam'] : '-';
 $alamat        = isset($_POST['alamat']) ? $_POST['alamat'] : '-';
 
-// Hitung harga otomatis berdasarkan alat
-$harga_per_hari = 100000;
+// Hitung harga per hari berdasarkan alat yang dipilih
+$harga_per_hari = 100000; // Default Canon EOS 3000D
 if (strpos($nama_alat, 'Sony A6000') !== false) {
     $harga_per_hari = 150000;
 } elseif (strpos($nama_alat, 'Tripod Saja') !== false) {
     $harga_per_hari = 30000;
 }
+
+// Total harga = harga per hari dikali durasi hari
 $total_harga = $harga_per_hari * $durasi;
 ?>
 
@@ -59,7 +61,7 @@ $total_harga = $harga_per_hari * $durasi;
         <span class="info-value"><?= htmlspecialchars($nama_alat); ?></span>
     </div>
     <div class="info-row">
-        <span>Durasi:</span>
+        <span>Durasi Pinjam:</span>
         <span class="info-value"><?= $durasi; ?> Hari</span>
     </div>
     <div class="info-row">
@@ -70,9 +72,17 @@ $total_harga = $harga_per_hari * $durasi;
         <span>Tanggal Kembali:</span>
         <span class="info-value"><?= htmlspecialchars($tgl_kembali); ?></span>
     </div>
+    <div class="info-row">
+        <span>Jenis Peminjaman:</span>
+        <span class="info-value"><?= htmlspecialchars($jenis_pinjam); ?></span>
+    </div>
+    <div class="info-row">
+        <span>Alamat:</span>
+        <span class="info-value"><?= htmlspecialchars($alamat); ?></span>
+    </div>
 
     <div class="total-box">
-        <span>Total Tagihan:</span>
+        <span>Estimasi Tagihan:</span>
         <b>Rp <?= number_format($total_harga, 0, ',', '.'); ?></b>
     </div>
 

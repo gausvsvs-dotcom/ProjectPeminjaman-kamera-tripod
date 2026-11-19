@@ -158,19 +158,6 @@ if (isset($_POST['update'])) {
 
                 <form method="POST" action="">
 
-                    <!-- ID KATEGORI -->
-                    <div class="mb-4">
-                        <label class="data-form-label">
-                            ID Kategori
-                        </label>
-
-                        <input
-                            type="text"
-                            class="data-form-control"
-                            value="#<?= (int) $id; ?>"
-                            readonly
-                        >
-                    </div>
 
                     <!-- NAMA KATEGORI -->
                     <div class="mb-4">

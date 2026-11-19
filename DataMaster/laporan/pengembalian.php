@@ -232,7 +232,7 @@ if (!$query) {
                         <thead>
                             <tr>
                                 <th>No.</th>
-                                <th>Kode Peminjaman</th>
+
                                 <th>Nama Peminjam</th>
                                 <th>Tanggal Peminjaman</th>
                                 <th>Tanggal Pengembalian</th>
@@ -253,7 +253,7 @@ if (!$query) {
 
                                     <td><?= $no++; ?></td>
 
-                                    <td>#<?= $id; ?></td>
+
 
                                     <td>
                                         <?= htmlspecialchars(

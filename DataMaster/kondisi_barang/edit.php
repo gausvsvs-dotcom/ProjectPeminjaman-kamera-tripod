@@ -165,17 +165,6 @@ if (isset($_POST['update'])) {
 
                 <form method="POST">
 
-                    <!-- ID KONDISI -->
-                    <div class="mb-3">
-                        <label class="data-form-label">ID Kondisi</label>
-
-                        <input
-                            type="text"
-                            class="data-form-control"
-                            value="<?= (int) $data['id_kondisi']; ?>"
-                            disabled>
-                    </div>
-
                     <!-- NAMA KONDISI -->
                     <div class="mb-4">
                         <label for="nama_kondisi" class="data-form-label">

@@ -49,12 +49,6 @@ $keterangan = $data['keterangan'] ?? '';
                 </div>
             </div>
             <div class="data-detail-body">
-                <!-- ID Kondisi -->
-                <div class="detail-item">
-                    <div class="detail-label">ID Kondisi</div>
-                    <div class="detail-value">
-                        <?= (int) $data['id_kondisi']; ?>
-                    </div>
                 </div>
                 <!-- Nama Kondisi -->
                 <div class="detail-item">

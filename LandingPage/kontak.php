@@ -167,7 +167,7 @@ function tutupNotifikasi() {
 
                 <div class="col-lg-7">
                     <div class="kontak-form">
-                        <h2 class="kontak-heading">Hubungi Kami</h2>
+                        <h2 class="kontak-heading">Silahkan Isi Form Berikut</h2>
 
                         <div id="areaNotifikasi"></div>
 
